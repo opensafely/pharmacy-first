@@ -10,3 +10,11 @@ actions:
     outputs:
       highly_sensitive:
         dataset: output/dataset.csv.gz
+
+  generate_pf_measures:
+    run: >
+      ehrql:v1 generate-measures analysis/report_measures.py
+      --output output/report/conditions_measures.csv
+    outputs:
+      moderately_sensitive:
+        measure: output/report/conditions_measures.csv  
