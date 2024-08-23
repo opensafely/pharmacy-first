@@ -15,6 +15,25 @@ pharmacy_first_event_codes = {
     # Pharmacy First service (qualifier value)
     "pharmacy_first_service": ["983341000000102"],
 }
+# The following codes come from codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv file.
+# Currently written as a hardcoded dictionary to allow for easy for looping (ln66-83), but will be imported from codelist csv in future commits.
+# Pharmacy First seven clinical conditions codelist
+pharmacy_first_conditions_codes = {
+    # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
+    "acute_otitis_media": ["3110003"],
+    # Community Pharmacy (CP) Contraception Service (procedure)
+    "herpes_zoster": ["4740000"],
+    # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
+    "acute_sinusitis": ["15805002"],
+    # Pharmacy First service (qualifier value)
+    "impetigo": ["48277006"],
+    # Community Pharmacy (CP) Contraception Service (procedure)
+    "infected_insect_bite": ["262550002"],
+    # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
+    "acute_pharyngitis": ["363746003"],
+    # Pharmacy First service (qualifier value)
+    "uncomplicated_urinary_tract_infection": ["1090711000000102"],
+}
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
@@ -24,7 +43,7 @@ selected_events = clinical_events.where(
 )
 
 # Loop through each condition to create a measure
-for condition_name, codelist in pharmacy_first_event_codes.items():
+for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
     condition_events = selected_events.where(
         clinical_events.snomedct_code.is_in(codelist)
     )
@@ -36,33 +55,29 @@ for condition_name, codelist in pharmacy_first_event_codes.items():
     # Define the denominator as the number of patients registered
     denominator = registration.exists_for_patient()
 
-    # Define the measure
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}",
+        numerator=numerator,
+        denominator=denominator,
+        intervals=months(8).starting_on("2023-11-01")
+    )
+
+# Loop through each CLINICAL condition to create a measure
+for condition_name, condition_code in pharmacy_first_conditions_codes.items():
+    condition_events = selected_events.where(
+        clinical_events.snomedct_code.is_in(condition_code)
+    )
+
+    # Define the numerator as the count of events for the condition
+    numerator = condition_events.count_for_patient()
+
+
+    # Define the denominator as the number of patients registered
+    denominator = registration.exists_for_patient()
+
     measures.define_measure(
         name=f"count_{condition_name}",
         numerator=numerator,
         denominator=denominator,
         intervals=months(8).starting_on("2023-11-01")
     )
-
-# # Count pharmacy first codes
-# pharmacy_first_code_counts = {}
-
-# for code_desc, code in pharmacy_first_event_codes.items():
-#     count_codes_query = selected_events.where(
-#         selected_events.snomedct_code.is_in(code)
-#     ).count_for_patient()
-#     pharmacy_first_code_counts[f"count_{code_desc}"] = count_codes_query
-
-
-# for measures_name, code_counts in pharmacy_first_code_counts.items():
-#     measures.define_measure(
-#         name=measures_name,
-#         numerator=code_counts,
-#         group_by={
-#             "practice_region": registration.practice_nuts1_region_name
-#             },
-#         denominator=patients.exists_for_patient(),
-#         intervals=intervals,
-#     )
-
-    

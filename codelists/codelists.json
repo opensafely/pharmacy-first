@@ -1,3 +1,10 @@
 {
-  "files": {}
+  "files": {
+    "user-chriswood-pharmacy-first-clinical-pathway-conditions.csv": {
+      "id": "user/chriswood/pharmacy-first-clinical-pathway-conditions/7ec97762",
+      "url": "https://www.opencodelists.org/codelist/user/chriswood/pharmacy-first-clinical-pathway-conditions/7ec97762/",
+      "downloaded_at": "2024-08-22 12:53:00.167017Z",
+      "sha": "bed7f74add5c2d2ac6f7120d89f5ba94e57a28cb"
+    }
+  }
 }

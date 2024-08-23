@@ -24,7 +24,6 @@ pre[class] {
 </style>
 
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
@@ -34,13 +33,13 @@ library(readr)
 
 
 ```
-$~$
+<br>
 
 ## Background <a name="background"></a>
 
 Add background here.
 
-$~$
+<br>
 
 ## Methods <a name="methods"></a>
 
@@ -58,8 +57,7 @@ Links to the codelist for each analysis can be found beneath the relevant sectio
 
 This report contains the following sections:
 
-
-
+* [Clinical Services](#services)
 * [Clinical Pathways](#pathways)
   * [Clinical condition](#condition)
   * [Days of the week](#dotw)
@@ -82,9 +80,11 @@ This report contains the following sections:
   * [Age](#contra_age)
   * [Region](#contra_region)
 
-$~$
+<br>
 
-## Clinical services
+## Clinical Services <a name="services"></a>
+
+<br>
 
 ```{r, message=FALSE, warning=FALSE}
 # Load plotting function
@@ -94,12 +94,15 @@ df_measures <- readr::read_csv(
   here::here("output", "report", "conditions_measures.csv")
 )
 
-plot1_conditions <- plot_measures(df_measures,
+plot_services <- plot_measures(df_measures,
 title = "Number of consultations for each clinical service per month",
-x_label = "Month",
-y_label = "Number of Consultations",
-color_label = "Clinical Service")
-print(plot1_conditions)
+measure_names = c("count_blood_pressure_service", 
+                "count_contraception_service", 
+                "count_consultation_service", 
+                "count_pharmacy_first_service"),
+y_label = "Number of codes for consultations",
+)
+print(plot_services)
 ```
 
 ## Clinical Pathways <a name="pathways"></a>
@@ -115,6 +118,22 @@ This section focuses on the clinical conditions within the Clinical Pathways ele
 Here we show the number of consultations for each of the Pharmacy First Clinical Pathways Clinical Conditions
 
 > LINE CHART WITH COUNT OF EACH CLINICAL CONDITION
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_conditions <- plot_measures(df_measures,
+title = "Number of consultations for each clinical condition per month",
+measure_names = c("count_acute_otitis_media", 
+                  "count_herpes_zoster", 
+                  "count_acute_sinusitis", 
+                  "count_impetigo",
+                  "count_infected_insect_bite",
+                  "count_acute_pharyngitis",
+                  "count_uncomplicated_urinary_tract_infection"),
+y_label = "Number of codes for consultations",
+)
+print(plot_conditions)
+```
 
 ### Counts by day of the week <a name="dotw"></a>
 Here we show the number of consultations for the Pharmacy First Clinical Pathways by day of the week the consultation was conducted. (Mainly of interest to show what happens at weekends etc e.g. when GP practices are closed).
