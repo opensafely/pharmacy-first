@@ -4,6 +4,7 @@
 #' 
 #' @param data A dataframe containing the data to plot.
 #' @param measure_names Strings specifiying the names of measure columns to be plotted.
+#' @param custom_labels Strings specifying the names of legend labels. 
 #' @param title A string specifying the title of the plot. Default is NULL. 
 #' @param x_label A string specifying the label for the x-axis. Default is NULL.
 #' @param y_label A string specifying the label for the y-axis. Default is NULL. 
@@ -18,6 +19,7 @@
 plot_measures <- function(
     data,
     measure_names,
+    custom_labels = NULL,
     date_col = "interval_end",
     value_col = "numerator",
     measure_col = "measure",
@@ -49,6 +51,12 @@ plot_measures <- function(
   data <- data %>%
     filter(!!measure_sym %in% measure_names)
 
+  # Apply custom labels if provided
+  if (!is.null(custom_labels)) {
+    data <- data %>%
+      mutate(!!measure_sym := factor(!!measure_sym, levels = measure_names, labels = custom_labels))
+  }
+
   # Create plot
   plot1 <- ggplot(
     data,
@@ -66,6 +74,8 @@ plot_measures <- function(
       y = y_label,
       color = color_label
     ) +
+    geom_point() +
+    geom_line(alpha = .5) +
     scale_y_continuous(
       limits = c(0, NA),
     ) +

@@ -15,26 +15,20 @@ pharmacy_first_event_codes = {
     # Pharmacy First service (qualifier value)
     "pharmacy_first_service": ["983341000000102"],
 }
-# The following codes come from codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv file.
-# Currently written as a hardcoded dictionary to allow for easy for looping (ln66-83), but will be imported from codelist csv in future commits.
-# Pharmacy First seven clinical conditions codelist
-pharmacy_first_conditions_codes = {
-    # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
-    "acute_otitis_media": ["3110003"],
-    # Community Pharmacy (CP) Contraception Service (procedure)
-    "herpes_zoster": ["4740000"],
-    # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
-    "acute_sinusitis": ["15805002"],
-    # Pharmacy First service (qualifier value)
-    "impetigo": ["48277006"],
-    # Community Pharmacy (CP) Contraception Service (procedure)
-    "infected_insect_bite": ["262550002"],
-    # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
-    "acute_pharyngitis": ["363746003"],
-    # Pharmacy First service (qualifier value)
-    "uncomplicated_urinary_tract_infection": ["1090711000000102"],
-}
 
+# Import the codelist from CSV
+pharmacy_first_codelist = codelist_from_csv(
+    "codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv",
+    column="code", category_column = "term"
+)
+
+pharmacy_first_conditions_codes = {}
+# Iterate through codelist, forming a dictionary 
+for codes, term in pharmacy_first_codelist.items():
+    normalised_term = term.lower().replace(" ", "_")
+    codes = [codes]
+    pharmacy_first_conditions_codes[normalised_term] = codes
+    
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
 # Select clinical events in interval date range
@@ -42,7 +36,7 @@ selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
 )
 
-# Loop through each condition to create a measure
+# Loop through each CLINICAL SERVICE to create a measure
 for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
     condition_events = selected_events.where(
         clinical_events.snomedct_code.is_in(codelist)
@@ -50,7 +44,6 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
 
     # Define the numerator as the count of events for the condition
     numerator = condition_events.count_for_patient()
-
 
     # Define the denominator as the number of patients registered
     denominator = registration.exists_for_patient()
@@ -62,7 +55,7 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         intervals=months(8).starting_on("2023-11-01")
     )
 
-# Loop through each CLINICAL condition to create a measure
+# Loop through each CLINICAL CONDITION to create a measure
 for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     condition_events = selected_events.where(
         clinical_events.snomedct_code.is_in(condition_code)
@@ -70,7 +63,6 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
 
     # Define the numerator as the count of events for the condition
     numerator = condition_events.count_for_patient()
-
 
     # Define the denominator as the number of patients registered
     denominator = registration.exists_for_patient()
