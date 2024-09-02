@@ -5,8 +5,10 @@ expectations:
   population_size: 1000
 
 actions:
-  generate_dataset:
-    run: ehrql:v1 generate-dataset analysis/dataset_definition.py --output output/dataset.csv.gz
+  generate_pf_measures:
+    run: >
+      ehrql:v1 generate-measures analysis/report_measures.py
+      --output output/report/conditions_measures.csv
     outputs:
-      highly_sensitive:
-        dataset: output/dataset.csv.gz
+      moderately_sensitive:
+        measure: output/report/conditions_measures.csv  

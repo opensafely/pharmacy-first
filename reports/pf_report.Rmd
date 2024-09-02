@@ -1,0 +1,206 @@
+---
+title: "Pharmacy First"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    theme: journal
+date: "01-01-2020 through 31-06-2024 by month"
+---
+```{css, echo=FALSE}
+pre {
+  max-height: 300px;
+  overflow-y: auto;
+}
+pre[class] {
+  max-height: 200px;
+}
+```
+
+<style>
+  body {
+    text-align: justify;
+     font-size: 11pt}
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
+library(here)
+library(readr)
+
+
+```
+<br>
+
+## Background <a name="background"></a>
+
+Add background here.
+
+<br>
+
+## Methods <a name="methods"></a>
+
+This study used data from OpenSAFELY-TPP, which covers 40% of the population of England. For a description of the representativeness of this sample, please see our manuscript [here](https://wellcomeopenresearch.org/articles/7-191/v1). Individuals were included if they were alive and registered at a TPP practice each month, across the study period. Patients were excluded if their listed age was not between 0 and 120 years.
+
+Counts represent patients with at least one clinical code of relevance in that month. Patients with more than one of the same clinical code in a month were only counted once. Rates divide the count by the included study population and multiply by 1,000 to achieve a rate per 1,000 registered patients.
+
+Counts <=7 have been redacted and all numbers rounded to the nearest 5 to avoid potential re-identification of individuals. The rates displayed were computed with these rounded counts.
+
+Our data relies on a relevant Pharmacy First code being added to a patient's GP record. The Pharmacy First service relies on [GP Connect: Update Record](https://digital.nhs.uk/services/gp-connect/gp-connect-in-your-organisation/gp-connect-update-record) to update a patient's GP record with consultation information from the community pharmacy. Following the launch of the Pharmacy First service, there has been a [gradual roll-out of GP Connect: Update Record](https://cpe.org.uk/our-news/gp-connect-update-record-rollout-and-flow-of-information/) across the approved community pharmacy IT system suppliers.
+
+*Need to complete this*
+
+Links to the codelist for each analysis can be found beneath the relevant section.
+
+<br>
+
+## Clinical Services <a name="services"></a>
+
+<br>
+
+```{r, message=FALSE, warning=FALSE}
+# Load plotting function
+source(here::here("lib", "functions", "function_plot_measures.R"))
+# Load data
+df_measures <- readr::read_csv(
+  here::here("output", "report", "conditions_measures.csv")
+)
+
+# Define the custom labels for clinical conditions
+clinical_measure_labels <- c(
+  "count_acute_otitis_media" = "Acute Otitis Media",
+  "count_herpes_zoster" = "Herpes Zoster",
+  "count_acute_sinusitis" = "Acute Sinusitis", 
+  "count_impetigo" = "Impetigo",
+  "count_infected_insect_bite" = "Infected Insect Bite",
+  "count_acute_pharyngitis" = "Acute Pharyngitis",
+  "count_uncomplicated_urinary_tract_infection" = "UTI"
+)
+
+# Define the custom labels for clinical services
+clinical_service_labels <- c(
+  "count_blood_pressure_service" = "Blood Pressure Service", 
+  "count_contraception_service" = "Contraception Service", 
+  "count_consultation_service" = "Consultation Service", 
+  "count_pharmacy_first_service" = "Pharmacy First Service"
+)
+
+```
+
+```{r, message=FALSE, warning=FALSE}
+plot_measures(df_measures,
+title = "Number of consultations for each clinical service per month",
+measure_names = names(clinical_service_labels),
+custom_labels = clinical_service_labels,
+y_label = "Number of codes for consultations",
+)
+```
+
+## Clinical Pathways <a name="pathways"></a>
+
+This section focuses on the Clinical Pathways element of that Pharmacy First service.  
+
+
+### Clinical Condition <a name="condition"></a>
+
+This section focuses on the clinical conditions within the Clinical Pathways element of that Pharmacy First service:  
+
+#### Counts by clinical condition
+Here we show the number of consultations for each of the Pharmacy First Clinical Pathways Clinical Conditions
+
+```{r, message=FALSE, warning=FALSE}
+plot_measures(df_measures,
+title = "Number of consultations for each clinical condition per month",
+measure_names = names(clinical_measure_labels),
+custom_labels = clinical_measure_labels,
+y_label = "Number of codes for consultations",
+)
+```
+
+### Counts by day of the week <a name="dotw"></a>
+Here we show the number of consultations for the Pharmacy First Clinical Pathways by day of the week the consultation was conducted. (Mainly of interest to show what happens at weekends etc e.g. when GP practices are closed).
+
+> BAR CHART WITH COUNT BY DAY OF THE WEEK
+
+### Rates by region <a name="region"></a>
+Here we show the rates of consultations for the Pharmacy First Clinical Pathways by the NHS Region in which the patient is registered. (Might not be the region where PF consultation conducted).
+
+> RATES OF ANY PF CLINICAL PATHWAY BY REGION
+
+### Rates by ethnicity <a name="ethnicity"></a>
+Here we show the rates of consultations for the Pharmacy First Clinical Pathways by patient ethnicity
+
+> RATES OF ANY PF CLINICAL PATHWAY BY ETHNICITY
+
+### Rates by IMD <a name="imd"></a>
+Here we show the rates of consultations for the Pharmacy First Clinical Pathways by IMD (based on patient address)
+
+> RATES OF ANY PF CLINICAL PATHWAY BY IMD
+
+### Shingles <a name="shingles"></a>
+Here we show the rates specifically for consultations conducted under the Shingles clinical pathway:  
+
+#### Rates by sex <a name="shingles_sex"></a>
+Here we show the rates of consultations for the Pharmacy First Shingles Clinical Pathways by sex
+
+> RATES OF SHINGLES CLINICAL PATHWAY BY SEX
+
+#### Rates by age <a name="shingles_age"></a>
+Here we show the rates of consultations for the Pharmacy First Shingles Clinical Pathways by age. (Would need to consider age bands as different for each pathway)
+
+> RATES OF SHINGLES CLINICAL PATHWAY BY AGE
+
+#### Rates by ethnicity <a name="shingles_ethnicity"></a>
+Here we show the rates of consultations for the Pharmacy First Shingles Clinical Pathways by ethnicity
+
+> RATES OF SHINGLES CLINICAL PATHWAY BY ETHNICITY
+
+#### Rates by IMD <a name="shingles_imd"></a>
+Here we show the rates of consultations for the Pharmacy First Shingles Clinical Pathways by IMD
+
+> RATES OF SHINGLES CLINICAL PATHWAY BY IMD
+
+#### Rates by region <a name="shingles_region"></a>
+Here we show the rates of consultations for the Pharmacy First Shingles Clinical Pathways by NHS region
+
+> RATES OF SHINGLES CLINICAL PATHWAY BY REGION
+
+#### Rates by medication supply <a name="shingles_supply"></a>
+Here we show the percentage of consultations for the Pharmacy First Shingles Clinical Pathways with vs without medication supply. (Could also potentially show details of which medication issued)
+
+> BAR PLOT OF PERCENTAGE OF SHINGLES CLINICAL PATHWAY WITH/WITHOUT MEDICATION SUPPLIED
+
+### Urinary tract infection etc. <a name="urt"></a>
+
+> *placeholder*
+
+## Hypertension <a name="hyp"></a>
+
+*description*
+
+### Age <a name="hyp_age"></a>
+
+> *placeholder*
+
+### Sex <a name="hyp_sex"></a>
+
+> *placeholder*
+
+### Region <a name="hyp_region"></a>
+
+> *placeholder*
+
+## Contraception <a name="contra"></a>
+
+*description*
+
+### Age <a name="contra_age"></a>
+
+> *placeholder*
+
+### Region <a name="contra_region"></a>
+
+> *placeholder*
