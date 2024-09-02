@@ -83,7 +83,7 @@ plot_measures <- function(
     theme(axis.text.x = element_text(size = axis_x_text_size), 
     legend.position="bottom",
     legend.key.size = unit(0.5, "cm"),
-    legend.text = element_text(size = 6),
+    legend.text = element_text(size = 8),
     legend.title = element_text(size = 8)) +
     guides(
     color = guide_legend(nrow = 2)  # Adjust number of rows in the legend

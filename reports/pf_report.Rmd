@@ -55,31 +55,6 @@ Our data relies on a relevant Pharmacy First code being added to a patient's GP 
 
 Links to the codelist for each analysis can be found beneath the relevant section.
 
-This report contains the following sections:
-
-* [Clinical Services](#services)
-* [Clinical Pathways](#pathways)
-  * [Clinical condition](#condition)
-  * [Days of the week](#dotw)
-  * [NHS region](#region)
-  * [Ethnicity](#ethnicity)
-  * [IMD](#imd)
-  * [Shingles](#shingles)
-    + [Sex](#shingles_sex)
-    + [Age](#shingles_age)
-    + [Ethnicity](#shingles_ethnicity)
-    + [IMD](#shingles_imd)
-    + [Region](#shingles_region)
-    + [Medication supply](#shingles_supply)
-  * [Urinary tract infection etc.](#urt)
-* [Hypertension](#hyp)
-  * [Age](#hyp_age)
-  * [Sex](#hyp_sex)
-  * [Region](#hyp_region)
-* [Contraception](#contra)
-  * [Age](#contra_age)
-  * [Region](#contra_region)
-
 <br>
 
 ## Clinical Services <a name="services"></a>
@@ -116,13 +91,12 @@ clinical_service_labels <- c(
 ```
 
 ```{r, message=FALSE, warning=FALSE}
-plot_services <- plot_measures(df_measures,
+plot_measures(df_measures,
 title = "Number of consultations for each clinical service per month",
 measure_names = names(clinical_service_labels),
 custom_labels = clinical_service_labels,
 y_label = "Number of codes for consultations",
 )
-print(plot_services)
 ```
 
 ## Clinical Pathways <a name="pathways"></a>
@@ -137,17 +111,13 @@ This section focuses on the clinical conditions within the Clinical Pathways ele
 #### Counts by clinical condition
 Here we show the number of consultations for each of the Pharmacy First Clinical Pathways Clinical Conditions
 
-> LINE CHART WITH COUNT OF EACH CLINICAL CONDITION
-
 ```{r, message=FALSE, warning=FALSE}
-
-plot_conditions <- plot_measures(df_measures,
+plot_measures(df_measures,
 title = "Number of consultations for each clinical condition per month",
 measure_names = names(clinical_measure_labels),
 custom_labels = clinical_measure_labels,
 y_label = "Number of codes for consultations",
 )
-print(plot_conditions)
 ```
 
 ### Counts by day of the week <a name="dotw"></a>
