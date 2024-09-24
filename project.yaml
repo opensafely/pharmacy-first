@@ -7,8 +7,8 @@ expectations:
 actions:
   generate_pf_measures:
     run: >
-      ehrql:v1 generate-measures analysis/report_measures.py
-      --output output/report/conditions_measures.csv
+      ehrql:v1 generate-measures analysis/measures_definition_pf_codes_conditions.py
+      --output output/measures/pf_codes_conditions_measures.csv
     outputs:
       moderately_sensitive:
-        measure: output/report/conditions_measures.csv  
+        measure: output/measures/pf_codes_conditions_measures.csv  

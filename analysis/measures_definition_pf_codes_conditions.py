@@ -1,5 +1,5 @@
 from ehrql import INTERVAL, create_measures, months, codelist_from_csv
-from ehrql.tables.tpp import clinical_events, patients, practice_registrations
+from ehrql.tables.tpp import clinical_events, practice_registrations
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -7,7 +7,7 @@ measures.configure_dummy_data(population_size=1000)
 start_date = "2023-11-01"
 monthly_intervals = 8
 
-# Dictionary of pharmacy first codes
+# Create dictionary of pharmacy first codes
 pharmacy_first_event_codes = {
     # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
     "blood_pressure_service": ["1659111000000107"],
@@ -19,7 +19,7 @@ pharmacy_first_event_codes = {
     "pharmacy_first_service": ["983341000000102"],
 }
 
-# Import the codelist from CSV
+# Import pharmacy first conditions codelist
 pharmacy_first_conditions_codelist = codelist_from_csv(
     "codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv",
     column="code",
@@ -33,14 +33,7 @@ selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
 )
 
-# Iterate through codelist, forming a dictionary
-pharmacy_first_conditions_codes = {}
-for codes, term in pharmacy_first_conditions_codelist.items():
-    normalised_term = term.lower().replace(" ", "_")
-    codes = [codes]
-    pharmacy_first_conditions_codes[normalised_term] = codes
-
-# Loop through each CLINICAL SERVICE to create a measure
+# Create measures for pharmacy first services
 for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
     condition_events = selected_events.where(
         clinical_events.snomedct_code.is_in(codelist)
@@ -59,7 +52,13 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         intervals=months(monthly_intervals).starting_on(start_date),
     )
 
-# Loop through each CLINICAL CONDITION to create a measure
+# Create measures for pharmacy first conditions
+pharmacy_first_conditions_codes = {}
+for codes, term in pharmacy_first_conditions_codelist.items():
+    normalised_term = term.lower().replace(" ", "_")
+    codes = [codes]
+    pharmacy_first_conditions_codes[normalised_term] = codes
+
 for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     condition_events = selected_events.where(
         clinical_events.snomedct_code.is_in(condition_code)

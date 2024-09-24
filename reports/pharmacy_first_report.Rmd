@@ -1,0 +1,94 @@
+---
+title: "Pharmacy First"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(here)
+library(readr)
+```
+
+```{r load-data, message=FALSE, warning=FALSE}
+# Load plotting function
+source(here::here("lib", "functions", "function_plot_measures.R"))
+# Load data
+df_measures <- readr::read_csv(
+  here::here("output", "measures", "pf_codes_conditions_measures.csv")
+)
+```
+
+```{r setup-dicts, message=FALSE, warning=FALSE}
+# Define the custom labels for clinical conditions
+pf_clinical_condition_dict <- c(
+  "count_acute_otitis_media" = "Acute Otitis Media",
+  "count_herpes_zoster" = "Herpes Zoster",
+  "count_acute_sinusitis" = "Acute Sinusitis",
+  "count_impetigo" = "Impetigo",
+  "count_infected_insect_bite" = "Infected Insect Bite",
+  "count_acute_pharyngitis" = "Acute Pharyngitis",
+  "count_uncomplicated_urinary_tract_infection" = "UTI"
+)
+
+# Define the custom labels for clinical services
+pf_clinical_service_dict <- c(
+  "count_blood_pressure_service" = "Blood Pressure Service",
+  "count_contraception_service" = "Contraception Service",
+  "count_consultation_service" = "Consultation Service",
+  "count_pharmacy_first_service" = "Pharmacy First Service"
+)
+```
+
+# Background
+
+Add background here.
+
+# Methods
+
+This study used data from OpenSAFELY-TPP, which covers 40% of the population of England. For a description of the representativeness of this sample, please see our manuscript [here](https://wellcomeopenresearch.org/articles/7-191/v1).
+Individuals were included if they were alive and registered at a TPP practice each month, across the study period.
+Patients were excluded if their listed age was not between 0 and 120 years.
+Counts represent patients with at least one clinical code of relevance in that month.
+Patients with more than one of the same clinical code in a month were only counted once. Rates divide the count by the included study population and multiply by 1,000 to achieve a rate per 1,000 registered patients.
+Counts <=7 have been redacted and all numbers rounded to the nearest 5 to avoid potential re-identification of individuals. The rates displayed were computed with these rounded counts.
+Our data relies on a relevant Pharmacy First code being added to a patient's GP record.
+The Pharmacy First service relies on [GP Connect - Update Record](https://digital.nhs.uk/services/gp-connect/gp-connect-in-your-organisation/gp-connect-update-record) to update a patient's GP record with consultation information from the community pharmacy.
+Following the launch of the Pharmacy First service, there has been a [Gradual roll-out of GP Connect - Update Record](https://cpe.org.uk/our-news/gp-connect-update-record-rollout-and-flow-of-information/) across the approved community pharmacy IT system suppliers.
+
+Links to the codelist for each analysis can be found beneath the relevant section.
+
+# Results
+
+## Clinical Services
+
+```{r, message=FALSE, warning=FALSE}
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical service per month",
+  measure_names = names(pf_clinical_service_dict),
+  custom_labels = pf_clinical_service_dict,
+  y_label = "Number of codes for consultations",
+)
+```
+
+## Clinical Pathways
+
+This section focuses on the Clinical Pathways element of that Pharmacy First service.  
+
+## Clinical Condition
+
+This section focuses on the clinical conditions within the Clinical Pathways element of that Pharmacy First service:  
+Here we show the number of consultations for each of the Pharmacy First Clinical Pathways Clinical Conditions.
+
+```{r, message=FALSE, warning=FALSE}
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical condition per month",
+  measure_names = names(pf_clinical_condition_dict),
+  custom_labels = pf_clinical_condition_dict,
+  y_label = "Number of codes for consultations",
+)
+```
