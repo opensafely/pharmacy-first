@@ -4,6 +4,9 @@ from ehrql.tables.tpp import clinical_events, patients, practice_registrations
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
 
+start_date = "2023-11-01"
+monthly_intervals = 8
+
 # Dictionary of pharmacy first codes
 pharmacy_first_event_codes = {
     # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
@@ -17,24 +20,25 @@ pharmacy_first_event_codes = {
 }
 
 # Import the codelist from CSV
-pharmacy_first_codelist = codelist_from_csv(
+pharmacy_first_conditions_codelist = codelist_from_csv(
     "codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv",
-    column="code", category_column = "term"
+    column="code",
+    category_column="term",
 )
 
-pharmacy_first_conditions_codes = {}
-# Iterate through codelist, forming a dictionary 
-for codes, term in pharmacy_first_codelist.items():
-    normalised_term = term.lower().replace(" ", "_")
-    codes = [codes]
-    pharmacy_first_conditions_codes[normalised_term] = codes
-    
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
 )
+
+# Iterate through codelist, forming a dictionary
+pharmacy_first_conditions_codes = {}
+for codes, term in pharmacy_first_conditions_codelist.items():
+    normalised_term = term.lower().replace(" ", "_")
+    codes = [codes]
+    pharmacy_first_conditions_codes[normalised_term] = codes
 
 # Loop through each CLINICAL SERVICE to create a measure
 for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
@@ -52,7 +56,7 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         name=f"count_{pharmacy_first_event}",
         numerator=numerator,
         denominator=denominator,
-        intervals=months(8).starting_on("2023-11-01")
+        intervals=months(monthly_intervals).starting_on(start_date),
     )
 
 # Loop through each CLINICAL CONDITION to create a measure
@@ -71,5 +75,5 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         name=f"count_{condition_name}",
         numerator=numerator,
         denominator=denominator,
-        intervals=months(8).starting_on("2023-11-01")
+        intervals=months(monthly_intervals).starting_on(start_date),
     )
