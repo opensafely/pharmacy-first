@@ -35,6 +35,17 @@ pf_clinical_condition_dict <- c(
   "count_uncomplicated_urinary_tract_infection" = "UTI"
 )
 
+# Define the custom labels for clinical conditions by age
+pf_clinical_condition_dict_by_age <- c(
+  "count_acute_otitis_media_by_age" = "Acute Otitis Media",
+  "count_herpes_zoster_by_age" = "Herpes Zoster",
+  "count_acute_sinusitis_by_age" = "Acute Sinusitis",
+  "count_impetigo_by_age" = "Impetigo",
+  "count_infected_insect_bite_by_age" = "Infected Insect Bite",
+  "count_acute_pharyngitis_by_age" = "Acute Pharyngitis",
+  "count_uncomplicated_urinary_tract_infection_by_age" = "UTI"
+)
+
 # Define the custom labels for clinical services
 pf_clinical_service_dict <- c(
   "count_blood_pressure_service" = "Blood Pressure Service",
@@ -112,5 +123,19 @@ plot_measures(df_measures,
   measure_names = names(pf_clinical_condition_dict),
   custom_labels = pf_clinical_condition_dict,
   y_label = "Number of codes for consultations",
+)
+```
+
+### Clinical Conditions by Age
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical condition by age per month",
+  measure_names = names(pf_clinical_condition_dict_by_age),
+  custom_labels = pf_clinical_condition_dict_by_age,
+  y_label = "Number of codes for consultations",
+  facet_var = "age_band",
+  rotate_x_labels = TRUE
 )
 ```
