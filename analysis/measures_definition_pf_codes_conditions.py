@@ -1,5 +1,5 @@
-from ehrql import INTERVAL, create_measures, months, codelist_from_csv
-from ehrql.tables.tpp import clinical_events, practice_registrations
+from ehrql import INTERVAL, create_measures, months, codelist_from_csv, case, when
+from ehrql.tables.tpp import clinical_events, practice_registrations, patients
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -28,6 +28,16 @@ pharmacy_first_conditions_codelist = codelist_from_csv(
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
+age = patients.age_on(INTERVAL.start_date)
+age_band = case(
+    when((age >= 0) & (age < 20)).then("0-19"),
+    when((age >= 20) & (age < 40)).then("20-39"),
+    when((age >= 40) & (age < 60)).then("40-59"),
+    when((age >= 60) & (age < 80)).then("60-79"),
+    when(age >= 80).then("80+"),
+    when(age.is_null()).then("Missing"),
+)
+
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
@@ -49,6 +59,16 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         name=f"count_{pharmacy_first_event}",
         numerator=numerator,
         denominator=denominator,
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_age",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "age_band": age_band,
+        },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
 

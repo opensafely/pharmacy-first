@@ -42,6 +42,14 @@ pf_clinical_service_dict <- c(
   "count_consultation_service" = "Consultation Service",
   "count_pharmacy_first_service" = "Pharmacy First Service"
 )
+
+# Define the custom labels for clinical services by age
+pf_clinical_service_dict_by_age <- c(
+  "count_blood_pressure_service_by_age" = "Blood Pressure Service",
+  "count_contraception_service_by_age" = "Contraception Service",
+  "count_consultation_service_by_age" = "Consultation Service",
+  "count_pharmacy_first_service_by_age" = "Pharmacy First Service"
+)
 ```
 
 # Background
@@ -72,6 +80,20 @@ plot_measures(df_measures,
   measure_names = names(pf_clinical_service_dict),
   custom_labels = pf_clinical_service_dict,
   y_label = "Number of codes for consultations",
+)
+```
+
+### Clinical Services by Age
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical service by age per month",
+  measure_names = names(pf_clinical_service_dict_by_age),
+  custom_labels = pf_clinical_service_dict_by_age,
+  y_label = "Number of codes for consultations",
+  facet_var = "age_band",
+  rotate_x_labels = TRUE
 )
 ```
 
