@@ -1,5 +1,5 @@
 from ehrql import INTERVAL, create_measures, months, codelist_from_csv, case, when
-from ehrql.tables.tpp import clinical_events, practice_registrations, patients
+from ehrql.tables.tpp import clinical_events, practice_registrations, patients, addresses
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -28,6 +28,7 @@ pharmacy_first_conditions_codelist = codelist_from_csv(
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
+# Age bands for age breakdown
 age = patients.age_on(INTERVAL.start_date)
 age_band = case(
     when((age >= 0) & (age < 20)).then("0-19"),
@@ -36,6 +37,17 @@ age_band = case(
     when((age >= 60) & (age < 80)).then("60-79"),
     when(age >= 80).then("80+"),
     when(age.is_null()).then("Missing"),
+)
+
+# IMD groupings for IMD breakdown
+imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
+imd_quintile = case(
+    when((imd >=0) & (imd < int(32844 * 1 / 5))).then("1 (most deprived)"),
+    when(imd < int(32844 * 2 / 5)).then("2"),
+    when(imd < int(32844 * 3 / 5)).then("3"),
+    when(imd < int(32844 * 4 / 5)).then("4"),
+    when(imd < int(32844 * 5 / 5)).then("5 (least deprived)"),
+    otherwise="unknown"
 )
 
 # Select clinical events in interval date range
@@ -83,6 +95,17 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         intervals=months(monthly_intervals).starting_on(start_date),
     )
 
+    # Measures for IMD breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_imd",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "imd": imd_quintile,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
 # Create measures for pharmacy first conditions
 pharmacy_first_conditions_codes = {}
 for codes, term in pharmacy_first_conditions_codelist.items():
@@ -125,6 +148,17 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         denominator=denominator,
         group_by={
             "sex": patients.sex,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for imd breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_imd",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "imd": imd_quintile,
         },
         intervals=months(monthly_intervals).starting_on(start_date),
     )

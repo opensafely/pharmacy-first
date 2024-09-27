@@ -57,6 +57,17 @@ pf_clinical_condition_dict_by_sex <- c(
   "count_uncomplicated_urinary_tract_infection_by_sex" = "UTI"
 )
 
+# Define the custom labels for clinical conditions by IMD
+pf_clinical_condition_dict_by_imd <- c(
+  "count_acute_otitis_media_by_imd" = "Acute Otitis Media",
+  "count_herpes_zoster_by_imd" = "Herpes Zoster",
+  "count_acute_sinusitis_by_imd" = "Acute Sinusitis",
+  "count_impetigo_by_imd" = "Impetigo",
+  "count_infected_insect_bite_by_imd" = "Infected Insect Bite",
+  "count_acute_pharyngitis_by_imd" = "Acute Pharyngitis",
+  "count_uncomplicated_urinary_tract_infection_by_imd" = "UTI"
+)
+
 # Define the custom labels for clinical services
 pf_clinical_service_dict <- c(
   "count_blood_pressure_service" = "Blood Pressure Service",
@@ -79,6 +90,14 @@ pf_clinical_service_dict_by_sex <- c(
   "count_contraception_service_by_sex" = "Contraception Service",
   "count_consultation_service_by_sex" = "Consultation Service",
   "count_pharmacy_first_service_by_sex" = "Pharmacy First Service"
+)
+
+# Define the custom labels for clinical services by IMD
+pf_clinical_service_dict_by_imd <- c(
+  "count_blood_pressure_service_by_imd" = "Blood Pressure Service",
+  "count_contraception_service_by_imd" = "Contraception Service",
+  "count_consultation_service_by_imd" = "Consultation Service",
+  "count_pharmacy_first_service_by_imd" = "Pharmacy First Service"
 )
 ```
 
@@ -140,6 +159,20 @@ plot_measures(df_measures,
   rotate_x_labels = TRUE
 )
 ```
+
+### Clinical Services by IMD
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical service by IMD per month",
+  measure_names = names(pf_clinical_service_dict_by_imd),
+  custom_labels = pf_clinical_service_dict_by_imd,
+  y_label = "Number of codes for consultations",
+  facet_var = "imd",
+  rotate_x_labels = TRUE
+)
+```
 ## Clinical Pathways
 
 This section focuses on the Clinical Pathways element of that Pharmacy First service.  
@@ -182,6 +215,20 @@ plot_measures(df_measures,
   custom_labels = pf_clinical_condition_dict_by_sex,
   y_label = "Number of codes for consultations",
   facet_var = "sex",
+  rotate_x_labels = TRUE
+)
+```
+
+### Clinical Conditions by IMD
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical condition by IMD per month",
+  measure_names = names(pf_clinical_condition_dict_by_imd),
+  custom_labels = pf_clinical_condition_dict_by_imd,
+  y_label = "Number of codes for consultations",
+  facet_var = "imd",
   rotate_x_labels = TRUE
 )
 ```
