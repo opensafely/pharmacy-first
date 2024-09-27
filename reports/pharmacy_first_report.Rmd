@@ -46,6 +46,17 @@ pf_clinical_condition_dict_by_age <- c(
   "count_uncomplicated_urinary_tract_infection_by_age" = "UTI"
 )
 
+# Define the custom labels for clinical conditions by sex
+pf_clinical_condition_dict_by_sex <- c(
+  "count_acute_otitis_media_by_sex" = "Acute Otitis Media",
+  "count_herpes_zoster_by_sex" = "Herpes Zoster",
+  "count_acute_sinusitis_by_sex" = "Acute Sinusitis",
+  "count_impetigo_by_sex" = "Impetigo",
+  "count_infected_insect_bite_by_sex" = "Infected Insect Bite",
+  "count_acute_pharyngitis_by_sex" = "Acute Pharyngitis",
+  "count_uncomplicated_urinary_tract_infection_by_sex" = "UTI"
+)
+
 # Define the custom labels for clinical services
 pf_clinical_service_dict <- c(
   "count_blood_pressure_service" = "Blood Pressure Service",
@@ -60,6 +71,14 @@ pf_clinical_service_dict_by_age <- c(
   "count_contraception_service_by_age" = "Contraception Service",
   "count_consultation_service_by_age" = "Consultation Service",
   "count_pharmacy_first_service_by_age" = "Pharmacy First Service"
+)
+
+# Define the custom labels for clinical services by sex
+pf_clinical_service_dict_by_sex <- c(
+  "count_blood_pressure_service_by_sex" = "Blood Pressure Service",
+  "count_contraception_service_by_sex" = "Contraception Service",
+  "count_consultation_service_by_sex" = "Consultation Service",
+  "count_pharmacy_first_service_by_sex" = "Pharmacy First Service"
 )
 ```
 
@@ -108,6 +127,19 @@ plot_measures(df_measures,
 )
 ```
 
+### Clinical Services by Sex
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical service by sex per month",
+  measure_names = names(pf_clinical_service_dict_by_sex),
+  custom_labels = pf_clinical_service_dict_by_sex,
+  y_label = "Number of codes for consultations",
+  facet_var = "sex",
+  rotate_x_labels = TRUE
+)
+```
 ## Clinical Pathways
 
 This section focuses on the Clinical Pathways element of that Pharmacy First service.  
@@ -136,6 +168,20 @@ plot_measures(df_measures,
   custom_labels = pf_clinical_condition_dict_by_age,
   y_label = "Number of codes for consultations",
   facet_var = "age_band",
+  rotate_x_labels = TRUE
+)
+```
+
+### Clinical Conditions by Sex
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical condition by sex per month",
+  measure_names = names(pf_clinical_condition_dict_by_sex),
+  custom_labels = pf_clinical_condition_dict_by_sex,
+  y_label = "Number of codes for consultations",
+  facet_var = "sex",
   rotate_x_labels = TRUE
 )
 ```

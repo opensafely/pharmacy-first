@@ -61,13 +61,24 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         denominator=denominator,
         intervals=months(monthly_intervals).starting_on(start_date),
     )
-
+    # Measures for age breakdown of clinical services
     measures.define_measure(
         name=f"count_{pharmacy_first_event}_by_age",
         numerator=numerator,
         denominator=denominator,
         group_by={
             "age_band": age_band,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for sex breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_sex",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "sex": patients.sex,
         },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
@@ -96,13 +107,24 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         denominator=denominator,
         intervals=months(monthly_intervals).starting_on(start_date),
     )
-
+    # Measures for age breakdown of clinical conditions
     measures.define_measure(
         name=f"count_{condition_name}_by_age",
         numerator=numerator,
         denominator=denominator,
         group_by={
             "age_band": age_band,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for age breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_sex",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "sex": patients.sex,
         },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
