@@ -106,6 +106,17 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         intervals=months(monthly_intervals).starting_on(start_date),
     )
 
+    # Measures for region breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_region",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "region": registration.practice_nuts1_region_name,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
 # Create measures for pharmacy first conditions
 pharmacy_first_conditions_codes = {}
 for codes, term in pharmacy_first_conditions_codelist.items():
@@ -159,6 +170,17 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         denominator=denominator,
         group_by={
             "imd": imd_quintile,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for region breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_region",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "region": registration.practice_nuts1_region_name,
         },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
