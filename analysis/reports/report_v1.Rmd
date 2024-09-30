@@ -43,7 +43,7 @@ Counts represent patients with at least one clinical code of relevance in that m
 
 Counts \<=7 have been redacted and all numbers rounded to the nearest 5 to avoid potential re-identification of individuals. The rates displayed were computed with these rounded counts.
 
-Our data relies on a relevant Pharmacy First code being added to a patient's GP record. The Pharmacy First service relies on [GP Connect: Update Record](https://digital.nhs.uk/services/gp-connect/gp-connect-in-your-organisation/gp-connect-update-record) to update a patient's GP record with consultation information from the community pharmacy. Following the launch of the Pharmacy First service, there has been a [gradual roll-out of GP Connect: Update Record](https://cpe.org.uk/our-news/gp-connect-update-record-rollout-and-flow-of-information/) across the approved community pharmacy IT system suppliers.
+Our data relies on relevant SNOMED CT codes being added to a patient's GP record to indicate a consultation under the Pharmacy First service and any treatments provided. To support transfer of community pharmacy consultation summary data into a patients primary care electronic health record he Pharmacy First service specification on [GP Connect: Update Record](https://digital.nhs.uk/services/gp-connect/gp-connect-in-your-organisation/gp-connect-update-record) to update a patient's GP record with consultation information from the community pharmacy. Following the launch of the Pharmacy First service, there has been a [gradual roll-out of GP Connect: Update Record](https://cpe.org.uk/our-news/gp-connect-update-record-rollout-and-flow-of-information/) across the approved community pharmacy IT system suppliers.
 
 *Need to complete this*
 
@@ -71,13 +71,13 @@ $~$
 
 ## Clinical Pathways <a name="pathways"></a>
 
-This section focuses on the Clinical Pathways element of that Pharmacy First service.
+This report focuses on the Clinical Pathways element of that Pharmacy First service.
 
 ### SNOMED CT codes <a name="pathwayssnomedcodes"></a>
 
-This section focuses on the Clinical Pathways element of that Pharmacy First service.
+Add text here about the SNOMED CT codes in use. Community Pharmacist (CP) Consultation Service for minor illness - entered via the Update Record system Pharmacy First service - manually coding
 
-> RATES OF ANY PF CLINICAL PATHWAY BY REGION
+> LINE CHATT - NATIONAL COUNTS OF THE 2 SNOMED CT codes - Community Pharmacist (CP) Consultation Service for minor illness (procedure): "1577041000000109" and Pharmacy First service (qualifier value): "983341000000102"
 
 ### Clinical Condition <a name="condition"></a>
 
@@ -99,7 +99,7 @@ Here we show the number of consultations for the Pharmacy First Clinical Pathway
 
 Here we show the rates of consultations for the Pharmacy First Clinical Pathways by the NHS Region in which the patient is registered. (Might not be the region where PF consultation conducted).
 
-> RATES OF ANY PF CLINICAL PATHWAY BY REGION
+> RATES OF ANY PF CLINICAL (either of Community Pharmacist (CP) Consultation Service for minor illness (procedure): "1577041000000109" and Pharmacy First service (qualifier value): "983341000000102") PATHWAY BY REGION
 
 ### Rates by ethnicity <a name="ethnicity"></a>
 
@@ -112,6 +112,8 @@ Here we show the rates of consultations for the Pharmacy First Clinical Pathways
 Here we show the rates of consultations for the Pharmacy First Clinical Pathways by IMD (based on patient address)
 
 > RATES OF ANY PF CLINICAL PATHWAY BY IMD
+
+# ---- BELOW HERE FOR FUTURE VERSIONS ----
 
 ### Shingles <a name="shingles"></a> {#shingles}
 
@@ -156,4 +158,3 @@ Here we show the percentage of consultations for the Pharmacy First Shingles Cli
 ### Urinary tract infection etc. <a name="urt"></a>
 
 > *placeholder*
-
