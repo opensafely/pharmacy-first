@@ -58,14 +58,6 @@ This report contains the following sections:
     -   [NHS region](#region)
     -   [Ethnicity](#ethnicity)
     -   [IMD](#imd)
-    -   [Shingles](#shingles)
-        -   [Sex](#shingles_sex)
-        -   [Age](#shingles_age)
-        -   [Ethnicity](#shingles_ethnicity)
-        -   [IMD](#shingles_imd)
-        -   [Region](#shingles_region)
-        -   [Medication supply](#shingles_supply)
-    -   [Urinary tract infection etc.](#urt)
 
 $~$
 
