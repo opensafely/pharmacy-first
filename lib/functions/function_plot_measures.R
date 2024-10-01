@@ -24,7 +24,9 @@ plot_measures <- function(
     title = NULL,
     x_label = NULL,
     y_label = NULL,
+    facet_var = NULL,
     color_label = NULL,
+    rotate_x_labels = FALSE,
     axis_x_text_size = 7) {
   # Check if the necessary columns exist in the data
   if (date_col %in% names(data) == FALSE) {
@@ -98,6 +100,17 @@ plot_measures <- function(
       date_breaks = "1 month",
       date_labels = "%b %Y"
     )
+
+    if (!is.null(facet_var)) {
+    facet_sym <- sym(facet_var)
+    plot1 <- plot1 + facet_wrap(vars(!!facet_sym), scales = "free_x")
+
+  }
+
+# Conditionally apply x-axis label rotation if rotate_x_labels is TRUE
+  if (rotate_x_labels) {
+    plot1 <- plot1 + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  }
 
   plot1
 }

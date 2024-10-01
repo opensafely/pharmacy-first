@@ -1,5 +1,5 @@
-from ehrql import INTERVAL, create_measures, months, codelist_from_csv
-from ehrql.tables.tpp import clinical_events, practice_registrations
+from ehrql import INTERVAL, create_measures, months, codelist_from_csv, case, when
+from ehrql.tables.tpp import clinical_events, practice_registrations, patients, addresses, ethnicity_from_sus
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -28,6 +28,29 @@ pharmacy_first_conditions_codelist = codelist_from_csv(
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
+# Age bands for age breakdown
+age = patients.age_on(INTERVAL.start_date)
+age_band = case(
+    when((age >= 0) & (age < 20)).then("0-19"),
+    when((age >= 20) & (age < 40)).then("20-39"),
+    when((age >= 40) & (age < 60)).then("40-59"),
+    when((age >= 60) & (age < 80)).then("60-79"),
+    when(age >= 80).then("80+"),
+    when(age.is_null()).then("Missing"),
+)
+
+# IMD groupings for IMD breakdown
+imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
+max_imd = 32844
+imd_quintile = case(
+    when((imd >=0) & (imd < int(max_imd * 1 / 5))).then("1"),
+    when(imd < int(max_imd * 2 / 5)).then("2"),
+    when(imd < int(max_imd * 3 / 5)).then("3"),
+    when(imd < int(max_imd * 4 / 5)).then("4"),
+    when(imd <= max_imd).then("5"),
+    otherwise="Missing"
+)
+
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
@@ -43,12 +66,67 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
     numerator = condition_events.count_for_patient()
 
     # Define the denominator as the number of patients registered
-    denominator = registration.exists_for_patient()
+    denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female", "intersex"])
 
     measures.define_measure(
         name=f"count_{pharmacy_first_event}",
         numerator=numerator,
         denominator=denominator,
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for age breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_age",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "age_band": age_band,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for sex breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_sex",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "sex": patients.sex,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for IMD breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_imd",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "imd": imd_quintile,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for region breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_region",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "region": registration.practice_nuts1_region_name,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for ethnicity code breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_ethnicity",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "ethnicity": ethnicity_from_sus.code,
+        },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
 
@@ -74,5 +152,59 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         name=f"count_{condition_name}",
         numerator=numerator,
         denominator=denominator,
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+    # Measures for age breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_age",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "age_band": age_band,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for age breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_sex",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "sex": patients.sex,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for imd breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_imd",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "imd": imd_quintile,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for region breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_region",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "region": registration.practice_nuts1_region_name,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for region breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_ethnicity",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "ethnicity": ethnicity_from_sus.code,
+        },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
