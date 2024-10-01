@@ -1,5 +1,5 @@
 from ehrql import INTERVAL, create_measures, months, codelist_from_csv, case, when
-from ehrql.tables.tpp import clinical_events, practice_registrations, patients, addresses
+from ehrql.tables.tpp import clinical_events, practice_registrations, patients, addresses, ethnicity_from_sus
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -41,13 +41,14 @@ age_band = case(
 
 # IMD groupings for IMD breakdown
 imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
+max_imd = 32844
 imd_quintile = case(
-    when((imd >=0) & (imd < int(32844 * 1 / 5))).then("1 (most deprived)"),
-    when(imd < int(32844 * 2 / 5)).then("2"),
-    when(imd < int(32844 * 3 / 5)).then("3"),
-    when(imd < int(32844 * 4 / 5)).then("4"),
-    when(imd < int(32844 * 5 / 5)).then("5 (least deprived)"),
-    otherwise="unknown"
+    when((imd >=0) & (imd < int(max_imd * 1 / 5))).then("1"),
+    when(imd < int(max_imd * 2 / 5)).then("2"),
+    when(imd < int(max_imd * 3 / 5)).then("3"),
+    when(imd < int(max_imd * 4 / 5)).then("4"),
+    when(imd <= max_imd).then("5"),
+    otherwise="Missing"
 )
 
 # Select clinical events in interval date range
@@ -65,7 +66,7 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
     numerator = condition_events.count_for_patient()
 
     # Define the denominator as the number of patients registered
-    denominator = registration.exists_for_patient()
+    denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female", "intersex"])
 
     measures.define_measure(
         name=f"count_{pharmacy_first_event}",
@@ -73,6 +74,7 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         denominator=denominator,
         intervals=months(monthly_intervals).starting_on(start_date),
     )
+
     # Measures for age breakdown of clinical services
     measures.define_measure(
         name=f"count_{pharmacy_first_event}_by_age",
@@ -113,6 +115,17 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
         denominator=denominator,
         group_by={
             "region": registration.practice_nuts1_region_name,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for ethnicity code breakdown of clinical services
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}_by_ethnicity",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "ethnicity": ethnicity_from_sus.code,
         },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
@@ -181,6 +194,17 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         denominator=denominator,
         group_by={
             "region": registration.practice_nuts1_region_name,
+        },
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
+
+    # Measures for region breakdown of clinical conditions
+    measures.define_measure(
+        name=f"count_{condition_name}_by_ethnicity",
+        numerator=numerator,
+        denominator=denominator,
+        group_by={
+            "ethnicity": ethnicity_from_sus.code,
         },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
