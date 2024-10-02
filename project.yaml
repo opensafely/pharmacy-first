@@ -11,4 +11,12 @@ actions:
       --output output/measures/pf_codes_conditions_measures.csv
     outputs:
       moderately_sensitive:
-        measure: output/measures/pf_codes_conditions_measures.csv  
+        measure: output/measures/pf_codes_conditions_measures.csv
+  
+  generate_pf_report:
+    run: >
+      r:latest -e 'rmarkdown::render("reports/pharmacy_first_report.Rmd", output_dir = "/workspace/output/reports", knit_root_dir = "/workspace")'
+    needs: [generate_pf_measures]
+    outputs:
+      moderately_sensitive:
+        report: output/reports/pharmacy_first_report.html
