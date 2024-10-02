@@ -160,7 +160,7 @@ plot_measures(df_measures,
   measure_names = names(pf_clinical_service_dict_by_age),
   custom_labels = pf_clinical_service_dict_by_age,
   y_label = "Number of codes for consultations",
-  facet_var = "age_band",
+  facet_var = "age",
   rotate_x_labels = TRUE
 )
 ```
@@ -234,7 +234,7 @@ plot_measures(df_measures,
   measure_names = names(pf_clinical_condition_dict_by_age),
   custom_labels = pf_clinical_condition_dict_by_age,
   y_label = "Number of codes for consultations",
-  facet_var = "age_band",
+  facet_var = "age",
   rotate_x_labels = TRUE
 )
 ```
