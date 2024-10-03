@@ -2,94 +2,66 @@
 #'
 #' Creates a line plot of measures over time, with customisable labels and colours.
 #'
-#' @param data A dataframe containing the data to plot.
-#' @param measure_names Strings specifiying the names of measure columns to be plotted.
-#' @param custom_labels Strings specifying the names of legend labels.
-#' @param title A string specifying the title of the plot. Default is NULL.
-#' @param x_label A string specifying the label for the x-axis. Default is NULL.
-#' @param y_label A string specifying the label for the y-axis. Default is NULL.
-#' @param color_label A string specifying the label for the color legend. Default is NULL.
-#' @param value_col The name of the dataframe column which contains the y-axis values. Default is "numerator".
-#' @param measure_col The name of the dataframe column which contains the categorical variable. Default is "measure".
+#' @param data A dataframe containing output from the OpenSAFELY measures framework
+#' @param select_measures List of strings specifiying the names in the measure columns to be plotted.
+#' @param select_interval_date Specify date variable interval_start or interval_end.
+#' @param select_value The name of the column which contains the y-axis values: ratio, numerator, or denominator
+#' @param title A string specifying the title of the plot.
+#' @param x_label A string specifying the label for the x-axis.
+#' @param y_label A string specifying the label for the y-axis.
+#' @param colour_var Column name of the colour variable
+#' @param legend_position Position of the guide/legend of the plot
+#' @param guide_label A string specifying the label for the color/guide legend.
+#' @param guide_nrow Number of rows for the colour/guide
+#' @param facet_wrap Logical, specifying whether to include panels using facet_wrap
+#' @param facet_var Variable name used for creating panels
 #'
 #' @return A ggplot object.
 
 plot_measures <- function(
     data,
-    measure_names,
-    custom_labels = NULL,
-    date_col = "interval_end",
-    value_col = "numerator",
-    measure_col = "measure",
+    select_measures = NULL,
+    select_interval_date,
+    select_value,
     title = NULL,
     x_label = NULL,
     y_label = NULL,
+    guide_label = NULL,
+    guide_nrow = 2,
+    facet_wrap = FALSE,
     facet_var = NULL,
-    color_label = NULL,
-    rotate_x_labels = FALSE,
-    axis_x_text_size = 7) {
-  # Check if the necessary columns exist in the data
-  if (date_col %in% names(data) == FALSE) {
-    stop("Data does not have a column with the name '", date_col, "'")
-  } else if (value_col %in% names(data) == FALSE) {
-    stop("Data does not have a column with the name '", value_col, "'")
-  } else if (measure_col %in% names(data) == FALSE) {
-    stop("Data does not have a column with the name '", measure_col, "'")
+    colour_var = NULL,
+    legend_position = "bottom") {
+  # Test if all columns expected in output from generate measures exist
+  expected_names <- c("measure", "interval_start", "interval_end", "ratio", "numerator", "denominator")
+  missing_columns <- setdiff(expected_names, colnames(data))
+
+  if (length(missing_columns) > 0) {
+    stop("Data does not have expected column(s): ", paste(missing_columns, collapse = ", "), call. = FALSE)
   }
 
-  # Convert column names to symbols
-  date_sym <- sym(date_col)
-  value_sym <- sym(value_col)
-  measure_sym <- sym(measure_col)
-
-  # Ensure the date column is of Date type
-  data <- data %>%
-    mutate(!!date_sym := as.Date(!!date_sym))
-
-  # Filter measures column for user-specified measure names
-  data <- data %>%
-    filter(!!measure_sym %in% measure_names)
-
-  # Apply custom labels if provided
-  if (!is.null(custom_labels)) {
+  # Filter measure column for user-specified measure names
+  if (!is.null(select_measures)) {
+    # Test if selected measures exist in measures file
+    expected_measures <- unique(data$measure)
+    if (any(select_measures %in% expected_measures) == FALSE) {
+      stop("At least one of the selected measures is not available in the data", call. = FALSE)
+    }
     data <- data %>%
-      mutate(!!measure_sym := factor(!!measure_sym, levels = measure_names, labels = custom_labels))
+      filter(measure %in% select_measures)
   }
 
-  # Create plot
-  plot1 <- ggplot(
+  plot_tmp <- ggplot(
     data,
     aes(
-      x = !!date_sym,
-      y = !!value_sym,
-      color = !!measure_sym,
-      group = !!measure_sym
+      x = {{ select_interval_date }},
+      y = {{ select_value }},
+      colour = {{ colour_var }},
+      group = {{ colour_var }}
     )
   ) +
-    geom_line() +
-    labs(
-      title = title,
-      x = x_label,
-      y = y_label,
-      color = color_label
-    ) +
     geom_point() +
     geom_line(alpha = .5) +
-    scale_y_continuous(
-      limits = c(0, NA),
-    ) +
-    theme_minimal() +
-    theme(
-      axis.text.x = element_text(size = axis_x_text_size),
-      legend.position = "bottom",
-      legend.key.size = unit(0.5, "cm"),
-      legend.text = element_text(size = 8),
-      legend.title = element_text(size = 8)
-    ) +
-    # Adjust number of rows in the legend
-    guides(
-      color = guide_legend(nrow = 2)
-    ) +
     geom_vline(
       xintercept = lubridate::as_date("2024-02-01"),
       linetype = "dotted",
@@ -98,19 +70,40 @@ plot_measures <- function(
     ) +
     scale_x_date(
       date_breaks = "1 month",
-      date_labels = "%b %Y"
+      labels = scales::label_date_short()
+    ) +
+    guides(
+      color = guide_legend(nrow = guide_nrow)
+    ) +
+    labs(
+      x = x_label,
+      y = y_label,
+      colour = guide_label,
+    ) +
+    theme(
+      legend.position = legend_position
     )
 
-    if (!is.null(facet_var)) {
-    facet_sym <- sym(facet_var)
-    plot1 <- plot1 + facet_wrap(vars(!!facet_sym), scales = "free_x")
-
+  # Automatically change y scale depending selected value
+  if (rlang::as_label(enquo(select_value)) %in% c("numerator", "denominator")) {
+    plot_tmp <- plot_tmp + scale_y_continuous(
+      limits = c(0, NA),
+      labels = scales::label_number()
+    )
+  } else {
+    plot_tmp <- plot_tmp + scale_y_continuous(
+      limits = c(0, NA),
+      labels = scales::label_percent()
+    )
   }
 
-# Conditionally apply x-axis label rotation if rotate_x_labels is TRUE
-  if (rotate_x_labels) {
-    plot1 <- plot1 + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  # Add facets if requested
+  # Ideally we would want to check facet_var instead of having an additional argument facet_wrap
+  # but for some unknown reason I cant get that to work
+  if (facet_wrap) {
+    plot_tmp <- plot_tmp +
+      facet_wrap(vars({{ facet_var }}), ncol = 2)
   }
 
-  plot1
+  plot_tmp
 }
