@@ -16,107 +16,56 @@ library(readr)
 
 ```{r load-data, message=FALSE, warning=FALSE}
 # Load plotting function
+source(here::here("lib", "functions", "function_tidy_measures.R"))
 source(here::here("lib", "functions", "function_plot_measures.R"))
+
 # Load data
 df_measures <- readr::read_csv(
   here::here("output", "measures", "pf_codes_conditions_measures.csv")
 )
-```
 
-```{r setup-dicts, message=FALSE, warning=FALSE}
-# Define the custom labels for clinical conditions
-pf_clinical_condition_dict <- c(
-  "count_acute_otitis_media" = "Acute Otitis Media",
-  "count_herpes_zoster" = "Herpes Zoster",
-  "count_acute_sinusitis" = "Acute Sinusitis",
-  "count_impetigo" = "Impetigo",
-  "count_infected_insect_bite" = "Infected Insect Bite",
-  "count_acute_pharyngitis" = "Acute Pharyngitis",
-  "count_uncomplicated_urinary_tract_infection" = "UTI"
+# Define dictionaries with tidy names and mappings for measures
+pf_measures_name_dict <- list(
+  blood_pressure_service = "Blood Pressure Service",
+  contraception_service = "Contraception Service",
+  consultation_service = "Consultation Service",
+  pharmacy_first_service = "Pharmacy First Service",
+  acute_otitis_media = "Acute Otitis Media",
+  herpes_zoster = "Herpes Zoster",
+  acute_sinusitis = "Acute Sinusitis",
+  impetigo = "Impetigo",
+  infected_insect_bite = "Infected Insect Bite",
+  acute_pharyngitis = "Acute Pharyngitis",
+  uncomplicated_urinary_tract_infection = "UTI"
 )
 
-# Define the custom labels for clinical conditions by age
-pf_clinical_condition_dict_by_age <- c(
-  "count_acute_otitis_media_by_age" = "Acute Otitis Media",
-  "count_herpes_zoster_by_age" = "Herpes Zoster",
-  "count_acute_sinusitis_by_age" = "Acute Sinusitis",
-  "count_impetigo_by_age" = "Impetigo",
-  "count_infected_insect_bite_by_age" = "Infected Insect Bite",
-  "count_acute_pharyngitis_by_age" = "Acute Pharyngitis",
-  "count_uncomplicated_urinary_tract_infection_by_age" = "UTI"
+pf_measures_name_mapping <- list(
+  blood_pressure_service = "clinical_service",
+  contraception_service = "clinical_service",
+  consultation_service = "clinical_service",
+  pharmacy_first_service = "clinical_service",
+  acute_otitis_media = "clinical_condition",
+  herpes_zoster = "clinical_condition",
+  acute_sinusitis = "clinical_condition",
+  impetigo = "clinical_condition",
+  infected_insect_bite = "clinical_condition",
+  acute_pharyngitis = "clinical_condition",
+  uncomplicated_urinary_tract_infection = "clinical_condition"
 )
 
-# Define the custom labels for clinical conditions by sex
-pf_clinical_condition_dict_by_sex <- c(
-  "count_acute_otitis_media_by_sex" = "Acute Otitis Media",
-  "count_herpes_zoster_by_sex" = "Herpes Zoster",
-  "count_acute_sinusitis_by_sex" = "Acute Sinusitis",
-  "count_impetigo_by_sex" = "Impetigo",
-  "count_infected_insect_bite_by_sex" = "Infected Insect Bite",
-  "count_acute_pharyngitis_by_sex" = "Acute Pharyngitis",
-  "count_uncomplicated_urinary_tract_infection_by_sex" = "UTI"
+pf_measures_groupby_dict <- list(
+  age = "Age",
+  sex = "Sex",
+  imd = "IMD",
+  region = "Region",
+  ethnicity = "Ethnicity"
 )
 
-# Define the custom labels for clinical conditions by IMD
-pf_clinical_condition_dict_by_imd <- c(
-  "count_acute_otitis_media_by_imd" = "Acute Otitis Media",
-  "count_herpes_zoster_by_imd" = "Herpes Zoster",
-  "count_acute_sinusitis_by_imd" = "Acute Sinusitis",
-  "count_impetigo_by_imd" = "Impetigo",
-  "count_infected_insect_bite_by_imd" = "Infected Insect Bite",
-  "count_acute_pharyngitis_by_imd" = "Acute Pharyngitis",
-  "count_uncomplicated_urinary_tract_infection_by_imd" = "UTI"
-)
-
-# Define the custom labels for clinical conditions by region
-pf_clinical_condition_dict_by_region <- c(
-  "count_acute_otitis_media_by_region" = "Acute Otitis Media",
-  "count_herpes_zoster_by_region" = "Herpes Zoster",
-  "count_acute_sinusitis_by_region" = "Acute Sinusitis",
-  "count_impetigo_by_region" = "Impetigo",
-  "count_infected_insect_bite_by_region" = "Infected Insect Bite",
-  "count_acute_pharyngitis_by_region" = "Acute Pharyngitis",
-  "count_uncomplicated_urinary_tract_infection_by_region" = "UTI"
-)
-
-# Define the custom labels for clinical services
-pf_clinical_service_dict <- c(
-  "count_blood_pressure_service" = "Blood Pressure Service",
-  "count_contraception_service" = "Contraception Service",
-  "count_consultation_service" = "Consultation Service",
-  "count_pharmacy_first_service" = "Pharmacy First Service"
-)
-
-# Define the custom labels for clinical services by age
-pf_clinical_service_dict_by_age <- c(
-  "count_blood_pressure_service_by_age" = "Blood Pressure Service",
-  "count_contraception_service_by_age" = "Contraception Service",
-  "count_consultation_service_by_age" = "Consultation Service",
-  "count_pharmacy_first_service_by_age" = "Pharmacy First Service"
-)
-
-# Define the custom labels for clinical services by sex
-pf_clinical_service_dict_by_sex <- c(
-  "count_blood_pressure_service_by_sex" = "Blood Pressure Service",
-  "count_contraception_service_by_sex" = "Contraception Service",
-  "count_consultation_service_by_sex" = "Consultation Service",
-  "count_pharmacy_first_service_by_sex" = "Pharmacy First Service"
-)
-
-# Define the custom labels for clinical services by IMD
-pf_clinical_service_dict_by_imd <- c(
-  "count_blood_pressure_service_by_imd" = "Blood Pressure Service",
-  "count_contraception_service_by_imd" = "Contraception Service",
-  "count_consultation_service_by_imd" = "Consultation Service",
-  "count_pharmacy_first_service_by_imd" = "Pharmacy First Service"
-)
-
-# Define the custom labels for clinical services by region
-pf_clinical_service_dict_by_region <- c(
-  "count_blood_pressure_service_by_region" = "Blood Pressure Service",
-  "count_contraception_service_by_region" = "Contraception Service",
-  "count_consultation_service_by_region" = "Consultation Service",
-  "count_pharmacy_first_service_by_region" = "Pharmacy First Service"
+df_measures <- tidy_measures(
+  data = df_measures,
+  pf_measures_name_dict = pf_measures_name_dict,
+  pf_measures_name_mapping = pf_measures_name_mapping,
+  pf_measures_groupby_dict = pf_measures_groupby_dict
 )
 ```
 
@@ -142,68 +91,103 @@ Links to the codelist for each analysis can be found beneath the relevant sectio
 
 ## Clinical Services
 
-```{r, message=FALSE, warning=FALSE}
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical service per month",
-  measure_names = names(pf_clinical_service_dict),
-  custom_labels = pf_clinical_service_dict,
-  y_label = "Number of codes for consultations",
+### Total population
+
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=4}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(is.na(group_by))
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = NULL,
+  guide_nrow = 1,
+  facet_wrap = FALSE,
+  facet_var = NULL,
 )
 ```
 
-### Clinical Services by Age
+### Breakdown by age
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(group_by == "Age")
 
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical service by age per month",
-  measure_names = names(pf_clinical_service_dict_by_age),
-  custom_labels = pf_clinical_service_dict_by_age,
-  y_label = "Number of codes for consultations",
-  facet_var = "age_band",
-  rotate_x_labels = TRUE
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = age_band,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
 )
 ```
 
-### Clinical Services by Sex
+### Breakdown by sex
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(group_by == "Sex")
 
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical service by sex per month",
-  measure_names = names(pf_clinical_service_dict_by_sex),
-  custom_labels = pf_clinical_service_dict_by_sex,
-  y_label = "Number of codes for consultations",
-  facet_var = "sex",
-  rotate_x_labels = TRUE
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = sex,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
 )
 ```
 
-### Clinical Services by IMD
+### Breakdown by IMD
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(group_by == "IMD")
 
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical service by IMD per month",
-  measure_names = names(pf_clinical_service_dict_by_imd),
-  custom_labels = pf_clinical_service_dict_by_imd,
-  y_label = "Number of codes for consultations",
-  facet_var = "imd",
-  rotate_x_labels = TRUE
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = imd,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
 )
 ```
 
-### Clinical Services by Region
+### Breakdown by region
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(group_by == "Region")
 
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical service by region per month",
-  measure_names = names(pf_clinical_service_dict_by_region),
-  custom_labels = pf_clinical_service_dict_by_region,
-  y_label = "Number of codes for consultations",
-  facet_var = "region",
-  rotate_x_labels = TRUE
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = region,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = measure,
 )
 ```
 
@@ -216,67 +200,101 @@ This section focuses on the Clinical Pathways element of the Pharmacy First serv
 This section focuses on the clinical conditions within the Clinical Pathways element of that Pharmacy First service:  
 Here we show the number of consultations for each of the Pharmacy First Clinical Pathways Clinical Conditions.
 
-```{r, message=FALSE, warning=FALSE}
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical condition per month",
-  measure_names = names(pf_clinical_condition_dict),
-  custom_labels = pf_clinical_condition_dict,
-  y_label = "Number of codes for consultations",
+### Total population
+
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=4}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(is.na(group_by))
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  guide_nrow = 1,
+  facet_wrap = FALSE,
+  facet_var = NULL,
 )
 ```
 
-### Clinical Conditions by Age
+### Breakdown by age
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "Age")
 
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical condition by age per month",
-  measure_names = names(pf_clinical_condition_dict_by_age),
-  custom_labels = pf_clinical_condition_dict_by_age,
-  y_label = "Number of codes for consultations",
-  facet_var = "age_band",
-  rotate_x_labels = TRUE
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = age_band,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
 )
 ```
 
-### Clinical Conditions by Sex
+### Breakdown by sex
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "Sex")
 
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical condition by sex per month",
-  measure_names = names(pf_clinical_condition_dict_by_sex),
-  custom_labels = pf_clinical_condition_dict_by_sex,
-  y_label = "Number of codes for consultations",
-  facet_var = "sex",
-  rotate_x_labels = TRUE
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = sex,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
 )
 ```
 
-### Clinical Conditions by IMD
+### Breakdown by IMD
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "IMD")
 
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical condition by IMD per month",
-  measure_names = names(pf_clinical_condition_dict_by_imd),
-  custom_labels = pf_clinical_condition_dict_by_imd,
-  y_label = "Number of codes for consultations",
-  facet_var = "imd",
-  rotate_x_labels = TRUE
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = imd,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
 )
 ```
 
-### Clinical Conditions by Region
+### Breakdown by region
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "Region")
 
-plot_measures(df_measures,
-  title = "Number of consultations for each clinical condition by region per month",
-  measure_names = names(pf_clinical_condition_dict_by_region),
-  custom_labels = pf_clinical_condition_dict_by_region,
-  y_label = "Number of codes for consultations",
-  facet_var = "region",
-  rotate_x_labels = TRUE
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = denominator,
+  select_interval_date = interval_end,
+  colour_var = region,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = measure,
 )
 ```
