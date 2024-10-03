@@ -1,5 +1,6 @@
-from ehrql import INTERVAL, create_measures, months, codelist_from_csv, case, when
+from ehrql import INTERVAL, create_measures, months, case, when
 from ehrql.tables.tpp import clinical_events, practice_registrations, patients, addresses, ethnicity_from_sus
+from codelists import pharmacy_first_conditions_codelist, ethnicity_codelist
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -18,21 +19,6 @@ pharmacy_first_event_codes = {
     # Pharmacy First service (qualifier value)
     "pharmacy_first_service": ["983341000000102"],
 }
-
-# Import pharmacy first conditions codelist
-pharmacy_first_conditions_codelist = codelist_from_csv(
-    "codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv",
-    column="code",
-    category_column="term",
-)
-
-# Import ethnicity codelist
-ethnicity_codelist = codelist_from_csv(
-    "codelists/opensafely-ethnicity-snomed-0removed.csv",
-    column="snomedcode",
-    category_column="Grouping_6",
-)
-
 
 # # Get the latest ethnicity data for each patient
 # ethnicity = (
