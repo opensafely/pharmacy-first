@@ -1,5 +1,10 @@
 from ehrql import INTERVAL, create_measures, months, case, when
-from ehrql.tables.tpp import clinical_events, practice_registrations, patients, addresses, ethnicity_from_sus
+from ehrql.tables.tpp import (
+    clinical_events,
+    practice_registrations,
+    patients,
+    addresses,
+)
 from codelists import pharmacy_first_conditions_codelist, ethnicity_codelist
 
 measures = create_measures()
@@ -20,34 +25,12 @@ pharmacy_first_event_codes = {
     "pharmacy_first_service": ["983341000000102"],
 }
 
-# # Get the latest ethnicity data for each patient
-# ethnicity = (
-#     clinical_events.where(
-#         clinical_events.snomedct_code.is_in(ethnicity_codelist)
-#     )
-#     .sort_by(clinical_events.date)
-#     .last_for_patient()
-#     .snomedct_code.to_category(ethnicity_codelist)
-# ) 
-
-# # Get the latest ethnicity data for each patient
-# latest_ethnicity_code = (
-#         clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
-#         .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
-#         .sort_by(clinical_events.date)
-#         .last_for_patient()
-#         .snomedct_code
-# )
-
-# ethnicity = latest_ethnicity_code.to_category(ethnicity_codelist)
-
 ethnicity = (
-  clinical_events.where(clinical_events
-  .snomedct_code.is_in(ethnicity_codelist))
-  .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
-  .sort_by(clinical_events.date)
-  .last_for_patient()
-  .snomedct_code
+    clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
+    .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
+    .sort_by(clinical_events.date)
+    .last_for_patient()
+    .snomedct_code
 )
 
 ethnicity = ethnicity.to_category(ethnicity_codelist)
@@ -69,12 +52,12 @@ age_band = case(
 imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
 max_imd = 32844
 imd_quintile = case(
-    when((imd >=0) & (imd < int(max_imd * 1 / 5))).then("1"),
+    when((imd >= 0) & (imd < int(max_imd * 1 / 5))).then("1"),
     when(imd < int(max_imd * 2 / 5)).then("2"),
     when(imd < int(max_imd * 3 / 5)).then("3"),
     when(imd < int(max_imd * 4 / 5)).then("4"),
     when(imd <= max_imd).then("5"),
-    otherwise="Missing"
+    otherwise="Missing",
 )
 
 
@@ -121,7 +104,7 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
             denominator=denominator,
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
-    )
+        )
 
 # Create measures for pharmacy first conditions
 pharmacy_first_conditions_codes = {}
@@ -144,7 +127,7 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         numerator=numerator,
         denominator=denominator,
         intervals=months(monthly_intervals).starting_on(start_date),
-    )   
+    )
 
     # Nested loop for each breakdown measure in clinical conditions
     for breakdown, variable in breakdown_metrics.items():
@@ -154,5 +137,4 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
             denominator=denominator,
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
-    )
-        
+        )
