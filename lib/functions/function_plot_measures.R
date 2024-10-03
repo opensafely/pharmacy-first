@@ -3,7 +3,6 @@
 #' Creates a line plot of measures over time, with customisable labels and colours.
 #'
 #' @param data A dataframe containing output from the OpenSAFELY measures framework
-#' @param select_measures List of strings specifiying the names in the measure columns to be plotted.
 #' @param select_interval_date Specify date variable interval_start or interval_end.
 #' @param select_value The name of the column which contains the y-axis values: ratio, numerator, or denominator
 #' @param title A string specifying the title of the plot.
@@ -20,7 +19,6 @@
 
 plot_measures <- function(
     data,
-    select_measures = NULL,
     select_interval_date,
     select_value,
     title = NULL,
@@ -38,17 +36,6 @@ plot_measures <- function(
 
   if (length(missing_columns) > 0) {
     stop("Data does not have expected column(s): ", paste(missing_columns, collapse = ", "), call. = FALSE)
-  }
-
-  # Filter measure column for user-specified measure names
-  if (!is.null(select_measures)) {
-    # Test if selected measures exist in measures file
-    expected_measures <- unique(data$measure)
-    if (any(select_measures %in% expected_measures) == FALSE) {
-      stop("At least one of the selected measures is not available in the data", call. = FALSE)
-    }
-    data <- data %>%
-      filter(measure %in% select_measures)
   }
 
   plot_tmp <- ggplot(
