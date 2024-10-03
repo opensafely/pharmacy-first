@@ -25,17 +25,24 @@ pharmacy_first_event_codes = {
     "pharmacy_first_service": ["983341000000102"],
 }
 
-ethnicity = (
+registration = practice_registrations.for_patient_on(INTERVAL.end_date)
+
+latest_ethnicity_category_num = (
     clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
     .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
     .sort_by(clinical_events.date)
     .last_for_patient()
-    .snomedct_code
+    .snomedct_code.to_category(ethnicity_codelist)
 )
 
-ethnicity = ethnicity.to_category(ethnicity_codelist)
-
-registration = practice_registrations.for_patient_on(INTERVAL.end_date)
+latest_ethnicity_category_desc = case(
+    when(latest_ethnicity_category_num == "1").then("White"),
+    when(latest_ethnicity_category_num == "2").then("Mixed"),
+    when(latest_ethnicity_category_num == "3").then("Asian or Asian British"),
+    when(latest_ethnicity_category_num == "4").then("Black or Black British"),
+    when(latest_ethnicity_category_num == "5").then("Chinese or Other Ethnic Groups"),
+    when(latest_ethnicity_category_num.is_null()).then("Missing"),
+)
 
 # Age bands for age breakdown
 age = patients.age_on(INTERVAL.start_date)
@@ -60,7 +67,6 @@ imd_quintile = case(
     otherwise="Missing",
 )
 
-
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
@@ -72,12 +78,11 @@ breakdown_metrics = {
     "sex": patients.sex,
     "imd": imd_quintile,
     "region": registration.practice_nuts1_region_name,
-    "ethnicity": ethnicity,
+    "ethnicity": latest_ethnicity_category_desc,
 }
 
 # Define the denominator as the number of patients registered
 denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"])
-
 
 # Create measures for pharmacy first services
 for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
