@@ -102,7 +102,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = NULL,
   guide_nrow = 1,
@@ -122,7 +122,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = age_band,
   guide_nrow = 1,
@@ -142,7 +142,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = sex,
   guide_nrow = 1,
@@ -162,7 +162,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = imd,
   guide_nrow = 1,
@@ -182,7 +182,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = region,
   guide_nrow = 2,
@@ -211,7 +211,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   guide_nrow = 1,
   facet_wrap = FALSE,
@@ -230,7 +230,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = age_band,
   guide_nrow = 1,
@@ -250,7 +250,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = sex,
   guide_nrow = 1,
@@ -270,7 +270,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = imd,
   guide_nrow = 1,
@@ -290,7 +290,7 @@ df_measures_selected <- df_measures %>%
 # Create visualisation
 plot_measures(
   df_measures_selected,
-  select_value = denominator,
+  select_value = numerator,
   select_interval_date = interval_end,
   colour_var = region,
   guide_nrow = 2,
