@@ -79,6 +79,17 @@ pf_clinical_condition_dict_by_region <- c(
   "count_uncomplicated_urinary_tract_infection_by_region" = "UTI"
 )
 
+# Define the custom labels for clinical conditions by ethnicity
+pf_clinical_condition_dict_by_ethnicity <- c(
+  "count_acute_otitis_media_by_ethnicity" = "Acute Otitis Media",
+  "count_herpes_zoster_by_ethnicity" = "Herpes Zoster",
+  "count_acute_sinusitis_by_ethnicity" = "Acute Sinusitis",
+  "count_impetigo_by_ethnicity" = "Impetigo",
+  "count_infected_insect_bite_by_ethnicity" = "Infected Insect Bite",
+  "count_acute_pharyngitis_by_ethnicity" = "Acute Pharyngitis",
+  "count_uncomplicated_urinary_tract_infection_by_ethnicity" = "UTI"
+)
+
 # Define the custom labels for clinical services
 pf_clinical_service_dict <- c(
   "count_blood_pressure_service" = "Blood Pressure Service",
@@ -117,6 +128,14 @@ pf_clinical_service_dict_by_region <- c(
   "count_contraception_service_by_region" = "Contraception Service",
   "count_consultation_service_by_region" = "Consultation Service",
   "count_pharmacy_first_service_by_region" = "Pharmacy First Service"
+)
+
+# Define the custom labels for clinical services by ethnicity
+pf_clinical_service_dict_by_ethnicity <- c(
+  "count_blood_pressure_service_by_ethnicity" = "Blood Pressure Service",
+  "count_contraception_service_by_ethnicity" = "Contraception Service",
+  "count_consultation_service_by_ethnicity" = "Consultation Service",
+  "count_pharmacy_first_service_by_ethnicity" = "Pharmacy First Service"
 )
 ```
 
@@ -207,6 +226,20 @@ plot_measures(df_measures,
 )
 ```
 
+### Clinical Services by Ethnicity
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical service by ethnicity per month",
+  measure_names = names(pf_clinical_service_dict_by_ethnicity),
+  custom_labels = pf_clinical_service_dict_by_ethnicity,
+  y_label = "Number of codes for consultations",
+  facet_var = "ethnicity",
+  rotate_x_labels = TRUE
+)
+```
+
 ## Clinical Pathways
 
 This section focuses on the Clinical Pathways element of the Pharmacy First service.  
@@ -277,6 +310,20 @@ plot_measures(df_measures,
   custom_labels = pf_clinical_condition_dict_by_region,
   y_label = "Number of codes for consultations",
   facet_var = "region",
+  rotate_x_labels = TRUE
+)
+```
+
+### Clinical Conditions by Ethnicity
+
+```{r, message=FALSE, warning=FALSE}
+
+plot_measures(df_measures,
+  title = "Number of consultations for each clinical condition by ethnicity per month",
+  measure_names = names(pf_clinical_condition_dict_by_ethnicity),
+  custom_labels = pf_clinical_condition_dict_by_ethnicity,
+  y_label = "Number of codes for consultations",
+  facet_var = "ethnicity",
   rotate_x_labels = TRUE
 )
 ```

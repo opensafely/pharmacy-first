@@ -26,6 +26,46 @@ pharmacy_first_conditions_codelist = codelist_from_csv(
     category_column="term",
 )
 
+# Import ethnicity codelist
+ethnicity_codelist = codelist_from_csv(
+    "codelists/opensafely-ethnicity-snomed-0removed.csv",
+    column="snomedcode",
+    category_column="Grouping_6",
+)
+
+
+# # Get the latest ethnicity data for each patient
+# ethnicity = (
+#     clinical_events.where(
+#         clinical_events.snomedct_code.is_in(ethnicity_codelist)
+#     )
+#     .sort_by(clinical_events.date)
+#     .last_for_patient()
+#     .snomedct_code.to_category(ethnicity_codelist)
+# ) 
+
+# # Get the latest ethnicity data for each patient
+# latest_ethnicity_code = (
+#         clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
+#         .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
+#         .sort_by(clinical_events.date)
+#         .last_for_patient()
+#         .snomedct_code
+# )
+
+# ethnicity = latest_ethnicity_code.to_category(ethnicity_codelist)
+
+ethnicity = (
+  clinical_events.where(clinical_events
+  .snomedct_code.is_in(ethnicity_codelist))
+  .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
+  .sort_by(clinical_events.date)
+  .last_for_patient()
+  .snomedct_code
+)
+
+ethnicity = ethnicity.to_category(ethnicity_codelist)
+
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
 # Age bands for age breakdown
@@ -51,17 +91,24 @@ imd_quintile = case(
     otherwise="Missing"
 )
 
+
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
 )
 
+# Breakdown metrics to be produced as graphs
 breakdown_metrics = {
     "age": age_band,
     "sex": patients.sex,
     "imd": imd_quintile,
     "region": registration.practice_nuts1_region_name,
+    "ethnicity": ethnicity,
 }
+
+# Define the denominator as the number of patients registered
+denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"])
+
 
 # Create measures for pharmacy first services
 for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
@@ -71,9 +118,6 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
 
     # Define the numerator as the count of events for the condition
     numerator = condition_events.count_for_patient()
-
-    # Define the denominator as the number of patients registered
-    denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female", "intersex"])
 
     # Measures for overall clinical services graph
     measures.define_measure(
@@ -108,9 +152,6 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     # Define the numerator as the count of events for the condition
     numerator = condition_events.count_for_patient()
 
-    # Define the denominator as the number of patients registered
-    denominator = registration.exists_for_patient()
-
     # Measures for overall clinical services graph
     measures.define_measure(
         name=f"count_{condition_name}",
@@ -128,3 +169,4 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
     )
+        
