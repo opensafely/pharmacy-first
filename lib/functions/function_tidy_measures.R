@@ -4,7 +4,7 @@
 #' The measures must be named in a spedific way for this function to work properly.
 #'
 #' @param data A dataframe containing output from the OpenSAFELY measures framework
-#' @param pf_measures_name_mapping List, specifying the dict of measure names.
+#' @param pf_measures_name_dict List, specifying the dict of measure names.
 #' This information will be pulled from the original measure name.
 #' @param pf_measures_name_mapping List, specifying the mapping of measures to groups.
 #' This information will be pulled from the original measure name.
