@@ -5,6 +5,12 @@
       "url": "https://www.opencodelists.org/codelist/user/chriswood/pharmacy-first-clinical-pathway-conditions/7ec97762/",
       "downloaded_at": "2024-08-22 12:53:00.167017Z",
       "sha": "bed7f74add5c2d2ac6f7120d89f5ba94e57a28cb"
+    },
+    "opensafely-ethnicity-snomed-0removed.csv": {
+      "id": "opensafely/ethnicity-snomed-0removed/2e641f61",
+      "url": "https://www.opencodelists.org/codelist/opensafely/ethnicity-snomed-0removed/2e641f61/",
+      "downloaded_at": "2024-10-03 11:34:59.878387Z",
+      "sha": "8b849b5b785d80306e488d0109640c8c1d2da01b"
     }
   }
 }
