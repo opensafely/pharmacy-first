@@ -54,7 +54,7 @@ pf_measures_name_mapping <- list(
 )
 
 pf_measures_groupby_dict <- list(
-  age = "Age",
+  age_band = "Age band",
   sex = "Sex",
   imd = "IMD",
   region = "Region",
@@ -117,7 +117,7 @@ plot_measures(
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_service") %>%
-  filter(group_by == "Age")
+  filter(group_by == "Age band")
 
 # Create visualisation
 plot_measures(
@@ -127,7 +127,7 @@ plot_measures(
   colour_var = age_band,
   guide_nrow = 1,
   facet_wrap = TRUE,
-  facet_var = measure,
+  facet_var = measure
 )
 ```
 
@@ -189,6 +189,14 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
 )
+```
+
+### Clinical Services by ethnicity
+
+```{r, message=FALSE, warning=FALSE}
+
+# TODO
+
 ```
 
 ## Clinical Pathways
@@ -225,7 +233,7 @@ plot_measures(
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
-  filter(group_by == "Age")
+  filter(group_by == "Age band")
 
 # Create visualisation
 plot_measures(
@@ -235,7 +243,7 @@ plot_measures(
   colour_var = age_band,
   guide_nrow = 1,
   facet_wrap = TRUE,
-  facet_var = measure,
+  facet_var = measure
 )
 ```
 
@@ -297,4 +305,12 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
 )
+```
+
+### Clinical Conditions by ethnicity
+
+```{r, message=FALSE, warning=FALSE}
+
+# TODO
+
 ```
