@@ -1,5 +1,11 @@
-from ehrql import INTERVAL, create_measures, months, codelist_from_csv, case, when
-from ehrql.tables.tpp import clinical_events, practice_registrations, patients, addresses, ethnicity_from_sus
+from ehrql import INTERVAL, create_measures, months, case, when
+from ehrql.tables.tpp import (
+    clinical_events,
+    practice_registrations,
+    patients,
+    addresses,
+)
+from codelists import pharmacy_first_conditions_codelist, ethnicity_codelist
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -19,54 +25,24 @@ pharmacy_first_event_codes = {
     "pharmacy_first_service": ["983341000000102"],
 }
 
-# Import pharmacy first conditions codelist
-pharmacy_first_conditions_codelist = codelist_from_csv(
-    "codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv",
-    column="code",
-    category_column="term",
-)
-
-# Import ethnicity codelist
-ethnicity_codelist = codelist_from_csv(
-    "codelists/opensafely-ethnicity-snomed-0removed.csv",
-    column="snomedcode",
-    category_column="Grouping_6",
-)
-
-
-# # Get the latest ethnicity data for each patient
-# ethnicity = (
-#     clinical_events.where(
-#         clinical_events.snomedct_code.is_in(ethnicity_codelist)
-#     )
-#     .sort_by(clinical_events.date)
-#     .last_for_patient()
-#     .snomedct_code.to_category(ethnicity_codelist)
-# ) 
-
-# # Get the latest ethnicity data for each patient
-# latest_ethnicity_code = (
-#         clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
-#         .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
-#         .sort_by(clinical_events.date)
-#         .last_for_patient()
-#         .snomedct_code
-# )
-
-# ethnicity = latest_ethnicity_code.to_category(ethnicity_codelist)
-
-ethnicity = (
-  clinical_events.where(clinical_events
-  .snomedct_code.is_in(ethnicity_codelist))
-  .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
-  .sort_by(clinical_events.date)
-  .last_for_patient()
-  .snomedct_code
-)
-
-ethnicity = ethnicity.to_category(ethnicity_codelist)
-
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
+
+latest_ethnicity_category_num = (
+    clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
+    .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
+    .sort_by(clinical_events.date)
+    .last_for_patient()
+    .snomedct_code.to_category(ethnicity_codelist)
+)
+
+latest_ethnicity_category_desc = case(
+    when(latest_ethnicity_category_num == "1").then("White"),
+    when(latest_ethnicity_category_num == "2").then("Mixed"),
+    when(latest_ethnicity_category_num == "3").then("Asian or Asian British"),
+    when(latest_ethnicity_category_num == "4").then("Black or Black British"),
+    when(latest_ethnicity_category_num == "5").then("Chinese or Other Ethnic Groups"),
+    when(latest_ethnicity_category_num.is_null()).then("Missing"),
+)
 
 # Age bands for age breakdown
 age = patients.age_on(INTERVAL.start_date)
@@ -83,14 +59,13 @@ age_band = case(
 imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
 max_imd = 32844
 imd_quintile = case(
-    when((imd >=0) & (imd < int(max_imd * 1 / 5))).then("1"),
+    when((imd >= 0) & (imd < int(max_imd * 1 / 5))).then("1"),
     when(imd < int(max_imd * 2 / 5)).then("2"),
     when(imd < int(max_imd * 3 / 5)).then("3"),
     when(imd < int(max_imd * 4 / 5)).then("4"),
     when(imd <= max_imd).then("5"),
-    otherwise="Missing"
+    otherwise="Missing",
 )
-
 
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
@@ -103,12 +78,11 @@ breakdown_metrics = {
     "sex": patients.sex,
     "imd": imd_quintile,
     "region": registration.practice_nuts1_region_name,
-    "ethnicity": ethnicity,
+    "ethnicity": latest_ethnicity_category_desc,
 }
 
 # Define the denominator as the number of patients registered
 denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"])
-
 
 # Create measures for pharmacy first services
 for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
@@ -135,7 +109,7 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
             denominator=denominator,
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
-    )
+        )
 
 # Create measures for pharmacy first conditions
 pharmacy_first_conditions_codes = {}
@@ -158,7 +132,7 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         numerator=numerator,
         denominator=denominator,
         intervals=months(monthly_intervals).starting_on(start_date),
-    )   
+    )
 
     # Nested loop for each breakdown measure in clinical conditions
     for breakdown, variable in breakdown_metrics.items():
@@ -168,5 +142,4 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
             denominator=denominator,
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
-    )
-        
+        )
