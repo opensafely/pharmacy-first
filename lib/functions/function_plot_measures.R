@@ -63,12 +63,14 @@ plot_measures <- function(
       color = guide_legend(nrow = guide_nrow)
     ) +
     labs(
+      title = title,
       x = x_label,
       y = y_label,
       colour = guide_label,
     ) +
     theme(
-      legend.position = legend_position
+      legend.position = legend_position,
+      plot.title = element_text(hjust = 0.5)
     )
 
   # Automatically change y scale depending selected value

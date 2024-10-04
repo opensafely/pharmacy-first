@@ -93,7 +93,7 @@ Links to the codelist for each analysis can be found beneath the relevant sectio
 
 ### Total population
 
-```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=4}
+```{r, message=FALSE, warning=FALSE}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_service") %>%
@@ -108,6 +108,8 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = FALSE,
   facet_var = NULL,
+  title = "Number of consultations for each clinical service per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -127,7 +129,9 @@ plot_measures(
   colour_var = age_band,
   guide_nrow = 1,
   facet_wrap = TRUE,
-  facet_var = measure
+  facet_var = measure,
+  title = "Number of consultations for each clinical service by age band per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -148,6 +152,8 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  title = "Number of consultations for each clinical service by sex per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -168,6 +174,8 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  title = "Number of consultations for each clinical service by IMD per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -188,6 +196,8 @@ plot_measures(
   guide_nrow = 2,
   facet_wrap = TRUE,
   facet_var = measure,
+  title = "Number of consultations for each clinical service by region per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -210,6 +220,8 @@ plot_measures(
   guide_nrow = 2,
   facet_wrap = TRUE,
   facet_var = measure,
+  title = "Number of consultations for each clinical service by ethnicity per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -234,6 +246,8 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = FALSE,
   facet_var = NULL,
+  title = "Number of consultations for each clinical condition per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -253,7 +267,9 @@ plot_measures(
   colour_var = age_band,
   guide_nrow = 1,
   facet_wrap = TRUE,
-  facet_var = measure
+  facet_var = measure,
+  title = "Number of consultations for each clinical condition by age band per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -274,6 +290,8 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  title = "Number of consultations for each clinical condition by sex per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -294,6 +312,8 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  title = "Number of consultations for each clinical condition by IMD per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -314,6 +334,8 @@ plot_measures(
   guide_nrow = 2,
   facet_wrap = TRUE,
   facet_var = measure,
+  title = "Number of consultations for each clinical condition by region per month",
+  y_label = "Number of codes for consultations",
 )
 ```
 
@@ -335,5 +357,7 @@ plot_measures(
   guide_nrow = 2,
   facet_wrap = TRUE,
   facet_var = measure,
+  title = "Number of consultations for each clinical condition by ethnicity per month",
+  y_label = "Number of codes for consultations",
 )
 ```
