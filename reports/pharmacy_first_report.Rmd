@@ -195,13 +195,23 @@ plot_measures(
 
 ```{r, message=FALSE, warning=FALSE}
 
-# TODO
 
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(group_by == "Ethnicity")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = numerator,
+  select_interval_date = interval_end,
+  colour_var = ethnicity,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = measure,
+)
 ```
-
-## Clinical Pathways
-
-This section focuses on the Clinical Pathways element of the Pharmacy First service.  
 
 ## Clinical Condition
 
@@ -311,6 +321,19 @@ plot_measures(
 
 ```{r, message=FALSE, warning=FALSE}
 
-# TODO
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "Ethnicity")
 
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = numerator,
+  select_interval_date = interval_end,
+  colour_var = ethnicity,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = measure,
+)
 ```
