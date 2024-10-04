@@ -74,7 +74,7 @@ selected_events = clinical_events.where(
 
 # Breakdown metrics to be produced as graphs
 breakdown_metrics = {
-    "age": age_band,
+    "age_band": age_band,
     "sex": patients.sex,
     "imd": imd_quintile,
     "region": registration.practice_nuts1_region_name,
