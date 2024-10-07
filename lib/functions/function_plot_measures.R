@@ -57,7 +57,7 @@ plot_measures <- function(
     ) +
     scale_x_date(
       date_breaks = "1 month",
-      labels = scales::label_date_short()
+      date_labels = "%b %Y"
     ) +
     guides(
       color = guide_legend(nrow = guide_nrow)

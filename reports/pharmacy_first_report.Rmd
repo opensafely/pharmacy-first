@@ -67,6 +67,34 @@ df_measures <- tidy_measures(
   pf_measures_name_mapping = pf_measures_name_mapping,
   pf_measures_groupby_dict = pf_measures_groupby_dict
 )
+
+df_measures$ethnicity <- factor(
+  df_measures$ethnicity,
+  levels = c("White", "Mixed", "Asian or Asian British",
+  "Black or Black British", "Chinese or Other Ethnic Groups",
+  "Missing"), 
+  ordered = TRUE
+)
+
+df_measures$age_band <- factor(
+  df_measures$age_band,
+  levels = c("0-19", "20-39", "40-59",
+  "60-79", "80+",
+  "Missing"), 
+  ordered = TRUE
+)
+
+df_measures$region <- factor(
+  df_measures$region,
+  levels = c("East", "East Midlands", "London",
+  "North East", "North West", "South East",
+  "South West", "West Midlands", "Yorkshire and The Humber",
+  "Missing"), 
+  ordered = TRUE
+)
+
+df_measures <- df_measures %>%
+  mutate(sex = ifelse(sex == "male", "Male", ifelse(sex == "female", "Female", sex)))
 ```
 
 # Background
@@ -232,7 +260,7 @@ Here we show the number of consultations for each of the Pharmacy First Clinical
 
 ### Total population
 
-```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=4}
+```{r, message=FALSE, warning=FALSE}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%

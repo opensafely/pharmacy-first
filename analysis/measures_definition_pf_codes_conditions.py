@@ -59,12 +59,19 @@ age_band = case(
 imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
 max_imd = 32844
 imd_quintile = case(
-    when((imd >= 0) & (imd < int(max_imd * 1 / 5))).then("1"),
+    when((imd >= 0) & (imd < int(max_imd * 1 / 5))).then("1 (Most Deprived)"),
     when(imd < int(max_imd * 2 / 5)).then("2"),
     when(imd < int(max_imd * 3 / 5)).then("3"),
     when(imd < int(max_imd * 4 / 5)).then("4"),
-    when(imd <= max_imd).then("5"),
+    when(imd <= max_imd).then("5 (Least Deprived)"),
     otherwise="Missing",
+)
+
+latest_region = registration.practice_nuts1_region_name
+
+latest_region = case(
+    when(latest_region.is_null()).then("Missing"),
+    otherwise=latest_region
 )
 
 # Select clinical events in interval date range
@@ -77,7 +84,7 @@ breakdown_metrics = {
     "age_band": age_band,
     "sex": patients.sex,
     "imd": imd_quintile,
-    "region": registration.practice_nuts1_region_name,
+    "region": latest_region,
     "ethnicity": latest_ethnicity_category_desc,
 }
 
