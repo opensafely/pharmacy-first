@@ -369,7 +369,7 @@ plot_measures(
 
 ### Clinical Conditions by ethnicity
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
 
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%

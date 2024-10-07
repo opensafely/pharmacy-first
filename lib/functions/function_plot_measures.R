@@ -57,7 +57,7 @@ plot_measures <- function(
     ) +
     scale_x_date(
       date_breaks = "1 month",
-      date_labels = "%b %Y"
+      labels = scales::label_date_short()
     ) +
     guides(
       color = guide_legend(nrow = guide_nrow)
@@ -71,7 +71,9 @@ plot_measures <- function(
     theme(
       legend.position = legend_position,
       plot.title = element_text(hjust = 0.5)
-    )
+    ) +
+
+    scale_colour_brewer(palette = "Set1")
 
   # Automatically change y scale depending selected value
   if (rlang::as_label(enquo(select_value)) %in% c("numerator", "denominator")) {
