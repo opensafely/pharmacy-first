@@ -4,6 +4,7 @@ from ehrql.tables.tpp import (
     practice_registrations,
     patients,
     addresses,
+    ethnicity_from_sus,
 )
 from codelists import pharmacy_first_conditions_codelist, ethnicity_codelist
 
@@ -35,12 +36,14 @@ latest_ethnicity_category_num = (
     .snomedct_code.to_category(ethnicity_codelist)
 )
 
+ethnicity_sus = ethnicity_from_sus.code
+
 latest_ethnicity_category_desc = case(
-    when(latest_ethnicity_category_num == "1").then("White"),
-    when(latest_ethnicity_category_num == "2").then("Mixed"),
-    when(latest_ethnicity_category_num == "3").then("Asian or Asian British"),
-    when(latest_ethnicity_category_num == "4").then("Black or Black British"),
-    when(latest_ethnicity_category_num == "5").then("Chinese or Other Ethnic Groups"),
+    when((latest_ethnicity_category_num == "1") | ((latest_ethnicity_category_num.is_null()) & (ethnicity_sus.is_in(["A", "B", "C"])))).then("White"),
+    when((latest_ethnicity_category_num == "2") | ((latest_ethnicity_category_num.is_null()) & (ethnicity_sus.is_in(["D", "E", "F", "G"])))).then("Mixed"),
+    when((latest_ethnicity_category_num == "3") | ((latest_ethnicity_category_num.is_null()) & (ethnicity_sus.is_in(["H", "J", "K", "L"])))).then("Asian or Asian British"),
+    when((latest_ethnicity_category_num == "4") | ((latest_ethnicity_category_num.is_null()) & (ethnicity_sus.is_in(["M", "N", "P"])))).then("Black or Black British"),
+    when((latest_ethnicity_category_num == "5") | ((latest_ethnicity_category_num.is_null()) & (ethnicity_sus.is_in(["R", "S"])))).then("Chinese or Other Ethnic Groups"),
     when(latest_ethnicity_category_num.is_null()).then("Missing"),
 )
 
