@@ -94,7 +94,7 @@ df_measures$region <- factor(
 )
 
 df_measures <- df_measures %>%
-  mutate(sex = ifelse(sex == "male", "Male", ifelse(sex == "female", "Female", sex)))
+  mutate(sex = factor(sex, levels = c("female", "male"), labels = c("Female", "Male")))
 ```
 
 # Background

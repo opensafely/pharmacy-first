@@ -67,11 +67,11 @@ imd_quintile = case(
     otherwise="Missing",
 )
 
-latest_region = registration.practice_nuts1_region_name
-
 latest_region = case(
-    when(latest_region.is_null()).then("Missing"),
-    otherwise=latest_region
+    when(
+        registration.practice_nuts1_region_name.is_not_null()
+    ).registration.practice_nuts1_region_name,
+    otherwise="Missing",
 )
 
 # Select clinical events in interval date range
