@@ -12,7 +12,7 @@ measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
 
 start_date = "2023-11-01"
-monthly_intervals = 8
+monthly_intervals = 9
 
 # Create dictionary of pharmacy first codes
 pharmacy_first_event_codes = {
@@ -97,7 +97,7 @@ imd_quintile = case(
 latest_region = case(
     when(
         registration.practice_nuts1_region_name.is_not_null()
-    ).registration.practice_nuts1_region_name,
+    ).then(registration.practice_nuts1_region_name),
     otherwise="Missing",
 )
 
