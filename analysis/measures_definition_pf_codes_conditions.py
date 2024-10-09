@@ -145,6 +145,24 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
             intervals=months(monthly_intervals).starting_on(start_date),
         )
 
+denominator_uncomplicated_uti = (age>=16) & (age<=64) & (patients.sex.is_in(["female"]))
+denominator_shingles = age>=18
+denominator_impetigo = age>=1
+denominator_infected_insect_bites = age>=1
+denominator_acute_sore_throat = age>=5
+denominator_acute_sinusitis = age>=12
+denominator_acute_otitis_media = (age>=1) & (age<=17)
+
+denominators = {
+    "uncomplicated_urinary_tract_infection" : denominator_uncomplicated_uti,
+    "herpes_zoster" : denominator_shingles,
+    "impetigo" : denominator_impetigo,
+    "infected_insect_bite": denominator_infected_insect_bites,
+    "acute_pharyngitis" : denominator_acute_sore_throat,
+    "acute_sinusitis" : denominator_acute_sinusitis,
+    "acute_otitis_media" : denominator_acute_otitis_media,
+}
+
 # Create measures for pharmacy first conditions
 pharmacy_first_conditions_codes = {}
 for codes, term in pharmacy_first_conditions_codelist.items():
@@ -173,7 +191,7 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         measures.define_measure(
             name=f"count_{condition_name}_by_{breakdown}",
             numerator=numerator,
-            denominator=denominator,
+            denominator=denominators[condition_name],
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
         )
