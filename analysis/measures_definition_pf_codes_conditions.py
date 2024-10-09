@@ -145,6 +145,8 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
             intervals=months(monthly_intervals).starting_on(start_date),
         )
 
+# Create denominator variables for each clinical condition based on NHS England rules using sex and age
+# Exclusions have not been added to these rules yet
 denominator_uncomplicated_uti = (age>=16) & (age<=64) & (patients.sex.is_in(["female"]))
 denominator_shingles = age>=18
 denominator_impetigo = age>=1
@@ -153,7 +155,8 @@ denominator_acute_sore_throat = age>=5
 denominator_acute_sinusitis = age>=12
 denominator_acute_otitis_media = (age>=1) & (age<=17)
 
-denominators = {
+# Create dictionary for clinical condition denominators
+pf_condition_denominators = {
     "uncomplicated_urinary_tract_infection" : denominator_uncomplicated_uti,
     "herpes_zoster" : denominator_shingles,
     "impetigo" : denominator_impetigo,
@@ -182,7 +185,7 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     measures.define_measure(
         name=f"count_{condition_name}",
         numerator=numerator,
-        denominator=denominator,
+        denominator=pf_condition_denominators[condition_name],
         intervals=months(monthly_intervals).starting_on(start_date),
     )
 
@@ -191,7 +194,7 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         measures.define_measure(
             name=f"count_{condition_name}_by_{breakdown}",
             numerator=numerator,
-            denominator=denominators[condition_name],
+            denominator=pf_condition_denominators[condition_name],
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
         )
