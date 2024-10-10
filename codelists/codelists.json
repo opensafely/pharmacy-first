@@ -11,6 +11,12 @@
       "url": "https://www.opencodelists.org/codelist/opensafely/ethnicity-snomed-0removed/2e641f61/",
       "downloaded_at": "2024-10-03 11:34:59.878387Z",
       "sha": "8b849b5b785d80306e488d0109640c8c1d2da01b"
+    },
+    "nhsd-primary-care-domain-refsets-preg_cod.csv": {
+      "id": "nhsd-primary-care-domain-refsets/preg_cod/20200812",
+      "url": "https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/preg_cod/20200812/",
+      "downloaded_at": "2024-10-10 13:27:57.825804Z",
+      "sha": "4a1cbc5c12ce8589030b376905ac47f5a68b2503"
     }
   }
 }
