@@ -6,7 +6,7 @@ from ehrql.tables.tpp import (
     addresses,
     ethnicity_from_sus,
 )
-from codelists import pharmacy_first_conditions_codelist, ethnicity_codelist
+from codelists import pharmacy_first_conditions_codelist, ethnicity_codelist, pregnancy_codelist
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -101,6 +101,15 @@ latest_region = case(
     otherwise="Missing",
 )
 
+# Create variable which when not null, indicates patient is pregnant
+pregnancy_status = (
+    clinical_events.where(clinical_events.snomedct_code.is_in(pregnancy_codelist))
+    .where(clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date))
+    .sort_by(clinical_events.date)
+    .last_for_patient()
+    .date
+)
+
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
@@ -145,15 +154,15 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
             intervals=months(monthly_intervals).starting_on(start_date),
         )
 
-# Create denominator variables for each clinical condition based on NHS England rules using sex and age
+# Create denominator variables for each clinical condition based on NHS England rules using sex, age and pregnancy status
 # Exclusions have not been added to these rules yet
-denominator_uncomplicated_uti = (age>=16) & (age<=64) & (patients.sex.is_in(["female"]))
-denominator_shingles = age>=18
-denominator_impetigo = age>=1
-denominator_infected_insect_bites = age>=1
-denominator_acute_sore_throat = age>=5
-denominator_acute_sinusitis = age>=12
-denominator_acute_otitis_media = (age>=1) & (age<=17)
+denominator_uncomplicated_uti = (age>=16) & (age<=64) & patients.sex.is_in(["female"]) & pregnancy_status.is_null() 
+denominator_shingles = (age>=18) & pregnancy_status.is_null()
+denominator_impetigo = (age>=1) | (pregnancy_status.is_not_null() & (age>=16))
+denominator_infected_insect_bites = (age>=1) | (pregnancy_status.is_not_null() & (age>=16))
+denominator_acute_sore_throat = (age>=5) | (pregnancy_status.is_not_null() & (age>=16))
+denominator_acute_sinusitis = ((age>=12) | (pregnancy_status.is_not_null() & (age>=16)))
+denominator_acute_otitis_media = (age>=1) & (age<=17) | (pregnancy_status.is_not_null() & (age>=16))
 
 # Create dictionary for clinical condition denominators
 pf_condition_denominators = {
