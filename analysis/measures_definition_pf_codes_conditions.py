@@ -110,6 +110,25 @@ pregnancy_status = (
     .date
 )
 
+# Create function to count number of diagnosis of a condition, and the length of time window
+def condition_history(condition_code, month):
+    return (
+        clinical_events.where(clinical_events.snomedct_code.is_in(condition_code))
+        .where(clinical_events.date.is_on_or_between(INTERVAL.start_date - months(month), INTERVAL.start_date))
+        .count_for_patient()
+    )
+
+# Call function to create variables which contain the number of repeated diagnoses
+urt_code = ["1090711000000102"]
+impetigo_code = ["48277006"]
+acute_sinusitis_code = ["15805002"]
+acute_otitis_code = ["3110003"]
+urt_6m = condition_history(urt_code, 6)
+urt_12m = condition_history(urt_code, 12)
+impetigo_12m = condition_history(impetigo_code, 12)
+acute_otitis_6m = condition_history(acute_otitis_code, 6)
+acute_otitis_12m = condition_history(acute_otitis_code, 12)
+
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
@@ -154,15 +173,15 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
             intervals=months(monthly_intervals).starting_on(start_date),
         )
 
-# Create denominator variables for each clinical condition based on NHS England rules using sex, age and pregnancy status
-# Exclusions have not been added to these rules yet
-denominator_uncomplicated_uti = (age>=16) & (age<=64) & patients.sex.is_in(["female"]) & pregnancy_status.is_null() 
+# Create denominator variables for each clinical condition based on NHS England rules using sex, age, pregnancy status and repeated diagnoses
+# The following exclusions have not been added: urinary catheter for URT, bullous impetigo, chronic sinusitis and immunosuppressed individuals for acute sinusitis 
+denominator_uncomplicated_uti = (age>=16) & (age<=64) & (patients.sex.is_in(["female"]) & pregnancy_status.is_null()) | (urt_6m<2) | (urt_12m<3)
 denominator_shingles = (age>=18) & pregnancy_status.is_null()
-denominator_impetigo = (age>=1) | (pregnancy_status.is_not_null() & (age>=16))
+denominator_impetigo = (age>=1) | (pregnancy_status.is_not_null() & (age>=16)) | (impetigo_12m<2)
 denominator_infected_insect_bites = (age>=1) | (pregnancy_status.is_not_null() & (age>=16))
 denominator_acute_sore_throat = (age>=5) | (pregnancy_status.is_not_null() & (age>=16))
-denominator_acute_sinusitis = ((age>=12) | (pregnancy_status.is_not_null() & (age>=16)))
-denominator_acute_otitis_media = (age>=1) & (age<=17) | (pregnancy_status.is_not_null() & (age>=16))
+denominator_acute_sinusitis = (age>=12) | (pregnancy_status.is_not_null() & (age>=16))
+denominator_acute_otitis_media = (age>=1) & (age<=17) | (pregnancy_status.is_not_null() & (age>=16)) |(acute_otitis_6m<3) | (acute_otitis_12m<4)
 
 # Create dictionary for clinical condition denominators
 pf_condition_denominators = {
