@@ -16,14 +16,15 @@ monthly_intervals = 9
 
 # Create dictionary of pharmacy first codes
 pharmacy_first_event_codes = {
-    # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
-    "blood_pressure_service": ["1659111000000107"],
-    # Community Pharmacy (CP) Contraception Service (procedure)
-    "contraception_service": ["1659121000000101"],
+    # # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
+    # "blood_pressure_service": ["1659111000000107"],
+    # # Community Pharmacy (CP) Contraception Service (procedure)
+    # "contraception_service": ["1659121000000101"],
     # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
     "consultation_service": ["1577041000000109"],
     # Pharmacy First service (qualifier value)
     "pharmacy_first_service": ["983341000000102"],
+    "combined_service": ["1577041000000109", "983341000000102"]
 }
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
