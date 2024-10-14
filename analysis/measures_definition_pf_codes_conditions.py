@@ -11,7 +11,7 @@ from codelists import (
     ethnicity_codelist,
 )
 
-from pf_dataset import pharmacy_first_event_codes
+from pf_dataset import pharmacy_first_event_codes, pharmacy_first_codes
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -93,11 +93,16 @@ latest_region = case(
     otherwise="Missing",
 )
 
+pharmacy_first_ids = clinical_events.where(
+    clinical_events.snomedct_code.is_in(pharmacy_first_codes)
+).consultation_id
 
 # Select clinical events in interval date range
-selected_events = clinical_events.where(
-    clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
+selected_events = (clinical_events.where(
+    clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date))
+.where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
 )
+
 
 # Breakdown metrics to be produced as graphs
 breakdown_metrics = {
