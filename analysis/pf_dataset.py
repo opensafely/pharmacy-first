@@ -10,16 +10,9 @@ pharmacy_first_event_codes = {
     "consultation_service": ["1577041000000109"],
     # Pharmacy First service (qualifier value)
     "pharmacy_first_service": ["983341000000102"],
-    "combined_service": ["1577041000000109", "983341000000102"],
+    "combined_pf_service": ["1577041000000109", "983341000000102"],
 }
 
-# Pharmacy first clinical codes
-pharmacy_first_codes = [
-    "1659111000000107",
-    "1659121000000101",
-    "1577041000000109",
-    "983341000000102",
-]
 
 # Create denominator variables for each clinical condition
 # These are based on NHS England rules using sex, age, pregnancy status and repeated diagnoses

@@ -11,7 +11,7 @@ from codelists import (
     ethnicity_codelist,
 )
 
-from pf_dataset import pharmacy_first_event_codes, pharmacy_first_codes
+from pf_dataset import pharmacy_first_event_codes
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -94,7 +94,7 @@ latest_region = case(
 )
 
 pharmacy_first_ids = clinical_events.where(
-    clinical_events.snomedct_code.is_in(pharmacy_first_codes)
+    clinical_events.snomedct_code.is_in(pharmacy_first_event_codes["combined_pf_service"])
 ).consultation_id
 
 # Select clinical events in interval date range
