@@ -6,25 +6,18 @@ from ehrql.tables.tpp import (
     addresses,
     ethnicity_from_sus,
 )
-from codelists import pharmacy_first_conditions_codelist, ethnicity_codelist
+from codelists import (
+    pharmacy_first_conditions_codelist,
+    ethnicity_codelist,
+)
+
+from pf_dataset import pharmacy_first_event_codes
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
 
 start_date = "2023-11-01"
 monthly_intervals = 9
-
-# Create dictionary of pharmacy first codes
-pharmacy_first_event_codes = {
-    # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
-    "blood_pressure_service": ["1659111000000107"],
-    # Community Pharmacy (CP) Contraception Service (procedure)
-    "contraception_service": ["1659121000000101"],
-    # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
-    "consultation_service": ["1577041000000109"],
-    # Pharmacy First service (qualifier value)
-    "pharmacy_first_service": ["983341000000102"],
-}
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
@@ -70,7 +63,6 @@ ethnicity_combined = case(
     otherwise="Missing",
 )
 
-
 # Age bands for age breakdown
 age = patients.age_on(INTERVAL.start_date)
 age_band = case(
@@ -95,11 +87,12 @@ imd_quintile = case(
 )
 
 latest_region = case(
-    when(
-        registration.practice_nuts1_region_name.is_not_null()
-    ).then(registration.practice_nuts1_region_name),
+    when(registration.practice_nuts1_region_name.is_not_null()).then(
+        registration.practice_nuts1_region_name
+    ),
     otherwise="Missing",
 )
+
 
 # Select clinical events in interval date range
 selected_events = clinical_events.where(
@@ -145,6 +138,17 @@ for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
             intervals=months(monthly_intervals).starting_on(start_date),
         )
 
+# Create dictionary for clinical condition denominators
+pf_condition_denominators = {
+    "uncomplicated_urinary_tract_infection": denominator,
+    "herpes_zoster": denominator,
+    "impetigo": denominator,
+    "infected_insect_bite": denominator,
+    "acute_pharyngitis": denominator,
+    "acute_sinusitis": denominator,
+    "acute_otitis_media": denominator,
+}
+
 # Create measures for pharmacy first conditions
 pharmacy_first_conditions_codes = {}
 for codes, term in pharmacy_first_conditions_codelist.items():
@@ -164,7 +168,7 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     measures.define_measure(
         name=f"count_{condition_name}",
         numerator=numerator,
-        denominator=denominator,
+        denominator=pf_condition_denominators[condition_name],
         intervals=months(monthly_intervals).starting_on(start_date),
     )
 
@@ -173,7 +177,7 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         measures.define_measure(
             name=f"count_{condition_name}_by_{breakdown}",
             numerator=numerator,
-            denominator=denominator,
+            denominator=pf_condition_denominators[condition_name],
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
         )

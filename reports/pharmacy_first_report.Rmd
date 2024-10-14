@@ -26,10 +26,11 @@ df_measures <- readr::read_csv(
 
 # Define dictionaries with tidy names and mappings for measures
 pf_measures_name_dict <- list(
-  blood_pressure_service = "Blood Pressure Service",
-  contraception_service = "Contraception Service",
+  # blood_pressure_service = "Blood Pressure Service",
+  # contraception_service = "Contraception Service",
   consultation_service = "Consultation Service",
   pharmacy_first_service = "Pharmacy First Service",
+  combined_service = "Pharmacy First Services",
   acute_otitis_media = "Acute Otitis Media",
   herpes_zoster = "Herpes Zoster",
   acute_sinusitis = "Acute Sinusitis",
@@ -40,10 +41,11 @@ pf_measures_name_dict <- list(
 )
 
 pf_measures_name_mapping <- list(
-  blood_pressure_service = "clinical_service",
-  contraception_service = "clinical_service",
+  # blood_pressure_service = "clinical_service",
+  # contraception_service = "clinical_service",
   consultation_service = "clinical_service",
   pharmacy_first_service = "clinical_service",
+  combined_service = "pharmacy_first_services",
   acute_otitis_media = "clinical_condition",
   herpes_zoster = "clinical_condition",
   acute_sinusitis = "clinical_condition",
@@ -146,7 +148,7 @@ plot_measures(
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
-  filter(measure_desc == "clinical_service") %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Age band")
 
 # Create visualisation
@@ -168,7 +170,7 @@ plot_measures(
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
-  filter(measure_desc == "clinical_service") %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Sex")
 
 # Create visualisation
@@ -190,7 +192,7 @@ plot_measures(
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
-  filter(measure_desc == "clinical_service") %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "IMD")
 
 # Create visualisation
@@ -212,7 +214,7 @@ plot_measures(
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
-  filter(measure_desc == "clinical_service") %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Region")
 
 # Create visualisation
@@ -236,7 +238,7 @@ plot_measures(
 
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
-  filter(measure_desc == "clinical_service") %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Ethnicity")
 
 # Create visualisation

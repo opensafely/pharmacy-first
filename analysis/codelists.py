@@ -13,3 +13,10 @@ ethnicity_codelist = codelist_from_csv(
     column="snomedcode",
     category_column="Grouping_6",
 )
+
+# Import pregnancy codelist
+pregnancy_codelist = codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-preg_cod.csv",
+    column="code",
+    category_column="term",
+)
