@@ -45,7 +45,7 @@ pf_measures_name_mapping <- list(
   # contraception_service = "clinical_service",
   consultation_service = "clinical_service",
   pharmacy_first_service = "clinical_service",
-  combined_service = "pharmacy_first_services",
+  combined_pf_service = "pharmacy_first_services",
   acute_otitis_media = "clinical_condition",
   herpes_zoster = "clinical_condition",
   acute_sinusitis = "clinical_condition",
