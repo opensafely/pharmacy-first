@@ -101,7 +101,7 @@ def get_acute_otitis_media_denominator(index_date, selected_events, pregnancy_co
         index_date, selected_events, acute_otitis_code, 6
     )
     count_acute_otitis_12m = count_past_events(
-        index_date, selected_events, acute_otitis_code, 6
+        index_date, selected_events, acute_otitis_code, 12
     )
 
     age = patients.age_on(index_date)
