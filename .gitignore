@@ -10,3 +10,4 @@ venv/
 .Rhistory
 .Rproj.user/
 reports/pharmacy_first_report.html
+/released_output/*
