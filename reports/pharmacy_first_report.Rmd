@@ -107,6 +107,8 @@ df_measures$region <- factor(
 
 df_measures <- df_measures %>%
   mutate(sex = factor(sex, levels = c("female", "male"), labels = c("Female", "Male")))
+
+df_measures$age_band[is.na(df_measures$age_band)] <- "Missing"  
 ```
 
 # Background
@@ -150,7 +152,7 @@ plot_measures(
   facet_var = NULL,
   title = "Number of consultations for each clinical service per month",
   y_label = "Number of codes for consultations",
-)
+) 
 ```
 
 ### Breakdown by age
@@ -172,7 +174,8 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical service by age band per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = c("#FFCCCC", "#fa7070", "#fc0e0e", "#9c0000", "#4c0000", "grey"))
+
 ```
 
 ### Breakdown by sex
@@ -216,7 +219,7 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical service by IMD per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey"))
 ```
 
 ### Breakdown by region
@@ -308,7 +311,8 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical condition by age band per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = c("#FFCCCC", "#fa7070", "#fc0e0e", "#9c0000", "#4c0000", "grey"))
+
 ```
 
 ### Breakdown by sex
@@ -352,7 +356,7 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical condition by IMD per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey"))
 ```
 
 ### Breakdown by region

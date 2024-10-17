@@ -73,7 +73,11 @@ plot_measures <- function(
       plot.title = element_text(hjust = 0.5)
     ) +
 
-    scale_colour_brewer(palette = "Set1")
+    scale_colour_manual(values = c(
+      "navy", "red", "#3cb44b", "#ff00ff",
+      "#f58231",
+      "#dcdc00", "#911eb4", "#469990", "#8000009d", "grey50"
+    ), na.value = "grey50")
 
   # Automatically change y scale depending selected value
   if (rlang::as_label(enquo(select_value)) %in% c("numerator", "denominator")) {
