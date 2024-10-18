@@ -74,6 +74,7 @@ age_band = case(
     when(age.is_null()).then("Missing"),
 )
 
+
 # IMD groupings for IMD breakdown
 imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
 max_imd = 32844

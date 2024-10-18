@@ -71,9 +71,7 @@ plot_measures <- function(
     theme(
       legend.position = legend_position,
       plot.title = element_text(hjust = 0.5)
-    ) +
-
-    scale_colour_brewer(palette = "Set1")
+    )
 
   # Automatically change y scale depending selected value
   if (rlang::as_label(enquo(select_value)) %in% c("numerator", "denominator")) {

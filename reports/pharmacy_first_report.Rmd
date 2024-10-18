@@ -34,11 +34,9 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
 
 # Define dictionaries with tidy names and mappings for measures
 pf_measures_name_dict <- list(
-  # blood_pressure_service = "Blood Pressure Service",
-  # contraception_service = "Contraception Service",
   consultation_service = "Consultation Service",
   pharmacy_first_service = "Pharmacy First Service",
-  combined_service = "Pharmacy First Services",
+  combined_pf_service = "Pharmacy First Services",
   acute_otitis_media = "Acute Otitis Media",
   herpes_zoster = "Herpes Zoster",
   acute_sinusitis = "Acute Sinusitis",
@@ -49,8 +47,6 @@ pf_measures_name_dict <- list(
 )
 
 pf_measures_name_mapping <- list(
-  # blood_pressure_service = "clinical_service",
-  # contraception_service = "clinical_service",
   consultation_service = "clinical_service",
   pharmacy_first_service = "clinical_service",
   combined_pf_service = "pharmacy_first_services",
@@ -111,6 +107,13 @@ df_measures$region <- factor(
 
 df_measures <- df_measures %>%
   mutate(sex = factor(sex, levels = c("female", "male"), labels = c("Female", "Male")))
+
+df_measures$age_band[is.na(df_measures$age_band)] <- "Missing"  
+
+gradient_palette <- c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey")
+region_palette <- c("red", "navy", "#018701", "#ffa600ca", "purple", "brown", "#f4a5b2", "cyan", "green", "grey")
+ethnicity_palette <- c("#42db0188", "#0056B3", "#ff0000c2", "#a52a2a5a", "purple", "grey")
+sex_palette <- c("red", "blue")
 ```
 
 # Background
@@ -137,7 +140,7 @@ Links to the codelist for each analysis can be found beneath the relevant sectio
 
 ### Total population
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_service") %>%
@@ -150,11 +153,11 @@ plot_measures(
   select_interval_date = interval_end,
   colour_var = NULL,
   guide_nrow = 1,
-  facet_wrap = FALSE,
-  facet_var = NULL,
+  facet_wrap = TRUE,
+  facet_var = measure,
   title = "Number of consultations for each clinical service per month",
   y_label = "Number of codes for consultations",
-)
+) 
 ```
 
 ### Breakdown by age
@@ -176,7 +179,8 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical service by age band per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = gradient_palette)
+
 ```
 
 ### Breakdown by sex
@@ -198,7 +202,7 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical service by sex per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = sex_palette)
 ```
 
 ### Breakdown by IMD
@@ -220,7 +224,7 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical service by IMD per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = gradient_palette)
 ```
 
 ### Breakdown by region
@@ -242,12 +246,12 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical service by region per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = region_palette)
 ```
 
-### Clinical Services by ethnicity
+### Breakdown by ethnicity
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
@@ -264,7 +268,7 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical service by ethnicity per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = ethnicity_palette)
 ```
 
 ## Clinical Condition
@@ -274,7 +278,7 @@ Here we show the number of consultations for each of the Pharmacy First Clinical
 
 ### Total population
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
@@ -286,8 +290,8 @@ plot_measures(
   select_value = numerator,
   select_interval_date = interval_end,
   guide_nrow = 1,
-  facet_wrap = FALSE,
-  facet_var = NULL,
+  facet_wrap = TRUE,
+  facet_var = measure,
   title = "Number of consultations for each clinical condition per month",
   y_label = "Number of codes for consultations",
 )
@@ -295,7 +299,7 @@ plot_measures(
 
 ### Breakdown by age
 
-```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
@@ -312,12 +316,12 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical condition by age band per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = gradient_palette)
 ```
 
 ### Breakdown by sex
 
-```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
@@ -334,12 +338,12 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical condition by sex per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = sex_palette)
 ```
 
 ### Breakdown by IMD
 
-```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
@@ -356,12 +360,12 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical condition by IMD per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = gradient_palette)
 ```
 
 ### Breakdown by region
 
-```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
@@ -378,12 +382,12 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical condition by region per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = region_palette)
 ```
 
 ### Clinical Conditions by ethnicity
 
-```{r, message=FALSE, warning=FALSE, fig.height=15, fig.width=8}
+```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
@@ -400,5 +404,5 @@ plot_measures(
   facet_var = measure,
   title = "Number of consultations for each clinical condition by ethnicity per month",
   y_label = "Number of codes for consultations",
-)
+) + scale_color_manual(values = ethnicity_palette)
 ```
