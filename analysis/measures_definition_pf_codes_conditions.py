@@ -66,13 +66,12 @@ ethnicity_combined = case(
 # Age bands for age breakdown
 age = patients.age_on(INTERVAL.start_date)
 age_band = case(
-    when(age.is_null()).then("Missing"),
     when((age >= 0) & (age < 20)).then("0-19"),
     when((age >= 20) & (age < 40)).then("20-39"),
     when((age >= 40) & (age < 60)).then("40-59"),
     when((age >= 60) & (age < 80)).then("60-79"),
     when(age >= 80).then("80+"),
-    otherwise="Missing"
+    when(age.is_null()).then("Missing"),
 )
 
 
