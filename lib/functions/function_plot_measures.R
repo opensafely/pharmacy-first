@@ -76,7 +76,7 @@ plot_measures <- function(
     scale_colour_manual(values = c(
       "navy", "red", "#3cb44b", "#ff00ff",
       "#f58231",
-      "#dcdc00", "#911eb4", "#469990", "#8000009d", "grey50"
+      "#dcdc00", "#911eb4", "#469990", "#8000009d", "grey"
     ), na.value = "grey50")
 
   # Automatically change y scale depending selected value
