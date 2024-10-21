@@ -1,5 +1,7 @@
+from ehrql.tables.tpp import patients, case, when
+
 from pf_variables_library import check_pregnancy_status, count_past_events
-from ehrql.tables.tpp import patients
+
 # Create dictionary of pharmacy first codes
 pharmacy_first_event_codes = {
     # # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
@@ -115,3 +117,49 @@ def get_acute_otitis_media_denominator(index_date, selected_events, pregnancy_co
         | (count_acute_otitis_6m < 3)
         | (count_acute_otitis_12m < 4)
     )
+
+
+def get_latest_ethnicity(index_date, clinical_events, ethnicity_codelist, ethnicity_from_sus):
+    latest_ethnicity_from_codes_category_num = (
+        clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
+        .where(clinical_events.date.is_on_or_before(index_date))
+        .sort_by(clinical_events.date)
+        .last_for_patient()
+        .snomedct_code.to_category(ethnicity_codelist)
+    )
+
+    latest_ethnicity_from_codes = case(
+        when(latest_ethnicity_from_codes_category_num == "1").then("White"),
+        when(latest_ethnicity_from_codes_category_num == "2").then("Mixed"),
+        when(latest_ethnicity_from_codes_category_num == "3").then(
+            "Asian or Asian British"
+        ),
+        when(latest_ethnicity_from_codes_category_num == "4").then(
+            "Black or Black British"
+        ),
+        when(latest_ethnicity_from_codes_category_num == "5").then(
+            "Chinese or Other Ethnic Groups"
+        ),
+    )
+
+    ethnicity_from_sus = case(
+        when(ethnicity_from_sus.code.is_in(["A", "B", "C"])).then("White"),
+        when(ethnicity_from_sus.code.is_in(["D", "E", "F", "G"])).then("Mixed"),
+        when(ethnicity_from_sus.code.is_in(["H", "J", "K", "L"])).then(
+            "Asian or Asian British"
+        ),
+        when(ethnicity_from_sus.code.is_in(["M", "N", "P"])).then("Black or Black British"),
+        when(ethnicity_from_sus.code.is_in(["R", "S"])).then(
+            "Chinese or Other Ethnic Groups"
+        ),
+    )
+
+    ethnicity_combined = case(
+        when(latest_ethnicity_from_codes.is_not_null()).then(latest_ethnicity_from_codes),
+        when(latest_ethnicity_from_codes.is_null() & ethnicity_from_sus.is_not_null()).then(
+            ethnicity_from_sus
+        ),
+        otherwise="Missing",
+    )
+
+    return(ethnicity_combined)
