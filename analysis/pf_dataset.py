@@ -1,5 +1,5 @@
 from pf_variables_library import check_pregnancy_status, count_past_events
-
+from ehrql.tables.tpp import patients
 # Create dictionary of pharmacy first codes
 pharmacy_first_event_codes = {
     # # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
