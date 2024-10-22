@@ -11,7 +11,7 @@ from codelists import (
     ethnicity_codelist,
 )
 
-from pf_dataset import pharmacy_first_event_codes
+from pf_dataset import pharmacy_first_event_codes, get_latest_ethnicity
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -20,49 +20,12 @@ start_date = "2023-11-01"
 monthly_intervals = 9
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
-
-latest_ethnicity_from_codes_category_num = (
-    clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
-    .where(clinical_events.date.is_on_or_before(INTERVAL.start_date))
-    .sort_by(clinical_events.date)
-    .last_for_patient()
-    .snomedct_code.to_category(ethnicity_codelist)
+ethnicity_combined = get_latest_ethnicity(
+    index_date=INTERVAL.start_date,
+    clinical_events=clinical_events,
+    ethnicity_codelist=ethnicity_codelist,
+    ethnicity_from_sus=ethnicity_from_sus
 )
-
-latest_ethnicity_from_codes = case(
-    when(latest_ethnicity_from_codes_category_num == "1").then("White"),
-    when(latest_ethnicity_from_codes_category_num == "2").then("Mixed"),
-    when(latest_ethnicity_from_codes_category_num == "3").then(
-        "Asian or Asian British"
-    ),
-    when(latest_ethnicity_from_codes_category_num == "4").then(
-        "Black or Black British"
-    ),
-    when(latest_ethnicity_from_codes_category_num == "5").then(
-        "Chinese or Other Ethnic Groups"
-    ),
-)
-
-ethnicity_from_sus = case(
-    when(ethnicity_from_sus.code.is_in(["A", "B", "C"])).then("White"),
-    when(ethnicity_from_sus.code.is_in(["D", "E", "F", "G"])).then("Mixed"),
-    when(ethnicity_from_sus.code.is_in(["H", "J", "K", "L"])).then(
-        "Asian or Asian British"
-    ),
-    when(ethnicity_from_sus.code.is_in(["M", "N", "P"])).then("Black or Black British"),
-    when(ethnicity_from_sus.code.is_in(["R", "S"])).then(
-        "Chinese or Other Ethnic Groups"
-    ),
-)
-
-ethnicity_combined = case(
-    when(latest_ethnicity_from_codes.is_not_null()).then(latest_ethnicity_from_codes),
-    when(latest_ethnicity_from_codes.is_null() & ethnicity_from_sus.is_not_null()).then(
-        ethnicity_from_sus
-    ),
-    otherwise="Missing",
-)
-
 # Age bands for age breakdown
 age = patients.age_on(INTERVAL.start_date)
 age_band = case(
