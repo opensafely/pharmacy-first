@@ -1,4 +1,4 @@
-from ehrql.tables.tpp import patients, case, when
+from ehrql.tables.tpp import patients, case, when, clinical_events
 
 from pf_variables_library import check_pregnancy_status, count_past_events
 
@@ -15,6 +15,15 @@ pharmacy_first_event_codes = {
     "combined_pf_service": ["1577041000000109", "983341000000102"],
 }
 
+def get_pf_consultation_ids():
+    pharmacy_first_ids = clinical_events.where(
+    clinical_events.snomedct_code.is_in(pharmacy_first_event_codes["combined_pf_service"])
+    ).consultation_id
+    return pharmacy_first_ids
+
+def get_pf_clinical_events(pharmacy_first_ids):
+    selected_events = clinical_events.where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
+    return selected_events
 
 # Create denominator variables for each clinical condition
 # These are based on NHS England rules using sex, age, pregnancy status and repeated diagnoses
