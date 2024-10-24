@@ -15,9 +15,9 @@ pharmacy_first_event_codes = {
     "combined_pf_service": ["1577041000000109", "983341000000102"],
 }
 
-def get_pf_consultation_ids():
-    pharmacy_first_ids = clinical_events.where(
-    clinical_events.snomedct_code.is_in(pharmacy_first_event_codes["combined_pf_service"])
+def get_pf_consultation_ids_from_events(events,codelist):
+    pharmacy_first_ids = events.where(
+    events.snomedct_code.is_in(codelist)
     ).consultation_id
     return pharmacy_first_ids
 

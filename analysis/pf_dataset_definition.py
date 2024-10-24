@@ -10,8 +10,9 @@ from pf_dataset import (
     get_acute_sinusitis_denominator,
     get_acute_otitis_media_denominator,
     get_pf_clinical_events,
-    get_pf_consultation_ids,
+    get_pf_consultation_ids_from_events,
     get_latest_ethnicity,
+    pharmacy_first_event_codes
 )
 
 import codelists
@@ -19,7 +20,7 @@ import codelists
 index_date = "2024-01-01"
 dataset = create_dataset()
 
-pharmacy_first_ids = get_pf_consultation_ids()
+pharmacy_first_ids = get_pf_consultation_ids_from_events(clinical_events, pharmacy_first_event_codes["combined_pf_service"])
 selected_events = get_pf_clinical_events(pharmacy_first_ids)
 
 registration = practice_registrations.for_patient_on(index_date)
