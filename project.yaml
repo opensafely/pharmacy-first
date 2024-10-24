@@ -20,3 +20,12 @@ actions:
     outputs:
       moderately_sensitive:
         report: output/reports/pharmacy_first_report.html
+
+  generate_pf_dataset_definition:
+    run: >
+      ehrql:v1
+       generate-dataset analysis/pf_dataset_definition.py
+       --output output/population/pf_population.csv.gz
+    outputs:
+      highly_sensitive:
+        cohort: output/population/pf_population.csv.gz
