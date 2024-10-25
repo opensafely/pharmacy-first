@@ -45,8 +45,8 @@ def get_uncomplicated_uti_denominator(index_date, selected_events, pregnancy_cod
         (age >= 16)
         & (age <= 64)
         & (patients.sex.is_in(["female"]) & pregnancy_status.is_null())
-        | (count_urt_6m < 2)
-        | (count_urt_12m < 3)
+        & (count_urt_6m < 2)
+        & (count_urt_12m < 3)
     )
 
 
@@ -71,11 +71,21 @@ def get_impetigo_denominator(index_date, selected_events, pregnancy_codelist):
     )
 
     return (
-        (age >= 1)
-        | (pregnancy_status.is_not_null() & (age >= 16))
-        | (count_impetigo_12m < 2)
+        ((age >= 1) &
+        (count_impetigo_12m < 2)) &
+        (
+            pregnancy_status.is_null()
+            | (pregnancy_status.is_not_null() & (age >= 16))  
+        )
     )
 
+
+def check_pregnancy_status_for_debug(index_date, selected_events, pregnancy_codelist):
+    pregnancy_status = check_pregnancy_status(
+        index_date, selected_events, pregnancy_codelist
+    )
+    
+    return pregnancy_status
 
 def get_infected_insect_bites_denominator(
     index_date, selected_events, pregnancy_codelist
@@ -85,8 +95,13 @@ def get_infected_insect_bites_denominator(
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (age >= 1) | (pregnancy_status.is_not_null() & (age >= 16))
-
+    return (        
+        (age >= 1) & 
+        (
+            pregnancy_status.is_null()
+            | (pregnancy_status.is_not_null() & (age >= 16))
+        )
+    )
 
 def get_acute_sore_throat_denominator(index_date, selected_events, pregnancy_codelist):
     age = patients.age_on(index_date)
@@ -94,8 +109,13 @@ def get_acute_sore_throat_denominator(index_date, selected_events, pregnancy_cod
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (age >= 5) | (pregnancy_status.is_not_null() & (age >= 16))
-
+    return (
+        (age >= 5) &
+        (
+            pregnancy_status.is_null()
+            | (pregnancy_status.is_not_null() & (age >= 16))
+        )
+    )
 
 def get_acute_sinusitis_denominator(index_date, selected_events, pregnancy_codelist):
     age = patients.age_on(index_date)
@@ -103,7 +123,13 @@ def get_acute_sinusitis_denominator(index_date, selected_events, pregnancy_codel
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (age >= 12) | (pregnancy_status.is_not_null() & (age >= 16))
+    return (
+        (age >= 12) & 
+        (
+            pregnancy_status.is_null()
+            | (pregnancy_status.is_not_null() & (age >= 16))
+        )
+    )
 
 
 def get_acute_otitis_media_denominator(index_date, selected_events, pregnancy_codelist):
@@ -121,10 +147,13 @@ def get_acute_otitis_media_denominator(index_date, selected_events, pregnancy_co
     )
 
     return (
-        (age >= 1) & (age <= 17)
-        | (pregnancy_status.is_not_null() & (age >= 16))
-        | (count_acute_otitis_6m < 3)
-        | (count_acute_otitis_12m < 4)
+        (age >= 1) & (age <= 17) & 
+        (count_acute_otitis_6m < 3) & 
+        (count_acute_otitis_12m < 4) & 
+        (
+            pregnancy_status.is_null()
+            | (pregnancy_status.is_not_null() & (age >= 16))
+        )
     )
 
 
