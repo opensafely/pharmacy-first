@@ -15,15 +15,20 @@ pharmacy_first_event_codes = {
     "combined_pf_service": ["1577041000000109", "983341000000102"],
 }
 
-def get_pf_consultation_ids_from_events(events,codelist):
+
+def get_pf_consultation_ids_from_events(events, codelist):
     pharmacy_first_ids = events.where(
-    events.snomedct_code.is_in(codelist)
+        events.snomedct_code.is_in(codelist)
     ).consultation_id
     return pharmacy_first_ids
 
+
 def get_pf_clinical_events(pharmacy_first_ids):
-    selected_events = clinical_events.where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
+    selected_events = clinical_events.where(
+        clinical_events.consultation_id.is_in(pharmacy_first_ids)
+    )
     return selected_events
+
 
 # Create denominator variables for each clinical condition
 # These are based on NHS England rules using sex, age, pregnancy status and repeated diagnoses
@@ -33,18 +38,18 @@ def get_pf_clinical_events(pharmacy_first_ids):
 # - chronic sinusitis and immunosuppressed individuals for acute sinusitis
 def get_uncomplicated_uti_denominator(index_date, selected_events, pregnancy_codelist):
     urt_code = ["1090711000000102"]
-    count_urt_6m = count_past_events(index_date, selected_events, urt_code, 6)
-    count_urt_12m = count_past_events(index_date, selected_events, urt_code, 12)
+    count_urt_6m = count_past_events(index_date, clinical_events, urt_code, 6)
+    count_urt_12m = count_past_events(index_date, clinical_events, urt_code, 12)
 
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
+        index_date, clinical_events, pregnancy_codelist
     )
 
     return (
         (age >= 16)
         & (age <= 64)
-        & (patients.sex.is_in(["female"]) & pregnancy_status.is_null())
+        & (patients.sex.is_in(["female"]) & (pregnancy_status == False))
         & (count_urt_6m < 2)
         & (count_urt_12m < 3)
     )
@@ -53,30 +58,25 @@ def get_uncomplicated_uti_denominator(index_date, selected_events, pregnancy_cod
 def get_shingles_denominator(index_date, selected_events, pregnancy_codelist):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
+        index_date, clinical_events, pregnancy_codelist
     )
 
-    return (age >= 18) & pregnancy_status.is_null()
+    return (age >= 18) & (pregnancy_status == False)
 
 
 def get_impetigo_denominator(index_date, selected_events, pregnancy_codelist):
     impetigo_code = ["48277006"]
     count_impetigo_12m = count_past_events(
-        index_date, selected_events, impetigo_code, 12
+        index_date, clinical_events, impetigo_code, 12
     )
 
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
+        index_date, clinical_events, pregnancy_codelist
     )
 
-    return (
-        ((age >= 1) &
-        (count_impetigo_12m < 2)) &
-        (
-            pregnancy_status.is_null()
-            | (pregnancy_status.is_not_null() & (age >= 16))  
-        )
+    return ((age >= 1) & (count_impetigo_12m < 2)) & (
+        (pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16))
     )
 
 
@@ -84,80 +84,71 @@ def check_pregnancy_status_for_debug(index_date, selected_events, pregnancy_code
     pregnancy_status = check_pregnancy_status(
         index_date, selected_events, pregnancy_codelist
     )
-    
+
     return pregnancy_status
+
 
 def get_infected_insect_bites_denominator(
     index_date, selected_events, pregnancy_codelist
 ):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
+        index_date, clinical_events, pregnancy_codelist
     )
 
-    return (        
-        (age >= 1) & 
-        (
-            pregnancy_status.is_null()
-            | (pregnancy_status.is_not_null() & (age >= 16))
-        )
+    return (age >= 1) & (
+        (pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16))
     )
+
 
 def get_acute_sore_throat_denominator(index_date, selected_events, pregnancy_codelist):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
+        index_date, clinical_events, pregnancy_codelist
     )
 
-    return (
-        (age >= 5) &
-        (
-            pregnancy_status.is_null()
-            | (pregnancy_status.is_not_null() & (age >= 16))
-        )
+    return (age >= 5) & (
+        (pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16))
     )
+
 
 def get_acute_sinusitis_denominator(index_date, selected_events, pregnancy_codelist):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
+        index_date, clinical_events, pregnancy_codelist
     )
 
-    return (
-        (age >= 12) & 
-        (
-            pregnancy_status.is_null()
-            | (pregnancy_status.is_not_null() & (age >= 16))
-        )
+    return (age >= 12) & (
+        (pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16))
     )
 
 
 def get_acute_otitis_media_denominator(index_date, selected_events, pregnancy_codelist):
     acute_otitis_code = ["3110003"]
     count_acute_otitis_6m = count_past_events(
-        index_date, selected_events, acute_otitis_code, 6
+        index_date, clinical_events, acute_otitis_code, 6
     )
     count_acute_otitis_12m = count_past_events(
-        index_date, selected_events, acute_otitis_code, 12
+        index_date, clinical_events, acute_otitis_code, 12
     )
 
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
+        index_date, clinical_events, pregnancy_codelist
     )
 
     return (
-        (age >= 1) & (age <= 17) & 
-        (count_acute_otitis_6m < 3) & 
-        (count_acute_otitis_12m < 4) & 
-        (
-            pregnancy_status.is_null()
-            | (pregnancy_status.is_not_null() & (age >= 16))
-        )
+        (age >= 1)
+        & (age <= 17)
+        & (count_acute_otitis_6m < 3)
+        & (count_acute_otitis_12m < 4)
+        & ((pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16)))
     )
 
 
-def get_latest_ethnicity(index_date, clinical_events, ethnicity_codelist, ethnicity_from_sus):
+def get_latest_ethnicity(
+    index_date, clinical_events, ethnicity_codelist, ethnicity_from_sus
+):
     latest_ethnicity_from_codes_category_num = (
         clinical_events.where(clinical_events.snomedct_code.is_in(ethnicity_codelist))
         .where(clinical_events.date.is_on_or_before(index_date))
@@ -186,18 +177,22 @@ def get_latest_ethnicity(index_date, clinical_events, ethnicity_codelist, ethnic
         when(ethnicity_from_sus.code.is_in(["H", "J", "K", "L"])).then(
             "Asian or Asian British"
         ),
-        when(ethnicity_from_sus.code.is_in(["M", "N", "P"])).then("Black or Black British"),
+        when(ethnicity_from_sus.code.is_in(["M", "N", "P"])).then(
+            "Black or Black British"
+        ),
         when(ethnicity_from_sus.code.is_in(["R", "S"])).then(
             "Chinese or Other Ethnic Groups"
         ),
     )
 
     ethnicity_combined = case(
-        when(latest_ethnicity_from_codes.is_not_null()).then(latest_ethnicity_from_codes),
-        when(latest_ethnicity_from_codes.is_null() & ethnicity_from_sus.is_not_null()).then(
-            ethnicity_from_sus
+        when(latest_ethnicity_from_codes.is_not_null()).then(
+            latest_ethnicity_from_codes
         ),
+        when(
+            latest_ethnicity_from_codes.is_null() & ethnicity_from_sus.is_not_null()
+        ).then(ethnicity_from_sus),
         otherwise="Missing",
     )
 
-    return(ethnicity_combined)
+    return ethnicity_combined
