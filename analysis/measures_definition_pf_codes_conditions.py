@@ -24,7 +24,7 @@ ethnicity_combined = get_latest_ethnicity(
     index_date=INTERVAL.start_date,
     clinical_events=clinical_events,
     ethnicity_codelist=ethnicity_codelist,
-    ethnicity_from_sus=ethnicity_from_sus
+    ethnicity_from_sus=ethnicity_from_sus,
 )
 # Age bands for age breakdown
 age = patients.age_on(INTERVAL.start_date)
@@ -58,14 +58,15 @@ latest_region = case(
 )
 
 pharmacy_first_ids = clinical_events.where(
-    clinical_events.snomedct_code.is_in(pharmacy_first_event_codes["combined_pf_service"])
+    clinical_events.snomedct_code.is_in(
+        pharmacy_first_event_codes["combined_pf_service"]
+    )
 ).consultation_id
 
 # Select clinical events in interval date range
-selected_events = (clinical_events.where(
-    clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date))
-.where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
-)
+selected_events = clinical_events.where(
+    clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
+).where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
 
 
 # Breakdown metrics to be produced as graphs
