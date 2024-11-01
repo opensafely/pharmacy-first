@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(here)
 library(readr)
+library(gt)
 ```
 
 ```{r load-data, message=FALSE, warning=FALSE}
@@ -122,17 +123,223 @@ Add background here.
 
 # Methods
 
-This study used data from OpenSAFELY-TPP, which covers 40% of the population of England. For a description of the representativeness of this sample, please see our manuscript [here](https://wellcomeopenresearch.org/articles/7-191/v1).
-Individuals were included if they were alive and registered at a TPP practice each month, across the study period.
-Patients were excluded if their listed age was not between 0 and 120 years.
-Counts represent patients with at least one clinical code of relevance in that month.
-Patients with more than one of the same clinical code in a month were only counted once. Rates divide the count by the included study population and multiply by 1,000 to achieve a rate per 1,000 registered patients.
-Counts <=7 have been redacted and all numbers rounded to the nearest 5 to avoid potential re-identification of individuals. The rates displayed were computed with these rounded counts.
-Our data relies on a relevant Pharmacy First code being added to a patient's GP record.
-The Pharmacy First service relies on [GP Connect - Update Record](https://digital.nhs.uk/services/gp-connect/gp-connect-in-your-organisation/gp-connect-update-record) to update a patient's GP record with consultation information from the community pharmacy.
-Following the launch of the Pharmacy First service, there has been a [Gradual roll-out of GP Connect - Update Record](https://cpe.org.uk/our-news/gp-connect-update-record-rollout-and-flow-of-information/) across the approved community pharmacy IT system suppliers.
+This study utilised data from OpenSAFELY-TPP, which covers approximately 40% of the population of England. 
+For a detailed description of the representativeness of this sample, please refer to our manuscript [here](https://wellcomeopenresearch.org/articles/7-191/v1).
 
-Links to the codelist for each analysis can be found beneath the relevant section.
+Between 1st November 2023 and 1st September 2024, we identified individuals aged between 0 and 120 years who were registered at a TPP practice each month across the study period. 
+From this cohort, we counted the number of patients with at least one SNOMED CT code indicating a consultation using the Pharmacy First Service. 
+Patients with more than one instance of the same clinical code within a month were counted only once.
+
+In addition to counts, we calculated rates by dividing the number of consultations by the total included study population and multiplying by 1,000, thereby obtaining a rate per 1,000 registered patients. 
+Counts of ≤7 were redacted, and all figures were rounded to the nearest 5 to avoid potential re-identification of individuals. Rates were calculated using these rounded counts.
+
+Our study relied on the correct entry of relevant Pharmacy First codes in patients' GP records. 
+The Pharmacy First service uses [GP Connect - Update Record](https://digital.nhs.uk/services/gp-connect/gp-connect-in-your-organisation/gp-connect-update-record) to update a patient's GP record with consultation information from community pharmacies. 
+Following the launch of the Pharmacy First service, there has been a [Gradual roll-out of GP Connect - Update Record](https://cpe.org.uk/our-news/gp-connect-update-record-rollout-and-flow-of-information/) across approved community pharmacy IT system suppliers.
+
+### Codelists
+
+To investigate Pharmacy First usage and the demographics of patients accessing the service, we used a variety of codelists to identify trends in Pharmacy First utilisation, including breakdowns by clinical condition and patient demographics.
+
+#### Pharmacy First Event Codes
+
+The following two SNOMED codes were used interchangeably to identify consultations classified as 'Pharmacy First consultations':
+
+```{r echo=FALSE}
+
+# Create pharmacy first service codes dataframe
+pharmacy_first_table <- data.frame(
+  codelist = c(
+    "Community Pharmacist (CP) Consultation Service for minor illness (procedure)",
+    "Pharmacy First service (qualifier value)"
+  ),
+  code = c(
+    "1577041000000109",
+    "983341000000102"
+  )
+)
+
+# Create pharmacy first service codes table
+pharmacy_first_table %>%
+  gt() %>%
+  tab_header(
+    title = "Table 1. Pharmacy First Codes",
+    subtitle = "Codelist descriptions and their respective SNOMED codes"
+  ) %>%
+  cols_label(
+    codelist = "Codelist Description",
+    code = "SNOMED Code"
+  ) %>%
+  tab_options(
+    table.font.size = "medium",
+    heading.title.font.size = "large",
+    heading.subtitle.font.size = "small"
+  )
+```
+
+
+We analysed trends in the usage of the Pharmacy First service by breaking down observations by various demographics, including age, sex, Index of Multiple Deprivation (IMD), region, and ethnicity.
+
+
+#### Ethnicity Codelist
+
+To assess service utilisation by ethnicity, we used the [ethnicity codelist](https://www.opencodelists.org/codelist/opensafely/ethnicity-snomed-0removed/2e641f61/). 
+This involved matching ethnicity SNOMED codes recorded within the clinical events dataset with their corresponding ethnicity in the codelist. 
+To ensure comprehensive ethnicity data, we supplemented missing primary care ethnicity values with data from the Secondary Uses Service (SUS).
+
+```{r echo=FALSE}
+ethnicity_table <- data.frame(
+  Code = c(1, 2, 3, 4, 5),
+  Ethnicity = c(
+    "White",
+    "Mixed",
+    "Asian or Asian British",
+    "Black or Black British",
+    "Chinese or Other Ethnic Groups"
+  )
+)
+
+# ethnicity_table %>%
+#   gt() %>%
+#   tab_header(
+#     title = "Table 2. Ethnic Group Codes",
+#     subtitle = "Codes representing different ethnic groups in the study"
+#   ) %>%
+#   cols_label(
+#     Code = "Code",
+#     `Ethnicity` = "Ethnic Group"
+#   ) %>%
+#   tab_options(
+#     table.font.size = "medium",
+#     heading.title.font.size = "large",
+#     heading.subtitle.font.size = "small"
+#   )
+
+```
+#### Pharmacy First Clinical Pathways Codes
+
+We utilised the Pharmacy First [clinical pathways codelist](https://www.opencodelists.org/codelist/opensafely/pharmacy-first-clinical-pathway-conditions/7ec97762/#full-list) to categorise clinical events related to Pharmacy First services based on specific clinical pathways. 
+
+```{r echo=FALSE, message=FALSE}
+
+clinical_codes_table <- data.frame(
+  condition = c(
+    "Acute otitis media",
+    "Herpes zoster",
+    "Acute sinusitis",
+    "Impetigo",
+    "Infected insect bite",
+    "Acute pharyngitis",
+    "Uncomplicated urinary tract infection"
+  ),
+  code = c(
+    "3110003",
+    "4740000",
+    "15805002",
+    "48277006",
+    "262550002",
+    "363746003",
+    "1090711000000102"
+  )
+)
+
+# clinical_codes_table %>%
+#   gt() %>%
+#   tab_header(
+#     title = "Table 3. Clinical Pathway Codes",
+#     subtitle = "Clinical conditions and their corresponding SNOMED codes"
+#   ) %>%
+#   cols_label(
+#     condition = "Clinical Condition",
+#     code = "SNOMED Code"
+#   ) %>%
+#   tab_options(
+#     table.font.size = "medium",
+#     heading.title.font.size = "large",
+#     heading.subtitle.font.size = "small"
+#   )
+```
+
+#### Pregnancy Codelist
+
+Following the breakdown of Pharmacy First usage by counts of clinical condition, we calculated rates to determine the proportion of patients with a diagnosis of a Pharmacy First-specific clinical condition, relative to the eligible patient population. 
+The [pregnancy codelist](https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/preg_cod/20200812/#full-list) was used to identify patients who were pregnant during the sample month, helping determine eligibility for different Pharmacy First conditions.
+
+### Population
+
+The eligible patient population for each clinical condition associated with Pharmacy First is detailed in the table below:
+
+```{r echo=FALSE, message=FALSE}
+# Create clinical pathways dataframe
+clinical_pathways_table <- data.frame(
+  Condition = c(
+    "Uncomplicated Urinary Tract Infection",
+    "Shingles",
+    "Impetigo",
+    "Infected Insect Bites",
+    "Acute Sore Throat",
+    "Acute Sinusitis",
+    "Acute Otitis Media"
+  ),
+  Age = c(
+    "16 to 64 years",
+    "18 years and over",
+    "1 year and over",
+    "1 year and over",
+    "5 years and over",
+    "12 years and over",
+    "1 to 17 years"
+  ),
+  Sex = c(
+    "Female",
+    "Any",
+    "Any",
+    "Any",
+    "Any",
+    "Any",
+    "Any"
+  ),
+  Exclusions = c(
+    "Pregnant individuals, urinary catheter, recurrent UTI (2 episodes in last 6 months, or 3 episodes in last 12 months)",
+    "Pregnant individuals",
+    "Bullous impetigo, recurrent impetigo (2 or more episodes in the same year), pregnant individuals under 16 years",
+    "Pregnant individuals under 16 years",
+    "Pregnant individuals under 16 years",
+    "Immunosuppressed individuals, chronic sinusitis (symptoms lasting more than 12 weeks), pregnant individuals under 16 years",
+    "Recurrent acute otitis media (3 or more episodes in 6 months or four or more episodes in 12 months), pregnant individuals under 16 years"
+  )
+)
+
+# Create clinical pathways table
+clinical_pathways_table %>%
+  gt() %>%
+  tab_header(
+    title = "Table 2. Clinical Pathways",
+    subtitle = "Inclusion and exclusion criteria for clinical pathway/conditions"
+  ) %>%
+  cols_label(
+    Condition = "Condition",
+    Age = "Age Range",
+    Sex = "Sex",
+    Exclusions = "Exclusions"
+  ) %>%
+  tab_options(
+    table.font.size = "medium",
+    heading.title.font.size = "large",
+    heading.subtitle.font.size = "small"
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_labels(columns = everything())
+  )
+
+```
+
+We excluded pregnant individuals for specific conditions where pregnancy made inclusion inappropriate, such as urinary tract infections (UTI) and shingles. 
+Additionally, pregnant individuals under 16 years were excluded for conditions like impetigo, infected insect bites, sore throat, sinusitis, and otitis. 
+Patients with recurrent diagnoses of the studied conditions were also excluded to focus on first-time or singular episodes, such as for UTI, impetigo and acute otitis media. 
+Furthermore, exclusions were applied based on age ranges and sex, in alignment with the eligibility criteria defined for each clinical condition. 
+These categories represented the most substantial sources of exclusion, whereas other specific criteria were anticipated to yield minimal exclusions.
 
 # Results
 
