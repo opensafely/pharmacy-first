@@ -328,12 +328,6 @@ clinical_pathways_table %>%
     heading.title.font.size = "large",
     heading.subtitle.font.size = "small"
   ) %>%
-  cols_width(
-    Condition ~ px(200),
-    Age ~ px(100),
-    Sex ~ px(75),
-    Exclusions ~ px(300)
-  ) %>%
   tab_style(
     style = cell_text(weight = "bold"),
     locations = cells_column_labels(columns = everything())
