@@ -2,6 +2,18 @@ from ehrql.tables.tpp import patients, case, when
 
 from pf_variables_library import check_pregnancy_status, count_past_events
 
+pharmacy_first_event_codes = {
+    # # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
+    # "blood_pressure_service": ["1659111000000107"],
+    # # Community Pharmacy (CP) Contraception Service (procedure)
+    # "contraception_service": ["1659121000000101"],
+    # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
+    "consultation_service": ["1577041000000109"],
+    # Pharmacy First service (qualifier value)
+    "pharmacy_first_service": ["983341000000102"],
+    "combined_pf_service": ["1577041000000109", "983341000000102"],
+}
+
 # Create denominator variables for each clinical condition
 # These are based on NHS England rules using sex, age, pregnancy status and repeated diagnoses
 # NOTE: The following exclusions have not been added:
