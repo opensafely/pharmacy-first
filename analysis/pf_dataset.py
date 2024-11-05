@@ -30,13 +30,10 @@ def get_uncomplicated_uti_denominator(index_date, patients, selected_events, pre
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (
-        (age >= 16)
-        & (age <= 64)
-        & (patients.sex.is_in(["female"]) & (pregnancy_status == False))
-        & (count_urt_6m < 2)
-        & (count_urt_12m < 3)
-    )
+    inclusion_criteria = (age >= 16) & (age <= 64) & (patients.sex.is_in(["female"]))
+    exclusion_criteria = pregnancy_status | (count_urt_6m >= 2) | (count_urt_12m >= 3)
+
+    return inclusion_criteria & ~exclusion_criteria
 
 
 def get_shingles_denominator(index_date, patients, selected_events, pregnancy_codelist):
@@ -45,7 +42,10 @@ def get_shingles_denominator(index_date, patients, selected_events, pregnancy_co
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (age >= 18) & (pregnancy_status == False)
+    inclusion_criteria = age >= 18
+    exclusion_criteria = pregnancy_status
+
+    return inclusion_criteria & ~exclusion_criteria
 
 
 def get_impetigo_denominator(index_date, patients, selected_events, pregnancy_codelist):
@@ -59,17 +59,10 @@ def get_impetigo_denominator(index_date, patients, selected_events, pregnancy_co
         index_date, selected_events, pregnancy_codelist
     )
 
-    return ((age >= 1) & (count_impetigo_12m < 2)) & (
-        (pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16))
-    )
+    inclusion_criteria = age >= 1
+    exclusion_criteria = (count_impetigo_12m >= 2) | (pregnancy_status & (age < 16))
 
-
-def check_pregnancy_status_for_debug(index_date, selected_events, pregnancy_codelist):
-    pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
-    )
-
-    return pregnancy_status
+    return inclusion_criteria & ~exclusion_criteria
 
 
 def get_infected_insect_bites_denominator(
@@ -80,9 +73,10 @@ def get_infected_insect_bites_denominator(
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (age >= 1) & (
-        (pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16))
-    )
+    inclusion_criteria = age >= 1
+    exclusion_criteria = (pregnancy_status & (age < 16))
+
+    return inclusion_criteria & ~exclusion_criteria
 
 
 def get_acute_sore_throat_denominator(index_date, patients, selected_events, pregnancy_codelist):
@@ -91,9 +85,10 @@ def get_acute_sore_throat_denominator(index_date, patients, selected_events, pre
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (age >= 5) & (
-        (pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16))
-    )
+    inclusion_criteria = age >= 5
+    exclusion_criteria = (pregnancy_status & (age < 16))
+
+    return inclusion_criteria & ~exclusion_criteria
 
 
 def get_acute_sinusitis_denominator(index_date, patients, selected_events, pregnancy_codelist):
@@ -102,9 +97,10 @@ def get_acute_sinusitis_denominator(index_date, patients, selected_events, pregn
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (age >= 12) & (
-        (pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16))
-    )
+    inclusion_criteria = age >= 12
+    exclusion_criteria = (pregnancy_status & (age < 16))
+
+    return inclusion_criteria & ~exclusion_criteria
 
 
 def get_acute_otitis_media_denominator(index_date, patients, selected_events, pregnancy_codelist):
@@ -121,13 +117,10 @@ def get_acute_otitis_media_denominator(index_date, patients, selected_events, pr
         index_date, selected_events, pregnancy_codelist
     )
 
-    return (
-        (age >= 1)
-        & (age <= 17)
-        & (count_acute_otitis_6m < 3)
-        & (count_acute_otitis_12m < 4)
-        & ((pregnancy_status == False) | ((pregnancy_status == True) & (age >= 16)))
-    )
+    inclusion_criteria = (age >= 1) & (age <= 17)
+    exclusion_criteria = (count_acute_otitis_6m >= 3) | (count_acute_otitis_12m >= 4) | (pregnancy_status & (age < 16))
+
+    return inclusion_criteria & ~exclusion_criteria
 
 
 def get_latest_ethnicity(
