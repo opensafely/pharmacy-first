@@ -25,6 +25,7 @@ actions:
     run: >
       ehrql:v1
        generate-dataset analysis/pf_dataset_definition.py
+       --test-data-file analysis/test_pf_dataset_definition.py
        --output output/population/pf_population.csv.gz
     outputs:
       highly_sensitive:
