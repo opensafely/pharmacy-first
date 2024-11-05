@@ -1,5 +1,7 @@
 # Function to check status of a condition within a specified time window
 from ehrql import months
+
+
 def check_pregnancy_status(index_date, selected_events, codelist):
     return (
         selected_events.where(selected_events.snomedct_code.is_in(codelist))

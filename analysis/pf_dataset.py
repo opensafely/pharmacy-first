@@ -14,13 +14,16 @@ pharmacy_first_event_codes = {
     "combined_pf_service": ["1577041000000109", "983341000000102"],
 }
 
+
 # Create denominator variables for each clinical condition
 # These are based on NHS England rules using sex, age, pregnancy status and repeated diagnoses
 # NOTE: The following exclusions have not been added:
 # - urinary catheter for URT,
 # - bullous impetigo,
 # - chronic sinusitis and immunosuppressed individuals for acute sinusitis
-def get_uncomplicated_uti_denominator(index_date, patients, selected_events, pregnancy_codelist):
+def get_uncomplicated_uti_denominator(
+    index_date, patients, selected_events, pregnancy_codelist
+):
     urt_code = ["1090711000000102"]
     count_urt_6m = count_past_events(index_date, selected_events, urt_code, 6)
     count_urt_12m = count_past_events(index_date, selected_events, urt_code, 12)
@@ -74,36 +77,42 @@ def get_infected_insect_bites_denominator(
     )
 
     inclusion_criteria = age >= 1
-    exclusion_criteria = (pregnancy_status & (age < 16))
+    exclusion_criteria = pregnancy_status & (age < 16)
 
     return inclusion_criteria & ~exclusion_criteria
 
 
-def get_acute_sore_throat_denominator(index_date, patients, selected_events, pregnancy_codelist):
+def get_acute_sore_throat_denominator(
+    index_date, patients, selected_events, pregnancy_codelist
+):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
         index_date, selected_events, pregnancy_codelist
     )
 
     inclusion_criteria = age >= 5
-    exclusion_criteria = (pregnancy_status & (age < 16))
+    exclusion_criteria = pregnancy_status & (age < 16)
 
     return inclusion_criteria & ~exclusion_criteria
 
 
-def get_acute_sinusitis_denominator(index_date, patients, selected_events, pregnancy_codelist):
+def get_acute_sinusitis_denominator(
+    index_date, patients, selected_events, pregnancy_codelist
+):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
         index_date, selected_events, pregnancy_codelist
     )
 
     inclusion_criteria = age >= 12
-    exclusion_criteria = (pregnancy_status & (age < 16))
+    exclusion_criteria = pregnancy_status & (age < 16)
 
     return inclusion_criteria & ~exclusion_criteria
 
 
-def get_acute_otitis_media_denominator(index_date, patients, selected_events, pregnancy_codelist):
+def get_acute_otitis_media_denominator(
+    index_date, patients, selected_events, pregnancy_codelist
+):
     acute_otitis_code = ["3110003"]
     count_acute_otitis_6m = count_past_events(
         index_date, selected_events, acute_otitis_code, 6
@@ -118,7 +127,11 @@ def get_acute_otitis_media_denominator(index_date, patients, selected_events, pr
     )
 
     inclusion_criteria = (age >= 1) & (age <= 17)
-    exclusion_criteria = (count_acute_otitis_6m >= 3) | (count_acute_otitis_12m >= 4) | (pregnancy_status & (age < 16))
+    exclusion_criteria = (
+        (count_acute_otitis_6m >= 3)
+        | (count_acute_otitis_12m >= 4)
+        | (pregnancy_status & (age < 16))
+    )
 
     return inclusion_criteria & ~exclusion_criteria
 
