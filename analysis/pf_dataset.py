@@ -1,4 +1,4 @@
-from ehrql.tables.tpp import patients, case, when
+from ehrql.tables.tpp import case, when
 
 from pf_variables_library import check_pregnancy_status, count_past_events
 
@@ -20,7 +20,7 @@ pharmacy_first_event_codes = {
 # - urinary catheter for URT,
 # - bullous impetigo,
 # - chronic sinusitis and immunosuppressed individuals for acute sinusitis
-def get_uncomplicated_uti_denominator(index_date, selected_events, pregnancy_codelist):
+def get_uncomplicated_uti_denominator(index_date, patients, selected_events, pregnancy_codelist):
     urt_code = ["1090711000000102"]
     count_urt_6m = count_past_events(index_date, selected_events, urt_code, 6)
     count_urt_12m = count_past_events(index_date, selected_events, urt_code, 12)
@@ -39,7 +39,7 @@ def get_uncomplicated_uti_denominator(index_date, selected_events, pregnancy_cod
     )
 
 
-def get_shingles_denominator(index_date, selected_events, pregnancy_codelist):
+def get_shingles_denominator(index_date, patients, selected_events, pregnancy_codelist):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
         index_date, selected_events, pregnancy_codelist
@@ -48,7 +48,7 @@ def get_shingles_denominator(index_date, selected_events, pregnancy_codelist):
     return (age >= 18) & (pregnancy_status == False)
 
 
-def get_impetigo_denominator(index_date, selected_events, pregnancy_codelist):
+def get_impetigo_denominator(index_date, patients, selected_events, pregnancy_codelist):
     impetigo_code = ["48277006"]
     count_impetigo_12m = count_past_events(
         index_date, selected_events, impetigo_code, 12
@@ -73,7 +73,7 @@ def check_pregnancy_status_for_debug(index_date, selected_events, pregnancy_code
 
 
 def get_infected_insect_bites_denominator(
-    index_date, selected_events, pregnancy_codelist
+    index_date, patients, selected_events, pregnancy_codelist
 ):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
@@ -85,7 +85,7 @@ def get_infected_insect_bites_denominator(
     )
 
 
-def get_acute_sore_throat_denominator(index_date, selected_events, pregnancy_codelist):
+def get_acute_sore_throat_denominator(index_date, patients, selected_events, pregnancy_codelist):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
         index_date, selected_events, pregnancy_codelist
@@ -96,7 +96,7 @@ def get_acute_sore_throat_denominator(index_date, selected_events, pregnancy_cod
     )
 
 
-def get_acute_sinusitis_denominator(index_date, selected_events, pregnancy_codelist):
+def get_acute_sinusitis_denominator(index_date, patients, selected_events, pregnancy_codelist):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
         index_date, selected_events, pregnancy_codelist
@@ -107,7 +107,7 @@ def get_acute_sinusitis_denominator(index_date, selected_events, pregnancy_codel
     )
 
 
-def get_acute_otitis_media_denominator(index_date, selected_events, pregnancy_codelist):
+def get_acute_otitis_media_denominator(index_date, patients, selected_events, pregnancy_codelist):
     acute_otitis_code = ["3110003"]
     count_acute_otitis_6m = count_past_events(
         index_date, selected_events, acute_otitis_code, 6
