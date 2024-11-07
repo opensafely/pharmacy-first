@@ -82,7 +82,8 @@ plot_measures <- function(
   } else {
     plot_tmp <- plot_tmp + scale_y_continuous(
       limits = c(0, NA),
-      labels = scales::label_percent()
+      # scale = 1000 to calculate rate per 1000 people
+      labels = scales::label_number(scale = 1000)
     )
   }
 
