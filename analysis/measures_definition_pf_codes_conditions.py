@@ -17,7 +17,7 @@ measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
 
 start_date = "2023-11-01"
-monthly_intervals = 9
+monthly_intervals = 12
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 ethnicity_combined = get_latest_ethnicity(
