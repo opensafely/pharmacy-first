@@ -399,6 +399,23 @@ plot_measures(
   y_label = "Number of codes for FP consultations",
 ) + scale_color_manual(values = gradient_palette)
 
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Age band")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = age_band,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Consultations per 1000 people",
+  y_label = "Number of codes for FP consultations",
+) + scale_color_manual(values = gradient_palette)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
@@ -417,6 +434,24 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
+  y_label = "Number of codes for PF conditions"
+) + scale_color_manual(values = gradient_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "Age band")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = age_band,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions"
 ) + scale_color_manual(values = gradient_palette)
 ```
@@ -441,6 +476,24 @@ plot_measures(
   title = "Pharmacy First Consultations",
   y_label = "Number of codes for FP consultations",
 ) + scale_color_manual(values = sex_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Sex")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = sex,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Consultations per 1000 people",
+  y_label = "Number of codes for FP consultations",
+) + scale_color_manual(values = sex_palette)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
@@ -459,6 +512,24 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
+  y_label = "Number of codes for PF conditions"
+) + scale_color_manual(values = sex_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "Sex")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = sex,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions"
 ) + scale_color_manual(values = sex_palette)
 ```
@@ -483,6 +554,24 @@ plot_measures(
   title = "Pharmacy First Consultations",
   y_label = "Number of codes for FP consultations",
 ) + scale_color_manual(values = gradient_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "IMD")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = imd,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Consultations per 1000 people",
+  y_label = "Number of codes for FP consultations",
+) + scale_color_manual(values = gradient_palette)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
@@ -501,6 +590,24 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
+  y_label = "Number of codes for PF conditions"
+) + scale_color_manual(values = gradient_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "IMD")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = imd,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions"
 ) + scale_color_manual(values = gradient_palette)
 ```
@@ -525,6 +632,24 @@ plot_measures(
   title = "Pharmacy First Consultations",
   y_label = "Number of codes for FP consultations",
 ) + scale_color_manual(values = region_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Region")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = region,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Consultations per 1000 people",
+  y_label = "Number of codes for FP consultations",
+) + scale_color_manual(values = region_palette)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
@@ -543,6 +668,24 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
+  y_label = "Number of codes for PF conditions"
+) + scale_color_manual(values = region_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "Region")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = region,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions"
 ) + scale_color_manual(values = region_palette)
 ```
@@ -567,6 +710,24 @@ plot_measures(
   title = "Pharmacy First Consultations",
   y_label = "Number of codes for FP consultations",
 ) + scale_color_manual(values = ethnicity_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Ethnicity")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = ethnicity,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Consultations per 1000 people",
+  y_label = "Number of codes for FP consultations",
+) + scale_color_manual(values = ethnicity_palette)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
@@ -585,6 +746,24 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
+  y_label = "Number of codes for PF conditions"
+) + scale_color_manual(values = ethnicity_palette)
+
+# Select measures and breakdown
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(group_by == "Ethnicity")
+
+# Create visualisation
+plot_measures(
+  df_measures_selected,
+  select_value = ratio,
+  select_interval_date = interval_end,
+  colour_var = ethnicity,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions"
 ) + scale_color_manual(values = ethnicity_palette)
 ```
