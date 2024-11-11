@@ -13,6 +13,14 @@ actions:
       moderately_sensitive:
         measure: output/measures/pf_codes_conditions_measures.csv
 
+  generate_seasonality_consultation_measures:
+    run: >
+      ehrql:v1 generate-measures analysis/measures_definition_seasonality_conditions.py
+      --output output/measures/seasonality_conditions_measures.csv
+    outputs:
+      moderately_sensitive:
+        measure: output/measures/seasonality_conditions_measures.csv
+
   generate_pf_medication_measures:
     run: >
       ehrql:v1 generate-measures analysis/measures_definition_pf_medications.py
