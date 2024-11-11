@@ -142,7 +142,7 @@ Following the launch of the Pharmacy First service, there has been a [Gradual ro
 ### Population
 
 The eligible patient population for each clinical condition associated with Pharmacy First is detailed in the table below.
-Currently, we have not yet applied any of the inclusion or exlusion citeria to restrict the population used in this report.
+Currently, we have not yet applied any of the inclusion or exclusion criteria to restrict the population used in this report.
 This will initially help us to understand the underlying data.
 
 ```{r echo=FALSE, message=FALSE}
@@ -254,7 +254,7 @@ pharmacy_first_table %>%
 
 #### Pharmacy First condition codes
 
-To categorise clinical events related to Pharmacy First services used the Pharmacy First [Clinical Pathways Codelist](https://www.opencodelists.org/codelist/opensafely/pharmacy-first-clinical-pathway-conditions/7ec97762/#full-list).
+To categorise clinical events related to Pharmacy First services, we used the Pharmacy First [Clinical Pathways Codelist](https://www.opencodelists.org/codelist/opensafely/pharmacy-first-clinical-pathway-conditions/7ec97762/#full-list).
 
 ```{r echo=FALSE, message=FALSE}
 
@@ -302,7 +302,7 @@ The [Pregnancy Codelist](https://www.opencodelists.org/codelist/nhsd-primary-car
 
 #### Ethnicity Codelist
 
-We used the [Ethnicity Codelist](https://www.opencodelists.org/codelist/opensafely/ethnicity-snomed-0removed/2e641f61/) identify ethnicity in Electronic Health Records.
+We used the [Ethnicity Codelist](https://www.opencodelists.org/codelist/opensafely/ethnicity-snomed-0removed/2e641f61/) to identify ethnicity in Electronic Health Records.
 To ensure comprehensive ethnicity data, we supplemented missing ethnicity values with data from the Secondary Uses Service (SUS).
 
 ```{r echo=FALSE}
@@ -355,7 +355,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Consultations",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 )
 ```
 
@@ -396,7 +396,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Consultations",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = gradient_palette)
 
 # Select measures and breakdown
@@ -414,7 +414,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = gradient_palette)
 ```
 
@@ -474,7 +474,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Consultations",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = sex_palette)
 
 # Select measures and breakdown
@@ -492,7 +492,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = sex_palette)
 ```
 
@@ -552,7 +552,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Consultations",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = gradient_palette)
 
 # Select measures and breakdown
@@ -570,7 +570,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = gradient_palette)
 ```
 
@@ -630,7 +630,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Consultations",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = region_palette)
 
 # Select measures and breakdown
@@ -648,7 +648,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = region_palette)
 ```
 
@@ -708,7 +708,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Consultations",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = ethnicity_palette)
 
 # Select measures and breakdown
@@ -726,7 +726,7 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
-  y_label = "Number of codes for FP consultations",
+  y_label = "Number of codes for PF consultations",
 ) + scale_color_manual(values = ethnicity_palette)
 ```
 
