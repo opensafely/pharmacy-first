@@ -20,15 +20,12 @@ selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL. end_date)
 )
 
-# Select all pharmacy first events from selected events
-pharmacy_first_events = selected_events.where(
+# Create variable which contains boolean values of whether pharmacy first event exists for patient
+has_pharmacy_first = selected_events.where(
     selected_events.snomedct_code.is_in(
         pharmacy_first_event_codes["combined_pf_service"]
     )
-)
-
-# Create variable which contains boolean values of whether pharmacy first event exists for patient
-has_pharmacy_first = pharmacy_first_events.exists_for_patient()
+).exists_for_patient()
 
 for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     condition_events = selected_events.where(
