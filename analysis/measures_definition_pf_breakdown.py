@@ -84,7 +84,7 @@ denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "f
 # Create measures for pharmacy first services
 for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
     condition_events = selected_events.where(
-        clinical_events.snomedct_code.is_in(codelist)
+        selected_events.snomedct_code.is_in(codelist)
     )
 
     # Define the numerator as the count of events for the condition
@@ -128,7 +128,7 @@ for codes, term in pharmacy_first_conditions_codelist.items():
 
 for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     condition_events = selected_events.where(
-        clinical_events.snomedct_code.is_in(condition_code)
+        selected_events.snomedct_code.is_in(condition_code)
     )
 
     # Define the numerator as the count of events for the condition

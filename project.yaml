@@ -7,11 +7,19 @@ expectations:
 actions:
   generate_pf_consultation_measures:
     run: >
-      ehrql:v1 generate-measures analysis/measures_definition_pf_codes_conditions.py
-      --output output/measures/pf_codes_conditions_measures.csv
+      ehrql:v1 generate-measures analysis/measures_definition_pf_breakdown.py
+      --output output/measures/pf_breakdown_measures.csv
     outputs:
       moderately_sensitive:
-        measure: output/measures/pf_codes_conditions_measures.csv
+        measure: output/measures/pf_breakdown_measures.csv
+
+  generate_seasonality_consultation_measures:
+    run: >
+      ehrql:v1 generate-measures analysis/measures_definition_pf_seasonality.py
+      --output output/measures/pf_seasonality_measures.csv
+    outputs:
+      moderately_sensitive:
+        measure: output/measures/pf_seasonality_measures.csv
 
   generate_pf_medication_measures:
     run: >
