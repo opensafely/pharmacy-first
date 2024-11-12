@@ -4,7 +4,9 @@ from ehrql.tables.tpp import (
     clinical_events,
     practice_registrations,
 )
-from measures_definition_pf_codes_conditions import pharmacy_first_conditions_codes
+from analysis.measures_definition_pf_breakdown import pharmacy_first_conditions_codes
+from pf_dataset import pharmacy_first_event_codes
+
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -14,20 +16,34 @@ monthly_intervals = 22
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
+selected_events = clinical_events.where(
+    clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL. end_date)
+)
+
+# Select all pharmacy first events from selected events
+pharmacy_first_events = selected_events.where(
+    selected_events.snomedct_code.is_in(
+        pharmacy_first_event_codes["combined_pf_service"]
+    )
+)
+
+# Create variable which contains boolean values of whether pharmacy first event exists for patient
+has_pharmacy_first = pharmacy_first_events.exists_for_patient()
+
 for condition_name, condition_code in pharmacy_first_conditions_codes.items():
-    condition_events = clinical_events.where(
-        clinical_events.snomedct_code.is_in(condition_code)
+    condition_events = selected_events.where(
+        selected_events.snomedct_code.is_in(condition_code)
     )
 
     # Define the numerator as the count of events for the condition
     numerator = condition_events.count_for_patient()
     denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"])
 
-
     # Measures for overall clinical services graph
     measures.define_measure(
-        name=f"countseasonality_{condition_name}",
+        name=f"count_{condition_name}_total",
         numerator=numerator,
         denominator=denominator,
+        group_by={"pf_status": has_pharmacy_first},
         intervals=months(monthly_intervals).starting_on(start_date),
     )
