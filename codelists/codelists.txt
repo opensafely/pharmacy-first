@@ -1,3 +1,10 @@
 user/chriswood/pharmacy-first-clinical-pathway-conditions/7ec97762
 opensafely/ethnicity-snomed-0removed/2e641f61
 nhsd-primary-care-domain-refsets/preg_cod/20200812
+opensafely/pharmacy-first-acute-otitis-media-treatment-dmd/4122468e
+opensafely/pharmacy-first-impetigo-treatment-dmd/708e6d02
+opensafely/pharmacy-first-infected-insect-bites-treatment-dmd/2812d359
+opensafely/pharmacy-first-shingles-treatment-dmd/3bbcc6a2
+opensafely/pharmacy-first-sinusitis-treatment-dmd/0f036024
+opensafely/pharmacy-first-sore-throat-treatment-dmd/2ac5934f
+opensafely/pharmacy-first-urinary-tract-infection-treatment-dmd/54cc39d7
