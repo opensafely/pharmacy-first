@@ -22,7 +22,7 @@ pharmacy_first_med_codes = (
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
 # Turn off during code development, but turn on before running against on the server
-measures.configure_disclosure_control(enabled=False)
+measures.configure_disclosure_control(enabled=True)
 
 start_date = "2023-11-01"
 monthly_intervals = 9
