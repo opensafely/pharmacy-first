@@ -5,7 +5,7 @@ expectations:
   population_size: 1000
 
 actions:
-  generate_pf_consultation_measures:
+  generate_pf_breakdown_measures:
     run: >
       ehrql:v1 generate-measures analysis/measures_definition_pf_breakdown.py
       --output output/measures/pf_breakdown_measures.csv
@@ -13,15 +13,15 @@ actions:
       moderately_sensitive:
         measure: output/measures/pf_breakdown_measures.csv
 
-  generate_seasonality_consultation_measures:
+  generate_pf_condition_provider_measures:
     run: >
-      ehrql:v1 generate-measures analysis/measures_definition_pf_seasonality.py
-      --output output/measures/pf_seasonality_measures.csv
+      ehrql:v1 generate-measures analysis/measures_definition_pf_condition_provider.py
+      --output output/measures/pf_condition_provider_measures.csv
     outputs:
       moderately_sensitive:
-        measure: output/measures/pf_seasonality_measures.csv
+        measure: output/measures/pf_condition_provider_measures.csv
 
-  generate_pf_medication_measures:
+  generate_pf_medications_measures:
     run: >
       ehrql:v1 generate-measures analysis/measures_definition_pf_medications.py
       --dummy-tables dummy_tables
