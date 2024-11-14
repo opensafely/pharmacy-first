@@ -4,7 +4,10 @@ from ehrql.tables.tpp import (
     clinical_events,
     practice_registrations,
 )
-from analysis.measures_definition_pf_breakdown import pharmacy_first_conditions_codes
+from analysis.measures_definition_pf_breakdown import (
+    pharmacy_first_conditions_codes,
+    imd_quintile,
+)
 from pf_dataset import pharmacy_first_event_codes
 
 
@@ -41,6 +44,9 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
         name=f"count_{condition_name}_total",
         numerator=numerator,
         denominator=denominator,
-        group_by={"pf_status": has_pharmacy_first},
+        group_by={
+            "pf_status": has_pharmacy_first,
+            "imd": imd_quintile
+        },
         intervals=months(monthly_intervals).starting_on(start_date),
     )
