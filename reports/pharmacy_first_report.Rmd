@@ -36,6 +36,9 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
   )
 }
 
+# Load validation data (NHS BSA)
+df_bsa_validation <- read_csv(here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
+
 # Define dictionaries with tidy names and mappings for measures
 pf_measures_name_dict <- list(
   consultation_service = "Consultation Service",
@@ -767,5 +770,115 @@ plot_measures(
   y_label = "Number of codes for PF conditions"
 ) + scale_color_manual(values = ethnicity_palette)
 ```
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
+# Multiply by 0.4 to get 40% of data
+df_bsa_validation <- df_bsa_validation %>%
+  mutate(count_40pct = round(as.numeric(count * .4), digits = 0))
 
+# OpenSAFELY data for clinical conditions into a tidy df
+df_opensafely <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(interval_start >= as.Date("2024-02-01") & interval_start <= as.Date("2024-07-30")) %>%
+  filter(is.na(group_by)) %>%
+  select(date = interval_start, consultation_type = measure, count = numerator)
+
+# Add a new column to each data frame to identify the source
+df_opensafely <- df_opensafely %>%
+  mutate(source = 'OS')
+df_bsa_validation <- df_bsa_validation %>%
+  mutate(source = 'BSA')
+
+# Drop the original 'count' column from the BSA data to allow for easy consistent grouping by 'count'
+df_validation_condition_counts <- df_bsa_validation %>%
+  select(-count) %>%
+  rename(count = count_40pct)
+# Combining rows from OS and BSA dataframes
+df_validation_condition_counts <- bind_rows(df_opensafely, df_validation_condition_counts)
+
+# format both sources of data as MM-YYYY
+df_validation_condition_counts <- df_validation_condition_counts %>%
+  mutate(month = format(as.Date(date), "%m-%Y"))
+
+# Pivot the data so that we get two sub columns per month for each source (OS and BSA)
+df_pivoted <- df_validation_condition_counts %>%
+  pivot_wider(names_from = c(month, source), values_from = count)
+
+# Changing names to make column naming the same to ensure grouping
+df_pivoted <- df_pivoted %>%
+  mutate(
+    consultation_type = recode(consultation_type,
+    "sinusitis" = "Acute Sinusitis",
+    "infected_insect_bites" = "Infected Insect Bite",
+    "uncomplicated_uti" = "UTI",
+    "acute_otitis_media" = "Acute Otitis Media",
+    "acute_sore_throat" = "Acute Pharyngitis",
+    "shingles" = "Herpes Zoster",
+    "impetigo" = "Impetigo",)
+
+  )
+# Removing date column as this will prevent grouping (date is already pivot columns)
+df_pivoted <- df_pivoted %>%
+  select(-date)
+
+# Group by consultation type and summarise to get rid of NAs and multiple consultation_types of same name
+df_pivoted <- df_pivoted %>%
+  group_by(consultation_type) %>%
+  summarise(across(everything(), sum, na.rm = TRUE), .groups = "drop")
+
+# Now create the gt table
+tab_pf_conditions_validation <- df_pivoted %>%
+  gt() %>%
+  tab_header(
+    title = "Validation Data of Pharmacy First Clinical Condition Counts",
+    subtitle = "Timeframe: 1st Feb 2024 to 31st July 2024"
+  ) %>%
+  cols_label(
+    consultation_type = "Clinical Condition",
+    `02-2024_OS` = "OS",
+    `02-2024_BSA` = "BSA",
+    `03-2024_OS` = "OS",
+    `03-2024_BSA` = "BSA",
+    `04-2024_OS` = "OS",
+    `04-2024_BSA` = "BSA",
+    `05-2024_OS` = "OS",
+    `05-2024_BSA` = "BSA",
+    `06-2024_OS` = "OS",
+    `06-2024_BSA` = "BSA",
+    `07-2024_OS` = "OS",
+    `07-2024_BSA` = "BSA"
+  ) %>%
+  tab_spanner(
+    label = "February 2024",
+    columns = c(`02-2024_OS`, `02-2024_BSA`)
+  ) %>%
+  tab_spanner(
+    label = "March 2024",
+    columns = c(`03-2024_OS`, `03-2024_BSA`)
+  ) %>%
+  tab_spanner(
+    label = "April 2024",
+    columns = c(`04-2024_OS`, `04-2024_BSA`)
+  ) %>%
+  tab_spanner(
+    label = "May 2024",
+    columns = c(`05-2024_OS`, `05-2024_BSA`)
+  ) %>%
+  tab_spanner(
+    label = "June 2024",
+    columns = c(`06-2024_OS`, `06-2024_BSA`)
+  ) %>%
+  tab_spanner(
+    label = "July 2024",
+    columns = c(`07-2024_OS`, `07-2024_BSA`)
+  ) %>%
+  tab_footnote(
+    footnote = "OS - OpenSAFELY data, BSA - Validation data (NHS BSA)"
+  ) %>%
+  fmt_number(
+    columns = everything(),
+    decimals = 0
+  )
+
+tab_pf_conditions_validation
+```
 # References
