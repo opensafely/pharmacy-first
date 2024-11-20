@@ -881,4 +881,29 @@ tab_pf_conditions_validation <- df_pivoted %>%
 
 tab_pf_conditions_validation
 ```
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+df_long <- df_pivoted %>% pivot_longer(cols=c('02-2024_OS','02-2024_BSA','03-2024_OS','03-2024_BSA','04-2024_OS','04-2024_BSA','05-2024_OS','05-2024_BSA','06-2024_OS','06-2024_BSA','07-2024_OS','07-2024_BSA'),
+  names_to=c('month', 'source'),
+  names_sep = "_",
+  values_to='count')
+# Changing format of date to use label_date_short to keep dates consistent for figures
+df_long$month <- as.Date(paste0("01-", df_long$month), format = "%d-%m-%Y")
+
+# Line graph comparing clinical condition counts of BSA and OS data
+validation_total_counts_figure <- ggplot(df_long, aes(x = month, y = count, color = consultation_type, group = consultation_type)) +
+  geom_point() +
+  geom_line(size = 0.5) +
+  facet_wrap(~ source, scales = "free_y") +
+  labs(title = "Clinical Conditions Count by Month (NHS BSA vs OpenSAFELY Data)",
+       x = "Month", y = "Count", color = "Clinical Condition") +
+  theme(
+    plot.title = element_text(hjust = 0.5)) +
+  scale_x_date(
+      labels = scales::label_date_short()
+  )
+
+validation_total_counts_figure
+```
+
 # References
