@@ -22,7 +22,6 @@ library(gt)
 # Load plotting function
 source(here::here("lib", "functions", "function_tidy_measures.R"))
 source(here::here("lib", "functions", "function_plot_measures.R"))
-source(here::here("lib", "functions", "function_get_validation_data.R"))
 
 # Load data based on environment
 if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
@@ -36,6 +35,9 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
     here::here("released_output", "measures", "pf_codes_conditions_measures.csv")
   )
 }
+
+# Load validation data (NHS BSA)
+df_bsa_validation <- read_csv(here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
 
 # Define dictionaries with tidy names and mappings for measures
 pf_measures_name_dict <- list(
@@ -769,11 +771,11 @@ plot_measures(
 ) + scale_color_manual(values = ethnicity_palette)
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
-df_bsa_validation <- read_csv(here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
 # Multiply by 0.4 to get 40% of data
-df_bsa_validation$count = df_bsa_validation$count * 0.4
+df_bsa_validation <- df_bsa_validation %>%
+  mutate(count_40pct = round(as.numeric(count * .4), digits = 0))
 
-# Our data for clinical conditions into a tidy df
+# OpenSAFELY data for clinical conditions into a tidy df
 df_opensafely <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(interval_start >= as.Date("2024-02-01") & interval_start <= as.Date("2024-07-30")) %>%
@@ -786,14 +788,14 @@ df_opensafely <- df_opensafely %>%
 df_bsa_validation <- df_bsa_validation %>%
   mutate(source = 'BSA')
 
+# Drop the original 'count' column from the BSA data to allow for easy consistent grouping by 'count'
+df_validation_condition_counts <- df_bsa_validation %>%
+  select(-count) %>%
+  rename(count = count_40pct)
 # Combining rows from OS and BSA dataframes
-df_validation_condition_counts <- bind_rows(df_opensafely, df_bsa_validation)
+df_validation_condition_counts <- bind_rows(df_opensafely, df_validation_condition_counts)
 
-# Round the 'count' column to 0 decimal places (nearest whole number)
-df_validation_condition_counts$count <- as.numeric(df_validation_condition_counts$count)
-df_validation_condition_counts$count <- round(df_validation_condition_counts$count, digits = 0)
-
-# format as MM-YYYY
+# format both sources of data as MM-YYYY
 df_validation_condition_counts <- df_validation_condition_counts %>%
   mutate(month = format(as.Date(date), "%m-%Y"))
 
@@ -821,7 +823,7 @@ df_pivoted <- df_pivoted %>%
 # Group by consultation type and summarise to get rid of NAs and multiple consultation_types of same name
 df_pivoted <- df_pivoted %>%
   group_by(consultation_type) %>%
-  summarise(across(everything(), sum, na.rm = TRUE), .groups = "drop")  # Sum the counts
+  summarise(across(everything(), sum, na.rm = TRUE), .groups = "drop")
 
 # Now create the gt table
 tab_pf_conditions_validation <- df_pivoted %>%
@@ -870,14 +872,13 @@ tab_pf_conditions_validation <- df_pivoted %>%
     columns = c(`07-2024_OS`, `07-2024_BSA`)
   ) %>%
   tab_footnote(
-    footnote = "OS - Opensafely data, BSA - Validation data (NHS BSA)"
+    footnote = "OS - OpenSAFELY data, BSA - Validation data (NHS BSA)"
   ) %>%
   fmt_number(
     columns = everything(),
     decimals = 0
-  ) 
+  )
 
-# Print the table
 tab_pf_conditions_validation
 ```
 # References
