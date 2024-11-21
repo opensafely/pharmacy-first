@@ -30,6 +30,15 @@ actions:
       moderately_sensitive:
         measure: output/measures/pf_medications_measures.csv
 
+  generate_pf_statistics_measures:
+    run: >
+      ehrql:v1 generate-measures analysis/measures_definition_pf_statistics.py
+      --dummy-tables dummy_tables
+      --output output/measures/pf_statistics_measures.csv
+    outputs:
+      moderately_sensitive:
+        measure: output/measures/pf_statistics_measures.csv
+
   generate_pf_dataset_definition:
     run: >
       ehrql:v1
