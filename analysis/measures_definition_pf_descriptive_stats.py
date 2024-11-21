@@ -11,8 +11,8 @@ from measures_definition_pf_breakdown import pharmacy_first_conditions_codes, se
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
 
-start_date = "2023-11-01"
-monthly_intervals = 12
+start_date = "2024-02-01"
+monthly_intervals = 9
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
@@ -40,31 +40,27 @@ has_pf_medication = selected_events.where(
     )
 ).exists_for_patient()
 
-# PF consultations with PF clinical condition and PF medication
-has_pf_condition_and_medication = has_pf_condition & has_pf_medication
-
 # Define the denominator as the number of patients registered
 denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"]) & has_pf_consultation
+measures.define_defaults(
+    denominator = denominator)
 
 # Measures for PF consultations with PF medication
 measures.define_measure(
     name="count_pfmed_status",
     numerator=has_pf_medication,
-    denominator=denominator,
     intervals=months(monthly_intervals).starting_on(start_date),
 )
 # Measures for PF consultations with PF condition
 measures.define_measure(
     name="count_pfcondition_status",
     numerator=has_pf_condition,
-    denominator=denominator,
     intervals=months(monthly_intervals).starting_on(start_date),
 )
 
 # Measures for PF consultations with both PF medication and condition
 measures.define_measure(
     name="count_pfmed_and_pfcondition_status",
-    numerator=has_pf_condition_and_medication,
-    denominator=denominator,
+    numerator=has_pf_condition & has_pf_medication,
     intervals=months(monthly_intervals).starting_on(start_date),
 )

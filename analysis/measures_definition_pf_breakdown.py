@@ -12,7 +12,6 @@ from codelists import (
 )
 
 from pf_dataset import pharmacy_first_event_codes, get_latest_ethnicity
-from measures_definition_pf_medications import pharmacy_first_med_codes
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -37,7 +36,6 @@ age_band = case(
     when(age >= 80).then("80+"),
     when(age.is_null()).then("Missing"),
 )
-
 
 # IMD groupings for IMD breakdown
 imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
@@ -68,7 +66,6 @@ pharmacy_first_ids = clinical_events.where(
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
 ).where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
-
 
 # Breakdown metrics to be produced as graphs
 breakdown_metrics = {
@@ -152,56 +149,3 @@ for condition_name, condition_code in pharmacy_first_conditions_codes.items():
             group_by={breakdown: variable},
             intervals=months(monthly_intervals).starting_on(start_date),
         )
-
-# Loop through all codes in each sublist of the dictionary to flatten the list ready for is_in commands to be used and have a list of pf_condition codes
-pf_condition_codelist = [code for sublist in pharmacy_first_conditions_codes.values() for code in sublist]
-
-# Create variable which contains boolean values of whether pharmacy first event exists for patient
-has_pf_consultation = selected_events.where(
-    selected_events.snomedct_code.is_in(
-        pharmacy_first_event_codes["combined_pf_service"]
-    )
-).exists_for_patient()
-
-# PF consultations with PF clinical condition
-has_pf_condition = selected_events.where(
-    selected_events.snomedct_code.is_in(
-        pf_condition_codelist
-    )
-).exists_for_patient()
-
-# PF consultations with prescribed PF medication
-has_pf_medication = selected_events.where(
-    selected_events.snomedct_code.is_in(
-        pharmacy_first_med_codes
-    )
-).exists_for_patient()
-
-# PF consultations with PF clinical condition and PF medication
-has_pf_condition_and_medication = has_pf_condition & has_pf_medication
-
-denominator = denominator & has_pf_consultation
-
-# Measures for PF consultations with PF medication
-measures.define_measure(
-    name="count_pfmed_status",
-    numerator=has_pf_medication,
-    denominator=denominator,
-    intervals=months(monthly_intervals).starting_on(start_date),
-)
-# Measures for PF consultations with PF condition
-measures.define_measure(
-    name="count_pfcondition_status",
-    numerator=has_pf_condition,
-    denominator=denominator,
-    intervals=months(monthly_intervals).starting_on(start_date),
-)
-
-# Measures for PF consultations with both PF medication and condition
-measures.define_measure(
-    name="count_pfmed_and_pfcondition_status",
-    numerator=has_pf_condition_and_medication,
-    denominator=denominator,
-    intervals=months(monthly_intervals).starting_on(start_date),
-)
-
