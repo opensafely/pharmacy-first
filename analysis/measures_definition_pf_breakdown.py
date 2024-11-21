@@ -27,36 +27,36 @@ ethnicity_combined = get_latest_ethnicity(
     ethnicity_codelist=ethnicity_codelist,
     ethnicity_from_sus=ethnicity_from_sus,
 )
-# # Age bands for age breakdown
-# age = patients.age_on(INTERVAL.start_date)
-# age_band = case(
-#     when((age >= 0) & (age < 20)).then("0-19"),
-#     when((age >= 20) & (age < 40)).then("20-39"),
-#     when((age >= 40) & (age < 60)).then("40-59"),
-#     when((age >= 60) & (age < 80)).then("60-79"),
-#     when(age >= 80).then("80+"),
-#     when(age.is_null()).then("Missing"),
-# )
+# Age bands for age breakdown
+age = patients.age_on(INTERVAL.start_date)
+age_band = case(
+    when((age >= 0) & (age < 20)).then("0-19"),
+    when((age >= 20) & (age < 40)).then("20-39"),
+    when((age >= 40) & (age < 60)).then("40-59"),
+    when((age >= 60) & (age < 80)).then("60-79"),
+    when(age >= 80).then("80+"),
+    when(age.is_null()).then("Missing"),
+)
 
 
-# # IMD groupings for IMD breakdown
-# imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
-# max_imd = 32844
-# imd_quintile = case(
-#     when((imd >= 0) & (imd < int(max_imd * 1 / 5))).then("1 (Most Deprived)"),
-#     when(imd < int(max_imd * 2 / 5)).then("2"),
-#     when(imd < int(max_imd * 3 / 5)).then("3"),
-#     when(imd < int(max_imd * 4 / 5)).then("4"),
-#     when(imd <= max_imd).then("5 (Least Deprived)"),
-#     otherwise="Missing",
-# )
+# IMD groupings for IMD breakdown
+imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
+max_imd = 32844
+imd_quintile = case(
+    when((imd >= 0) & (imd < int(max_imd * 1 / 5))).then("1 (Most Deprived)"),
+    when(imd < int(max_imd * 2 / 5)).then("2"),
+    when(imd < int(max_imd * 3 / 5)).then("3"),
+    when(imd < int(max_imd * 4 / 5)).then("4"),
+    when(imd <= max_imd).then("5 (Least Deprived)"),
+    otherwise="Missing",
+)
 
-# latest_region = case(
-#     when(registration.practice_nuts1_region_name.is_not_null()).then(
-#         registration.practice_nuts1_region_name
-#     ),
-#     otherwise="Missing",
-# )
+latest_region = case(
+    when(registration.practice_nuts1_region_name.is_not_null()).then(
+        registration.practice_nuts1_region_name
+    ),
+    otherwise="Missing",
+)
 
 pharmacy_first_ids = clinical_events.where(
     clinical_events.snomedct_code.is_in(
@@ -70,44 +70,44 @@ selected_events = clinical_events.where(
 ).where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
 
 
-# # Breakdown metrics to be produced as graphs
-# breakdown_metrics = {
-#     "age_band": age_band,
-#     "sex": patients.sex,
-#     "imd": imd_quintile,
-#     "region": latest_region,
-#     "ethnicity": ethnicity_combined,
-# }
+# Breakdown metrics to be produced as graphs
+breakdown_metrics = {
+    "age_band": age_band,
+    "sex": patients.sex,
+    "imd": imd_quintile,
+    "region": latest_region,
+    "ethnicity": ethnicity_combined,
+}
 
 # Define the denominator as the number of patients registered
 denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"])
 
 # Create measures for pharmacy first services
-# for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
-#     condition_events = selected_events.where(
-#         selected_events.snomedct_code.is_in(codelist)
-#     )
+for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
+    condition_events = selected_events.where(
+        selected_events.snomedct_code.is_in(codelist)
+    )
 
-#     # Define the numerator as the count of events for the condition
-#     numerator = condition_events.count_for_patient()
+    # Define the numerator as the count of events for the condition
+    numerator = condition_events.count_for_patient()
 
-#     # Measures for overall clinical services graph
-#     measures.define_measure(
-#         name=f"count_{pharmacy_first_event}",
-#         numerator=numerator,
-#         denominator=denominator,
-#         intervals=months(monthly_intervals).starting_on(start_date),
-#     )
+    # Measures for overall clinical services graph
+    measures.define_measure(
+        name=f"count_{pharmacy_first_event}",
+        numerator=numerator,
+        denominator=denominator,
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
 
-#     # Nested loop for each breakdown measure in clinical services
-#     for breakdown, variable in breakdown_metrics.items():
-#         measures.define_measure(
-#             name=f"count_{pharmacy_first_event}_by_{breakdown}",
-#             numerator=numerator,
-#             denominator=denominator,
-#             group_by={breakdown: variable},
-#             intervals=months(monthly_intervals).starting_on(start_date),
-#         )
+    # Nested loop for each breakdown measure in clinical services
+    for breakdown, variable in breakdown_metrics.items():
+        measures.define_measure(
+            name=f"count_{pharmacy_first_event}_by_{breakdown}",
+            numerator=numerator,
+            denominator=denominator,
+            group_by={breakdown: variable},
+            intervals=months(monthly_intervals).starting_on(start_date),
+        )
 
 # Create dictionary for clinical condition denominators
 pf_condition_denominators = {
@@ -127,31 +127,31 @@ for codes, term in pharmacy_first_conditions_codelist.items():
     codes = [codes]
     pharmacy_first_conditions_codes[normalised_term] = codes
 
-# for condition_name, condition_code in pharmacy_first_conditions_codes.items():
-#     condition_events = selected_events.where(
-#         selected_events.snomedct_code.is_in(condition_code)
-#     )
+for condition_name, condition_code in pharmacy_first_conditions_codes.items():
+    condition_events = selected_events.where(
+        selected_events.snomedct_code.is_in(condition_code)
+    )
 
-#     # Define the numerator as the count of events for the condition
-#     numerator = condition_events.count_for_patient()
+    # Define the numerator as the count of events for the condition
+    numerator = condition_events.count_for_patient()
 
-#     # Measures for overall clinical services graph
-#     measures.define_measure(
-#         name=f"count_{condition_name}",
-#         numerator=numerator,
-#         denominator=pf_condition_denominators[condition_name],
-#         intervals=months(monthly_intervals).starting_on(start_date),
-#     )
+    # Measures for overall clinical services graph
+    measures.define_measure(
+        name=f"count_{condition_name}",
+        numerator=numerator,
+        denominator=pf_condition_denominators[condition_name],
+        intervals=months(monthly_intervals).starting_on(start_date),
+    )
 
-#     # Nested loop for each breakdown measure in clinical conditions
-#     for breakdown, variable in breakdown_metrics.items():
-#         measures.define_measure(
-#             name=f"count_{condition_name}_by_{breakdown}",
-#             numerator=numerator,
-#             denominator=pf_condition_denominators[condition_name],
-#             group_by={breakdown: variable},
-#             intervals=months(monthly_intervals).starting_on(start_date),
-#         )
+    # Nested loop for each breakdown measure in clinical conditions
+    for breakdown, variable in breakdown_metrics.items():
+        measures.define_measure(
+            name=f"count_{condition_name}_by_{breakdown}",
+            numerator=numerator,
+            denominator=pf_condition_denominators[condition_name],
+            group_by={breakdown: variable},
+            intervals=months(monthly_intervals).starting_on(start_date),
+        )
 
 # Loop through all codes in each sublist of the dictionary to flatten the list ready for is_in commands to be used and have a list of pf_condition codes
 pf_condition_codelist = [code for sublist in pharmacy_first_conditions_codes.values() for code in sublist]
