@@ -37,7 +37,6 @@ age_band = case(
     when(age.is_null()).then("Missing"),
 )
 
-
 # IMD groupings for IMD breakdown
 imd = addresses.for_patient_on(INTERVAL.start_date).imd_rounded
 max_imd = 32844
@@ -67,7 +66,6 @@ pharmacy_first_ids = clinical_events.where(
 selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
 ).where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
-
 
 # Breakdown metrics to be produced as graphs
 breakdown_metrics = {
