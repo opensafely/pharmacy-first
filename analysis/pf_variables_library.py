@@ -24,15 +24,15 @@ def count_past_events(index_date, selected_events, codelist, num_months):
         .count_for_patient()
     )
 
+
 # Function to get consultation IDs linked to a specified codelist
 def get_consultation_ids(clinical_events, codelist):
     consultation_ids = clinical_events.where(
-    clinical_events.snomedct_code.is_in(
-        codelist
-    )
-    ).consultation_id   
+        clinical_events.snomedct_code.is_in(codelist)
+    ).consultation_id
 
     return consultation_ids
+
 
 # Function to get events with specific consultation IDs
 def get_consultationid_events(event_frame, consultation_ids):

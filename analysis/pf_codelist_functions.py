@@ -6,5 +6,5 @@ def get_pf_condition_codes(pharmacy_first_conditions_codelist):
         normalised_term = term.lower().replace(" ", "_")
         codes = [codes]
         pharmacy_first_conditions_codes[normalised_term] = codes
-       
+
     return pharmacy_first_conditions_codes
