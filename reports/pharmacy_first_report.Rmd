@@ -39,6 +39,8 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
 # Load validation data (NHS BSA)
 df_bsa_validation <- read_csv(here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
 
+df_descriptive_stats <- read_csv(here("output", "measures", "pf_descriptive_stats_measures.csv"))
+
 # Define dictionaries with tidy names and mappings for measures
 pf_measures_name_dict <- list(
   consultation_service = "Consultation Service",
@@ -904,6 +906,36 @@ validation_total_counts_figure <- ggplot(df_long, aes(x = month, y = count, colo
   )
 
 validation_total_counts_figure
+```
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+# Line graph comparing clinical condition counts of BSA and OS data
+df_descriptive_stats <- df_descriptive_stats %>%
+  mutate(
+    measure = recode(measure,
+    "pf_with_pfmed" = "PF Med",
+    "pf_with_pfcondition" = "PF Condition",
+    "pf_with_pfmed_and_pfcondition" = "PF Med & PF Condition",
+    ))
+
+descriptive_stats_figure <- ggplot(df_descriptive_stats, aes(x = interval_start, y = ratio, color = measure, group = measure)) +
+  geom_point() +
+  geom_line(size = 0.5) +
+  # facet_wrap(~ measure, scales = "free_y") +
+  labs(title = "Breakdown of PF consultations with linked PF conditions and medications",
+      color = "PF consultation with:") +
+  theme(
+    plot.title = element_text(hjust = 0.5)) +
+  scale_x_date(
+      labels = scales::label_date_short()
+  ) +
+  scale_y_continuous(labels = scales::percent,
+  limits = c(0,1)) + 
+  theme(axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+
+descriptive_stats_figure
+
 ```
 
 # References
