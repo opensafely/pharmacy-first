@@ -12,7 +12,7 @@ from codelists import pharmacy_first_med_codelist, pharmacy_first_consultation_c
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
-measures.configure_disclosure_control(enabled=False)
+#measures.configure_disclosure_control(enabled=False)
 
 start_date = "2024-02-01"
 monthly_intervals = 9
