@@ -65,6 +65,7 @@ pharmacy_first_med_codelist = (
     + sore_throat_tx_cod
     + urinary_tract_infection_tx_cod
 )
-
+# Consultation service - 1577041000000109
+# Pharmacy First service - 983341000000102
 pharmacy_first_consultation_codelist = ["1577041000000109", "983341000000102"]
 
