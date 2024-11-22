@@ -56,7 +56,7 @@ urinary_tract_infection_tx_cod = codelist_from_csv(
     column="code",
 )
 
-pharmacy_first_med_codes = (
+pharmacy_first_med_codelist = (
     acute_otitis_media_tx_cod
     + impetigo_treatment_tx_cod
     + infected_insect_bites_tx_cod
@@ -66,5 +66,5 @@ pharmacy_first_med_codes = (
     + urinary_tract_infection_tx_cod
 )
 
-pharmacy_first_consultations_codelist = ["1577041000000109", "983341000000102"]
+pharmacy_first_consultation_codelist = ["1577041000000109", "983341000000102"]
 
