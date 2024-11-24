@@ -20,8 +20,8 @@ library(gt)
 
 ```{r load-data, message=FALSE, warning=FALSE}
 # Load plotting function
-source(here::here("lib", "functions", "function_tidy_measures.R"))
-source(here::here("lib", "functions", "function_plot_measures.R"))
+source(here::here("lib", "functions", "tidy_measures.R"))
+source(here::here("lib", "functions", "plot_measures.R"))
 
 # Load data based on environment
 if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
@@ -117,7 +117,7 @@ df_measures$region <- factor(
 df_measures <- df_measures %>%
   mutate(sex = factor(sex, levels = c("female", "male"), labels = c("Female", "Male")))
 
-df_measures$age_band[is.na(df_measures$age_band)] <- "Missing"  
+df_measures$age_band[is.na(df_measures$age_band)] <- "Missing"
 
 gradient_palette <- c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey")
 region_palette <- c("red", "navy", "#018701", "#ffa600ca", "purple", "brown", "#f4a5b2", "cyan", "green", "grey")
@@ -213,7 +213,6 @@ clinical_pathways_table %>%
     style = cell_text(weight = "bold"),
     locations = cells_column_labels(columns = everything())
   )
-
 ```
 
 ### Codelists
@@ -226,7 +225,6 @@ The following two SNOMED codes were used to identify Pharmacy First consultation
 For clarity, we combined these codes for the presentation of the results.
 
 ```{r echo=FALSE}
-
 # Create pharmacy first service codes dataframe
 pharmacy_first_table <- data.frame(
   codelist = c(
@@ -262,7 +260,6 @@ pharmacy_first_table %>%
 To categorise clinical events related to Pharmacy First services used the Pharmacy First [Clinical Pathways Codelist](https://www.opencodelists.org/codelist/opensafely/pharmacy-first-clinical-pathway-conditions/7ec97762/#full-list).
 
 ```{r echo=FALSE, message=FALSE}
-
 clinical_codes_table <- data.frame(
   condition = c(
     "Acute otitis media",
@@ -337,7 +334,6 @@ ethnicity_table <- data.frame(
 #     heading.title.font.size = "large",
 #     heading.subtitle.font.size = "small"
 #   )
-
 ```
 
 # Results
@@ -786,9 +782,9 @@ df_opensafely <- df_measures %>%
 
 # Add a new column to each data frame to identify the source
 df_opensafely <- df_opensafely %>%
-  mutate(source = 'OS')
+  mutate(source = "OS")
 df_bsa_validation <- df_bsa_validation %>%
-  mutate(source = 'BSA')
+  mutate(source = "BSA")
 
 # Drop the original 'count' column from the BSA data to allow for easy consistent grouping by 'count'
 df_validation_condition_counts <- df_bsa_validation %>%
@@ -809,14 +805,14 @@ df_pivoted <- df_validation_condition_counts %>%
 df_pivoted <- df_pivoted %>%
   mutate(
     consultation_type = recode(consultation_type,
-    "sinusitis" = "Acute Sinusitis",
-    "infected_insect_bites" = "Infected Insect Bite",
-    "uncomplicated_uti" = "UTI",
-    "acute_otitis_media" = "Acute Otitis Media",
-    "acute_sore_throat" = "Acute Pharyngitis",
-    "shingles" = "Herpes Zoster",
-    "impetigo" = "Impetigo",)
-
+      "sinusitis" = "Acute Sinusitis",
+      "infected_insect_bites" = "Infected Insect Bite",
+      "uncomplicated_uti" = "UTI",
+      "acute_otitis_media" = "Acute Otitis Media",
+      "acute_sore_throat" = "Acute Pharyngitis",
+      "shingles" = "Herpes Zoster",
+      "impetigo" = "Impetigo",
+    )
   )
 # Removing date column as this will prevent grouping (date is already pivot columns)
 df_pivoted <- df_pivoted %>%
@@ -885,10 +881,12 @@ tab_pf_conditions_validation
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
-df_long <- df_pivoted %>% pivot_longer(cols=c('02-2024_OS','02-2024_BSA','03-2024_OS','03-2024_BSA','04-2024_OS','04-2024_BSA','05-2024_OS','05-2024_BSA','06-2024_OS','06-2024_BSA','07-2024_OS','07-2024_BSA'),
-  names_to=c('month', 'source'),
+df_long <- df_pivoted %>% pivot_longer(
+  cols = c("02-2024_OS", "02-2024_BSA", "03-2024_OS", "03-2024_BSA", "04-2024_OS", "04-2024_BSA", "05-2024_OS", "05-2024_BSA", "06-2024_OS", "06-2024_BSA", "07-2024_OS", "07-2024_BSA"),
+  names_to = c("month", "source"),
   names_sep = "_",
-  values_to='count')
+  values_to = "count"
+)
 # Changing format of date to use label_date_short to keep dates consistent for figures
 df_long$month <- as.Date(paste0("01-", df_long$month), format = "%d-%m-%Y")
 
@@ -896,13 +894,16 @@ df_long$month <- as.Date(paste0("01-", df_long$month), format = "%d-%m-%Y")
 validation_total_counts_figure <- ggplot(df_long, aes(x = month, y = count, color = consultation_type, group = consultation_type)) +
   geom_point() +
   geom_line(size = 0.5) +
-  facet_wrap(~ source, scales = "free_y") +
-  labs(title = "Clinical Conditions Count by Month (NHS BSA vs OpenSAFELY Data)",
-       x = "Month", y = "Count", color = "Clinical Condition") +
+  facet_wrap(~source, scales = "free_y") +
+  labs(
+    title = "Clinical Conditions Count by Month (NHS BSA vs OpenSAFELY Data)",
+    x = "Month", y = "Count", color = "Clinical Condition"
+  ) +
   theme(
-    plot.title = element_text(hjust = 0.5)) +
+    plot.title = element_text(hjust = 0.5)
+  ) +
   scale_x_date(
-      labels = scales::label_date_short()
+    labels = scales::label_date_short()
   )
 
 validation_total_counts_figure
@@ -913,29 +914,36 @@ validation_total_counts_figure
 df_descriptive_stats <- df_descriptive_stats %>%
   mutate(
     measure = recode(measure,
-    "pf_with_pfmed" = "PF Med",
-    "pf_with_pfcondition" = "PF Condition",
-    "pf_with_pfmed_and_pfcondition" = "PF Med & PF Condition",
-    ))
+      "pf_with_pfmed" = "PF Med",
+      "pf_with_pfcondition" = "PF Condition",
+      "pf_with_pfmed_and_pfcondition" = "PF Med & PF Condition",
+    )
+  )
 
 descriptive_stats_figure <- ggplot(df_descriptive_stats, aes(x = interval_start, y = ratio, color = measure, group = measure)) +
   geom_point() +
   geom_line(size = 0.5) +
   # facet_wrap(~ measure, scales = "free_y") +
-  labs(title = "Breakdown of PF consultations with linked PF conditions and medications",
-      color = "PF consultation with:") +
-  theme(
-    plot.title = element_text(hjust = 0.5)) +
-  scale_x_date(
-      labels = scales::label_date_short()
+  labs(
+    title = "Breakdown of PF consultations with linked PF conditions and medications",
+    color = "PF consultation with:"
   ) +
-  scale_y_continuous(labels = scales::percent,
-  limits = c(0,1)) + 
-  theme(axis.title.x = element_blank(),
-    axis.title.y = element_blank())
+  theme(
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  scale_x_date(
+    labels = scales::label_date_short()
+  ) +
+  scale_y_continuous(
+    labels = scales::percent,
+    limits = c(0, 1)
+  ) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  )
 
 descriptive_stats_figure
-
 ```
 
 # References

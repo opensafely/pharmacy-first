@@ -115,19 +115,21 @@ df_dispensing_data_summary <- df_dispensing_data |>
     # n_pf_urgent_medicine_supply_consultations = sum(n_pf_urgent_medicine_supply_consultations, na.rm = TRUE),
     # n_pf_minor_illness_referral_consultations = sum(n_pf_minor_illness_referral_consultations, na.rm = TRUE)
   ) |>
-  pivot_longer(cols = c(
-    n_pf_consultation_acute_otitis_media,
-    n_pf_consultation_acute_sore_throat,
-    n_pf_consultation_impetigo,
-    n_pf_consultation_infected_insect_bites,
-    n_pf_consultation_shingles,
-    n_pf_consultation_sinusitis,
-    n_pf_consultation_uncomplicated_uti,
-    # n_pf_urgent_medicine_supply_consultations,
-    # n_pf_minor_illness_referral_consultations
-  ),
-  names_to = "consultation_type",
-  values_to = "count") |>
+  pivot_longer(
+    cols = c(
+      n_pf_consultation_acute_otitis_media,
+      n_pf_consultation_acute_sore_throat,
+      n_pf_consultation_impetigo,
+      n_pf_consultation_infected_insect_bites,
+      n_pf_consultation_shingles,
+      n_pf_consultation_sinusitis,
+      n_pf_consultation_uncomplicated_uti,
+      # n_pf_urgent_medicine_supply_consultations,
+      # n_pf_minor_illness_referral_consultations
+    ),
+    names_to = "consultation_type",
+    values_to = "count"
+  ) |>
   mutate(consultation_type = str_replace(consultation_type, "^n_pf_consultation_", ""))
 
 write_csv(df_dispensing_data_summary, here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
