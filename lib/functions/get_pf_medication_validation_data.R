@@ -13,7 +13,7 @@ package_list_method <- "package_list"
 package_show_method <- "package_show?id="
 action_method <- "datastore_search_sql?"
 
-get_available_datasets <- function(remove_foi = TRUE) {
+get_available_datasets <- function() {
   base_endpoint <- "https://opendata.nhsbsa.net/api/3/action/"
   package_list_method <- "package_list"
 
@@ -22,9 +22,10 @@ get_available_datasets <- function(remove_foi = TRUE) {
     package_list_method
   ))$result
 
-  if (remove_foi) {
-    datasets_response <- datasets_response[!grepl("^foi", datasets_response)]
-  }
+  # Remove datasets with FOI and starting with a number
+  # There does not seem to be any data that we can query from these tables
+  datasets_response <- datasets_response[!grepl("foi", datasets_response)]
+  datasets_response <- datasets_response[!grepl("^[0-9]", datasets_response)]
 
   datasets_response
 }
@@ -32,7 +33,7 @@ get_available_datasets <- function(remove_foi = TRUE) {
 get_available_datasets()
 
 get_dataset_table_names <- function(dataset_id, start_date = NULL, end_date = NULL) {
-  available_datasets <- get_available_datasets(remove_foi = FALSE)
+  available_datasets <- get_available_datasets()
 
   if (!dataset_id %in% available_datasets) {
     stop("The provided 'dataset_id' is not available. Run 'get_available_datasets()' to see all available datasets.", call. = FALSE)
