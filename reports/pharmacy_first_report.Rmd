@@ -38,8 +38,11 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
 
 # Load validation data (NHS BSA)
 df_bsa_validation <- read_csv(here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
+df_bsa_meds <- read_csv(here("lib", "validation", "data", "pf_medication_validation_data.csv"))
 
-df_descriptive_stats <- read_csv(here("output", "measures", "pf_descriptive_stats_measures.csv"))
+df_descriptive_stats <- read_csv(here("released_output", "measures", "pf_descriptive_stats_measures.csv"))
+df_pfmed <- read_csv(here("output", "measures", "pf_medications_measures.csv"))
+df_condition_provider <- read_csv(here("released_output", "measures", "pf_condition_provider_measures.csv"))
 
 # Define dictionaries with tidy names and mappings for measures
 pf_measures_name_dict <- list(
@@ -936,7 +939,6 @@ descriptive_stats_figure <- ggplot(df_descriptive_stats, aes(x = interval_start,
   ) +
   scale_y_continuous(
     labels = scales::percent,
-    limits = c(0, 1)
   ) +
   theme(
     axis.title.x = element_blank(),
@@ -944,6 +946,67 @@ descriptive_stats_figure <- ggplot(df_descriptive_stats, aes(x = interval_start,
   )
 
 descriptive_stats_figure
+```
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+
+# Validation of pharmacy first medication counts figure
+# OS data - waiting on released output
+
+df_bsa_total_meds <- df_bsa_meds %>%
+  group_by(date) %>%
+    summarise(total_meds = sum(count) * 0.4,
+    .groups = 'drop') %>% 
+    mutate(source = "BSA") 
+
+df_pfmed_total <- df_pfmed %>%
+  rename(date = interval_start) %>%
+  group_by(date) %>% 
+  summarise(total_meds = sum(numerator),
+  .groups = 'drop') %>%
+  mutate(source = "OS")
+
+df_validation_med_counts <- bind_rows(df_pfmed_total, df_bsa_total_meds)
+
+fig_validation_med_counts <- ggplot(df_validation_med_counts, aes(x = date, y = total_meds)) +
+  geom_point() +
+  geom_line(size = 0.5) +
+  facet_wrap(~source, scales = "free_y") +
+  labs(
+    title = "Pharmacy First Medications by Month (NHS BSA vs OpenSAFELY Data)",
+    x = "Month", y = "Count"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank()
+  ) +
+  scale_x_date(
+    labels = scales::label_date_short()
+  )
+
+fig_validation_med_counts
+```
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+# Condition - Provider graph, not there yet - needs some work. 
+# Need to discuss this tomorrow, how to visualise this graph, with respect to IMD and PF Status
+
+# figure_gp_vs_pf <- ggplot(df_condition_provider, aes(x = interval_start, y = numerator, color = pf_status, group = measure)) +
+#   geom_point() +
+#   geom_line(size = 0.5) +
+#   facet_wrap(~imd, scales = "free_y") +
+#   labs(
+#     title = "Count of clinical events",
+#     x = "Month", y = "Count", color = "Pharmacy First Status"
+#   ) +
+#   theme(
+#     plot.title = element_text(hjust = 0.5)
+#   ) +
+#   scale_x_date(
+#     labels = scales::label_date_short()
+#   )
+
+# figure_gp_vs_pf
+
 ```
 
 # References
