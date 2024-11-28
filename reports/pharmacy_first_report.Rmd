@@ -957,14 +957,16 @@ df_bsa_total_meds <- df_bsa_meds %>%
   group_by(date) %>%
     summarise(total_meds = sum(count) * 0.4,
     .groups = 'drop') %>% 
-    mutate(source = "BSA") 
+    mutate(source = "BSA") %>%
+    filter(date <= "2024-07-01")
 
 df_pfmed_total <- df_pfmed %>%
   rename(date = interval_start) %>%
   group_by(date) %>% 
   summarise(total_meds = sum(numerator),
   .groups = 'drop') %>%
-  mutate(source = "OS")
+  mutate(source = "OS") %>%
+  filter(date >= "2024-02-01")
 
 df_validation_med_counts <- bind_rows(df_pfmed_total, df_bsa_total_meds)
 
