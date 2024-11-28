@@ -987,25 +987,46 @@ fig_validation_med_counts <- ggplot(df_validation_med_counts, aes(x = date, y = 
 fig_validation_med_counts
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
-# Condition - Provider graph, not there yet - needs some work. 
-# Need to discuss this tomorrow, how to visualise this graph, with respect to IMD and PF Status
+# GP vs PF provider graph 
 
-# figure_gp_vs_pf <- ggplot(df_condition_provider, aes(x = interval_start, y = numerator, color = pf_status, group = measure)) +
-#   geom_point() +
-#   geom_line(size = 0.5) +
-#   facet_wrap(~imd, scales = "free_y") +
-#   labs(
-#     title = "Count of clinical events",
-#     x = "Month", y = "Count", color = "Pharmacy First Status"
-#   ) +
-#   theme(
-#     plot.title = element_text(hjust = 0.5)
-#   ) +
-#   scale_x_date(
-#     labels = scales::label_date_short()
-#   )
+df_condition_provider_grouped <- df_condition_provider %>% 
+  group_by(measure, interval_start, pf_status) %>% 
+  summarise(count = sum(numerator),
+  .groups = 'drop') %>%
+  mutate(
+    measure = recode(measure,
+      "count_acute_sinusitis_total" = "Acute Sinusitis",
+      "count_infected_insect_bite_total" = "Infected Insect Bite",
+      "count_uncomplicated_urinary_tract_infection_total" = "Uncomplicated UTI",
+      "count_acute_otitis_media_total" = "Acute Otitis Media",
+      "count_acute_pharyngitis_total" = "Acute Pharyngitis",
+      "count_herpes_zoster_total" = "Herpes Zoster",
+      "count_impetigo_total" = "Impetigo",
+    ),
+    pf_status = case_when(
+      pf_status == TRUE ~ "PF",
+      pf_status == FALSE ~ "GP"
+    )
+  )
 
-# figure_gp_vs_pf
+figure_gp_vs_pf <- ggplot(df_condition_provider_grouped, aes(x = interval_start, y = count, color = pf_status)) +
+  geom_point() +
+  geom_line(size = 0.5) +
+  facet_wrap(~measure, scales = "free_y") +
+  labs(
+    title = "Count of clinical events",
+    x = "Month", y = "Count", color = "Provider:"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "bottom",
+    axis.title.x = element_blank()
+  ) +
+  scale_x_date(
+    labels = scales::label_date_short()
+  )
+
+figure_gp_vs_pf
 
 ```
 
