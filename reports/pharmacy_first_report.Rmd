@@ -41,7 +41,7 @@ df_bsa_validation <- read_csv(here("lib", "validation", "data", "pf_consultation
 df_bsa_meds <- read_csv(here("lib", "validation", "data", "pf_medication_validation_data.csv"))
 
 df_descriptive_stats <- read_csv(here("released_output", "measures", "pf_descriptive_stats_measures.csv"))
-df_pfmed <- read_csv(here("output", "measures", "pf_medications_measures.csv"))
+df_pfmed <- read_csv(here("released_output", "measures", "pf_medications_measures.csv"))
 df_condition_provider <- read_csv(here("released_output", "measures", "pf_condition_provider_measures.csv"))
 
 # Define dictionaries with tidy names and mappings for measures
