@@ -913,6 +913,33 @@ validation_total_counts_figure
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+df_consultation_totals <- df_long %>%
+  group_by(month, source) %>% 
+  summarise(count = sum(count),
+  .groups = 'drop')
+
+# Line graph comparing clinical condition counts of BSA and OS data
+validation_total_consultation_counts_figure <- ggplot(df_consultation_totals, aes(x = month, y = count)) +
+  geom_point() +
+  geom_line(size = 0.5) +
+  facet_wrap(~source, scales = "free_y") +
+  labs(
+    title = "Consultations by Month (NHS BSA vs OpenSAFELY Data)",
+    x = "Month", y = "Count"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank()
+  ) +
+  scale_x_date(
+    labels = scales::label_date_short()
+  )
+
+validation_total_consultation_counts_figure
+
+```
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
 # Line graph comparing clinical condition counts of BSA and OS data
 df_descriptive_stats <- df_descriptive_stats %>%
   mutate(
