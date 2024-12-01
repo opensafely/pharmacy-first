@@ -69,7 +69,7 @@ get_dataset_table_names <- function(dataset_id, start_date = NULL, end_date = NU
   dataset_tables
 }
 
-get_dataset_table_names("prescription-cost-analysis-pca-monthly-data", "2024-09-01")
+get_dataset_table_names("prescription-cost-analysis-pca-monthly-data", "2024-01-01")
 
 construct_sql_query <- function(table_name, sql_query) {
   gsub("{FROM_TABLE}", sprintf("FROM `%s`", table_name), sql_query, fixed = TRUE)
@@ -108,6 +108,7 @@ df_validate <- get_nhsbsa_data("prescription-cost-analysis-pca-monthly-data", sq
 
 names(df_validate)
 unique(df_validate$pharmacy_advanced_service)
+range(df_validate$date)
 
 pf_medication_validation_data <- df_validate |>
   select(date, snomed_code, pharmacy_advanced_service, bnf_section, bnf_paragraph, items) |>

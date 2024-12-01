@@ -100,7 +100,7 @@ get_dispensing_data <- function(start_date = NULL, end_date = NULL) {
 }
 
 # Calculate summary of counts
-df_dispensing_data <- get_dispensing_data(start_date = "2024-02-01")
+df_dispensing_data <- get_dispensing_data(start_date = "2023-11-01")
 
 df_dispensing_data_summary <- df_dispensing_data |>
   group_by(date) |>
@@ -132,4 +132,5 @@ df_dispensing_data_summary <- df_dispensing_data |>
   ) |>
   mutate(consultation_type = str_replace(consultation_type, "^n_pf_consultation_", ""))
 
+range(df_dispensing_data_summary$date)
 write_csv(df_dispensing_data_summary, here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
