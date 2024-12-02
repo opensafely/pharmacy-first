@@ -97,3 +97,9 @@ plot_measures <- function(
 
   plot_tmp
 }
+
+# Colour palettes
+gradient_palette <- c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey")
+region_palette <- c("red", "navy", "#018701", "#ffa600ca", "purple", "brown", "#f4a5b2", "cyan", "green", "grey")
+ethnicity_palette <- c("#42db0188", "#0056B3", "#ff0000c2", "#a52a2a5a", "purple", "grey")
+sex_palette <- c("red", "blue")
