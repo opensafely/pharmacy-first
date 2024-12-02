@@ -16,116 +16,25 @@ library(tidyverse)
 library(here)
 library(readr)
 library(gt)
+library(patchwork)
 ```
 
 ```{r load-data, message=FALSE, warning=FALSE}
-# Load plotting function
-source(here::here("lib", "functions", "tidy_measures.R"))
-source(here::here("lib", "functions", "plot_measures.R"))
+# Load functions
+source(here("lib", "functions", "tidy_measures.R"))
+source(here("lib", "functions", "plot_measures.R"))
 
-# Load data based on environment
-if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
-  # Load data from generate_pf_measures action
-  df_measures <- readr::read_csv(
-    here::here("output", "measures", "pf_codes_conditions_measures.csv")
-  )
-} else {
-  # Load data from released_output directory
-  df_measures <- readr::read_csv(
-    here::here("released_output", "measures", "pf_codes_conditions_measures.csv")
-  )
-}
+# Load validation data:
+# - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
+# - df_bsa_consultation_validation: date, consultation_type, source, count_method, count
+source(here("lib", "functions", "load_validation_data.R"))
 
-# Load validation data (NHS BSA)
-df_bsa_validation <- read_csv(here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
-df_bsa_meds <- read_csv(here("lib", "validation", "data", "pf_medication_validation_data.csv"))
-
-df_descriptive_stats <- read_csv(here("released_output", "measures", "pf_descriptive_stats_measures.csv"))
-df_pfmed <- read_csv(here("released_output", "measures", "pf_medications_measures.csv"))
-df_condition_provider <- read_csv(here("released_output", "measures", "pf_condition_provider_measures.csv"))
-
-# Define dictionaries with tidy names and mappings for measures
-pf_measures_name_dict <- list(
-  consultation_service = "Consultation Service",
-  pharmacy_first_service = "Pharmacy First Consultation",
-  combined_pf_service = "Pharmacy First Consultations (Combined)",
-  acute_otitis_media = "Acute Otitis Media",
-  herpes_zoster = "Herpes Zoster",
-  acute_sinusitis = "Acute Sinusitis",
-  impetigo = "Impetigo",
-  infected_insect_bite = "Infected Insect Bite",
-  acute_pharyngitis = "Acute Pharyngitis",
-  uncomplicated_urinary_tract_infection = "UTI"
-)
-
-pf_measures_name_mapping <- list(
-  consultation_service = "clinical_service",
-  pharmacy_first_service = "clinical_service",
-  combined_pf_service = "pharmacy_first_services",
-  acute_otitis_media = "clinical_condition",
-  herpes_zoster = "clinical_condition",
-  acute_sinusitis = "clinical_condition",
-  impetigo = "clinical_condition",
-  infected_insect_bite = "clinical_condition",
-  acute_pharyngitis = "clinical_condition",
-  uncomplicated_urinary_tract_infection = "clinical_condition"
-)
-
-pf_measures_groupby_dict <- list(
-  age_band = "Age band",
-  sex = "Sex",
-  imd = "IMD",
-  region = "Region",
-  ethnicity = "Ethnicity"
-)
-
-df_measures <- tidy_measures(
-  data = df_measures,
-  pf_measures_name_dict = pf_measures_name_dict,
-  pf_measures_name_mapping = pf_measures_name_mapping,
-  pf_measures_groupby_dict = pf_measures_groupby_dict
-)
-
-df_measures$ethnicity <- factor(
-  df_measures$ethnicity,
-  levels = c(
-    "White", "Mixed", "Asian or Asian British",
-    "Black or Black British", "Chinese or Other Ethnic Groups",
-    "Missing"
-  ),
-  ordered = TRUE
-)
-
-df_measures$age_band <- factor(
-  df_measures$age_band,
-  levels = c(
-    "0-19", "20-39", "40-59",
-    "60-79", "80+",
-    "Missing"
-  ),
-  ordered = TRUE
-)
-
-df_measures$region <- factor(
-  df_measures$region,
-  levels = c(
-    "East", "East Midlands", "London",
-    "North East", "North West", "South East",
-    "South West", "West Midlands", "Yorkshire and The Humber",
-    "Missing"
-  ),
-  ordered = TRUE
-)
-
-df_measures <- df_measures %>%
-  mutate(sex = factor(sex, levels = c("female", "male"), labels = c("Female", "Male")))
-
-df_measures$age_band[is.na(df_measures$age_band)] <- "Missing"
-
-gradient_palette <- c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey")
-region_palette <- c("red", "navy", "#018701", "#ffa600ca", "purple", "brown", "#f4a5b2", "cyan", "green", "grey")
-ethnicity_palette <- c("#42db0188", "#0056B3", "#ff0000c2", "#a52a2a5a", "purple", "grey")
-sex_palette <- c("red", "blue")
+# Load opensafely ouputs:
+# - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
+# - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
+# - df_pfmed: measure, interval_start, interval_end, ratio, numerator, denominator, dmd_code
+# - df_condition_provider: measure, interval_start, interval_end, ratio, numerator, denominator, pf_status, imd
+source(here("lib", "functions", "load_opensafely_outputs.R"))
 ```
 
 # Background
@@ -309,35 +218,6 @@ The [Pregnancy Codelist](https://www.opencodelists.org/codelist/nhsd-primary-car
 
 We used the [Ethnicity Codelist](https://www.opencodelists.org/codelist/opensafely/ethnicity-snomed-0removed/2e641f61/) identify ethnicity in Electronic Health Records.
 To ensure comprehensive ethnicity data, we supplemented missing ethnicity values with data from the Secondary Uses Service (SUS).
-
-```{r echo=FALSE}
-ethnicity_table <- data.frame(
-  Code = c(1, 2, 3, 4, 5),
-  Ethnicity = c(
-    "White",
-    "Mixed",
-    "Asian or Asian British",
-    "Black or Black British",
-    "Chinese or Other Ethnic Groups"
-  )
-)
-
-# ethnicity_table %>%
-#   gt() %>%
-#   tab_header(
-#     title = "Table 2. Ethnic Group Codes",
-#     subtitle = "Codes representing different ethnic groups in the study"
-#   ) %>%
-#   cols_label(
-#     Code = "Code",
-#     `Ethnicity` = "Ethnic Group"
-#   ) %>%
-#   tab_options(
-#     table.font.size = "medium",
-#     heading.title.font.size = "large",
-#     heading.subtitle.font.size = "small"
-#   )
-```
 
 # Results
 
@@ -772,226 +652,216 @@ plot_measures(
 ) + scale_color_manual(values = ethnicity_palette)
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
-# Multiply by 0.4 to get 40% of data
-df_bsa_validation <- df_bsa_validation %>%
-  mutate(count_40pct = round(as.numeric(count * .4), digits = 0))
-
 # OpenSAFELY data for clinical conditions into a tidy df
-df_opensafely <- df_measures %>%
+df_opensafely_validation <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
-  filter(interval_start >= as.Date("2024-02-01") & interval_start <= as.Date("2024-07-30")) %>%
+  # filter(interval_start >= as.Date("2024-02-01") & interval_start <= as.Date("2024-07-30")) %>%
   filter(is.na(group_by)) %>%
-  select(date = interval_start, consultation_type = measure, count = numerator)
-
-# Add a new column to each data frame to identify the source
-df_opensafely <- df_opensafely %>%
-  mutate(source = "OS")
-df_bsa_validation <- df_bsa_validation %>%
-  mutate(source = "BSA")
-
-# Drop the original 'count' column from the BSA data to allow for easy consistent grouping by 'count'
-df_validation_condition_counts <- df_bsa_validation %>%
-  select(-count) %>%
-  rename(count = count_40pct)
-# Combining rows from OS and BSA dataframes
-df_validation_condition_counts <- bind_rows(df_opensafely, df_validation_condition_counts)
-
-# format both sources of data as MM-YYYY
-df_validation_condition_counts <- df_validation_condition_counts %>%
-  mutate(month = format(as.Date(date), "%m-%Y"))
-
-# Pivot the data so that we get two sub columns per month for each source (OS and BSA)
-df_pivoted <- df_validation_condition_counts %>%
-  pivot_wider(names_from = c(month, source), values_from = count)
-
-# Changing names to make column naming the same to ensure grouping
-df_pivoted <- df_pivoted %>%
+  select(date = interval_start, consultation_type = measure, count = numerator) %>%
   mutate(
-    consultation_type = recode(consultation_type,
-      "sinusitis" = "Acute Sinusitis",
-      "infected_insect_bites" = "Infected Insect Bite",
-      "uncomplicated_uti" = "UTI",
-      "acute_otitis_media" = "Acute Otitis Media",
-      "acute_sore_throat" = "Acute Pharyngitis",
-      "shingles" = "Herpes Zoster",
-      "impetigo" = "Impetigo",
+    source = "opensafely",
+    count_method = "opensafely_tpp"
+  ) |>
+  filter(date >= "2024-01-01") %>%
+  relocate(date, consultation_type, source, count_method, count)
+
+# Combining rows from OS and BSA validation dataframes
+df_validation_condition_counts <- bind_rows(df_opensafely_validation, df_bsa_consultation_validation)
+
+# Line graph comparing clinical condition counts of BSA and OS data
+plot_validation_condition_count <- df_validation_condition_counts %>%
+  filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+  mutate(source = factor(source,
+    levels = c("opensafely", "nhs_bsa"),
+    labels = c("OpenSAFELY-TPP", "NHS BSA (40%)")
+  )) %>%
+  ggplot(
+    aes(
+      x = date,
+      y = count,
+      shape = consultation_type,
+      color = consultation_type,
+      fill = consultation_type,
+      group = consultation_type
     )
+  ) +
+  geom_point(size = 2.5) +
+  geom_line(size = 0.5) +
+  facet_wrap(~source, scales = "free_y") +
+  scale_x_date(
+    labels = scales::label_date_short()
+  ) +
+  labs(x = NULL, y = "Count", colour = NULL, shape = NULL, fill = NULL) +
+  scale_color_viridis_d(
+    option = "plasma",
+    end = 0.9
+  ) +
+  scale_fill_viridis_d(
+    option = "plasma",
+    end = 0.9
+  ) +
+  scale_shape_manual(
+    values = c(
+      "Acute Sinusitis" = 15,
+      "Infected Insect Bite" = 19,
+      "UTI" = 4,
+      "Acute Otitis Media" = 23,
+      "Acute Pharyngitis" = 3,
+      "Herpes Zoster" = 17,
+      "Impetigo" = 8
+    )
+  ) +
+  theme(
+    text = element_text(size = 14)
+  ) +
+  geom_vline(
+    xintercept = lubridate::as_date("2024-02-01"),
+    linetype = "dotted",
+    colour = "orange",
+    linewidth = .7
+  ) +
+  scale_y_continuous(labels = scales::number)
+
+# Another plot visualising the percentage
+plot_validation_condition_pct <- df_validation_condition_counts %>%
+  filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+  pivot_wider(names_from = c(source, count_method), values_from = count) %>%
+  mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY") %>%
+  ggplot(
+    aes(
+      x = date,
+      y = opensafely_opensafely_tpp / nhs_bsa_count_40pct,
+      shape = consultation_type,
+      color = consultation_type,
+      fill = consultation_type,
+      group = consultation_type
+    )
+  ) +
+  geom_point(size = 2.5) +
+  geom_line(size = 0.5) +
+  facet_wrap(~source, scales = "free_y") +
+  scale_x_date(
+    labels = scales::label_date_short()
+  ) +
+  labs(x = NULL, y = "Percent", colour = NULL, shape = NULL, fill = NULL) +
+  scale_color_viridis_d(
+    option = "plasma",
+    end = 0.9
+  ) +
+  scale_fill_viridis_d(
+    option = "plasma",
+    end = 0.9
+  ) +
+  scale_shape_manual(
+    values = c(
+      "Acute Sinusitis" = 15,
+      "Infected Insect Bite" = 19,
+      "UTI" = 4,
+      "Acute Otitis Media" = 23,
+      "Acute Pharyngitis" = 3,
+      "Herpes Zoster" = 17,
+      "Impetigo" = 8
+    )
+  ) +
+  theme(
+    text = element_text(size = 14)
+  ) +
+  geom_vline(
+    xintercept = lubridate::as_date("2024-02-01"),
+    linetype = "dotted",
+    colour = "orange",
+    linewidth = .7
+  ) +
+  scale_y_continuous(labels = scales::percent)
+
+# Combining the plots with patchwork
+plot_validation_condition_count_pct <- (plot_validation_condition_count + plot_validation_condition_pct) +
+  plot_annotation(tag_levels = "A") +
+  plot_layout(guides = "collect", widths = c(2, 1)) &
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 15),
+    strip.background = element_rect(size = 0),
+    strip.text.x = element_text(size = 13, face = "bold")
   )
-# Removing date column as this will prevent grouping (date is already pivot columns)
-df_pivoted <- df_pivoted %>%
-  select(-date)
 
-# Group by consultation type and summarise to get rid of NAs and multiple consultation_types of same name
-df_pivoted <- df_pivoted %>%
-  group_by(consultation_type) %>%
-  summarise(across(everything(), sum, na.rm = TRUE), .groups = "drop")
-
-# Now create the gt table
-tab_pf_conditions_validation <- df_pivoted %>%
-  gt() %>%
-  tab_header(
-    title = "Validation Data of Pharmacy First Clinical Condition Counts",
-    subtitle = "Timeframe: 1st Feb 2024 to 31st July 2024"
-  ) %>%
-  cols_label(
-    consultation_type = "Clinical Condition",
-    `02-2024_OS` = "OS",
-    `02-2024_BSA` = "BSA",
-    `03-2024_OS` = "OS",
-    `03-2024_BSA` = "BSA",
-    `04-2024_OS` = "OS",
-    `04-2024_BSA` = "BSA",
-    `05-2024_OS` = "OS",
-    `05-2024_BSA` = "BSA",
-    `06-2024_OS` = "OS",
-    `06-2024_BSA` = "BSA",
-    `07-2024_OS` = "OS",
-    `07-2024_BSA` = "BSA"
-  ) %>%
-  tab_spanner(
-    label = "February 2024",
-    columns = c(`02-2024_OS`, `02-2024_BSA`)
-  ) %>%
-  tab_spanner(
-    label = "March 2024",
-    columns = c(`03-2024_OS`, `03-2024_BSA`)
-  ) %>%
-  tab_spanner(
-    label = "April 2024",
-    columns = c(`04-2024_OS`, `04-2024_BSA`)
-  ) %>%
-  tab_spanner(
-    label = "May 2024",
-    columns = c(`05-2024_OS`, `05-2024_BSA`)
-  ) %>%
-  tab_spanner(
-    label = "June 2024",
-    columns = c(`06-2024_OS`, `06-2024_BSA`)
-  ) %>%
-  tab_spanner(
-    label = "July 2024",
-    columns = c(`07-2024_OS`, `07-2024_BSA`)
-  ) %>%
-  tab_footnote(
-    footnote = "OS - OpenSAFELY data, BSA - Validation data (NHS BSA)"
-  ) %>%
-  fmt_number(
-    columns = everything(),
-    decimals = 0
-  )
-
-tab_pf_conditions_validation
-```
-
-```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
-df_long <- df_pivoted %>% pivot_longer(
-  cols = c("02-2024_OS", "02-2024_BSA", "03-2024_OS", "03-2024_BSA", "04-2024_OS", "04-2024_BSA", "05-2024_OS", "05-2024_BSA", "06-2024_OS", "06-2024_BSA", "07-2024_OS", "07-2024_BSA"),
-  names_to = c("month", "source"),
-  names_sep = "_",
-  values_to = "count"
+ggsave(
+  here("released_output", "results", "figures", "plot_validation_condition_count_pct.png"),
+  plot_validation_condition_count_pct,
+  width = 15, height = 6
 )
-# Changing format of date to use label_date_short to keep dates consistent for figures
-df_long$month <- as.Date(paste0("01-", df_long$month), format = "%d-%m-%Y")
-
-# Line graph comparing clinical condition counts of BSA and OS data
-validation_total_counts_figure <- ggplot(df_long, aes(x = month, y = count, color = consultation_type, group = consultation_type)) +
-  geom_point() +
-  geom_line(size = 0.5) +
-  facet_wrap(~source, scales = "free_y") +
-  labs(
-    title = "Clinical Conditions Count by Month (NHS BSA vs OpenSAFELY Data)",
-    x = "Month", y = "Count", color = "Clinical Condition"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5)
-  ) +
-  scale_x_date(
-    labels = scales::label_date_short()
-  )
-
-validation_total_counts_figure
-```
-
-```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
-df_consultation_totals <- df_long %>%
-  group_by(month, source) %>% 
-  summarise(count = sum(count),
-  .groups = 'drop')
-
-# Line graph comparing clinical condition counts of BSA and OS data
-validation_total_consultation_counts_figure <- ggplot(df_consultation_totals, aes(x = month, y = count)) +
-  geom_point() +
-  geom_line(size = 0.5) +
-  facet_wrap(~source, scales = "free_y") +
-  labs(
-    title = "Consultations by Month (NHS BSA vs OpenSAFELY Data)",
-    x = "Month", y = "Count"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    axis.title.x = element_blank()
-  ) +
-  scale_x_date(
-    labels = scales::label_date_short()
-  )
-
-validation_total_consultation_counts_figure
-
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
 # Line graph comparing clinical condition counts of BSA and OS data
-df_descriptive_stats <- df_descriptive_stats %>%
+plot_pf_descriptive_stats <- df_descriptive_stats %>%
   mutate(
-    measure = recode(measure,
-      "pf_with_pfmed" = "PF Med",
-      "pf_with_pfcondition" = "PF Condition",
-      "pf_with_pfmed_and_pfcondition" = "PF Med & PF Condition",
+    measure = factor(measure,
+      levels = c("pf_with_pfmed", "pf_with_pfcondition", "pf_with_pfmed_and_pfcondition"),
+      labels = c("PF Med", "PF Condition", "PF Med & PF Condition")
     )
-  )
-
-descriptive_stats_figure <- ggplot(df_descriptive_stats, aes(x = interval_start, y = ratio, color = measure, group = measure)) +
-  geom_point() +
+  ) |>
+  ggplot(aes(
+    x = interval_start,
+    y = ratio,
+    colour = measure,
+    shape = measure,
+  )) +
+  geom_point(size = 2.5) +
   geom_line(size = 0.5) +
-  # facet_wrap(~ measure, scales = "free_y") +
   labs(
-    title = "Breakdown of PF consultations with linked PF conditions and medications",
-    color = "PF consultation with:"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5)
+    x = NULL,
+    y = NULL,
+    shape = "PF consultation with:",
+    colour = "PF consultation with:"
   ) +
   scale_x_date(
-    labels = scales::label_date_short()
+    labels = scales::label_date_short(), breaks = "month"
   ) +
   scale_y_continuous(
     labels = scales::percent,
   ) +
   theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()
-  )
+    text = element_text(size = 14)
+  ) +
+  geom_vline(
+    xintercept = lubridate::as_date("2024-02-01"),
+    linetype = "dotted",
+    colour = "orange",
+    linewidth = .7
+  ) +
+  scale_colour_brewer(palette = "Dark2")
 
-descriptive_stats_figure
+
+plot_pf_descriptive_stats
+
+ggsave(
+  here("released_output", "results", "figures", "plot_pf_descriptive_stats.png"),
+  plot_pf_descriptive_stats,
+  width = 10, height = 6
+)
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
-
 # Validation of pharmacy first medication counts figure
 # OS data - waiting on released output
 
 df_bsa_total_meds <- df_bsa_meds %>%
   group_by(date) %>%
-    summarise(total_meds = sum(count) * 0.4,
-    .groups = 'drop') %>% 
-    mutate(source = "BSA") %>%
-    filter(date <= "2024-07-01")
+  summarise(
+    total_meds = sum(count) * 0.4,
+    .groups = "drop"
+  ) %>%
+  mutate(source = "BSA") %>%
+  filter(date <= "2024-07-01")
 
 df_pfmed_total <- df_pfmed %>%
   rename(date = interval_start) %>%
-  group_by(date) %>% 
-  summarise(total_meds = sum(numerator),
-  .groups = 'drop') %>%
+  group_by(date) %>%
+  summarise(
+    total_meds = sum(numerator),
+    .groups = "drop"
+  ) %>%
   mutate(source = "OS") %>%
   filter(date >= "2024-02-01")
 
@@ -1016,12 +886,14 @@ fig_validation_med_counts <- ggplot(df_validation_med_counts, aes(x = date, y = 
 fig_validation_med_counts
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
-# GP vs PF provider graph 
+# GP vs PF provider graph
 
-df_condition_provider_grouped <- df_condition_provider %>% 
-  group_by(measure, interval_start, pf_status) %>% 
-  summarise(count = sum(numerator),
-  .groups = 'drop') %>%
+df_condition_provider_grouped <- df_condition_provider %>%
+  group_by(measure, interval_start, pf_status) %>%
+  summarise(
+    count = sum(numerator),
+    .groups = "drop"
+  ) %>%
   mutate(
     measure = recode(measure,
       "count_acute_sinusitis_total" = "Acute Sinusitis",
@@ -1056,7 +928,6 @@ figure_gp_vs_pf <- ggplot(df_condition_provider_grouped, aes(x = interval_start,
   )
 
 figure_gp_vs_pf
-
 ```
 
 # References
