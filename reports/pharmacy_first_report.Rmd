@@ -785,6 +785,8 @@ plot_validation_condition_count_pct <- (plot_validation_condition_count + plot_v
     strip.text.x = element_text(size = 13, face = "bold")
   )
 
+plot_validation_condition_count_pct
+
 ggsave(
   here("released_output", "results", "figures", "plot_validation_condition_count_pct.png"),
   plot_validation_condition_count_pct,
@@ -842,48 +844,125 @@ ggsave(
 )
 ```
 
-```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
 # Validation of pharmacy first medication counts figure
 # OS data - waiting on released output
 
-df_bsa_total_meds <- df_bsa_meds %>%
+df_bsa_medication_validation_sum <- df_bsa_medication_validation %>%
   group_by(date) %>%
-  summarise(
-    total_meds = sum(count) * 0.4,
-    .groups = "drop"
-  ) %>%
-  mutate(source = "BSA") %>%
-  filter(date <= "2024-07-01")
-
-df_pfmed_total <- df_pfmed %>%
+  summarise(count = sum(count) * 0.4) %>%
+  mutate(
+    source = "nhs_bsa",
+    count_method = "count_40pct"
+  )
+range(df_pfmed$interval_start)
+df_opensafely_pfmed_sum <- df_pfmed %>%
   rename(date = interval_start) %>%
   group_by(date) %>%
-  summarise(
-    total_meds = sum(numerator),
-    .groups = "drop"
-  ) %>%
-  mutate(source = "OS") %>%
-  filter(date >= "2024-02-01")
-
-df_validation_med_counts <- bind_rows(df_pfmed_total, df_bsa_total_meds)
-
-fig_validation_med_counts <- ggplot(df_validation_med_counts, aes(x = date, y = total_meds)) +
-  geom_point() +
-  geom_line(size = 0.5) +
-  facet_wrap(~source, scales = "free_y") +
-  labs(
-    title = "Pharmacy First Medications by Month (NHS BSA vs OpenSAFELY Data)",
-    x = "Month", y = "Count"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    axis.title.x = element_blank()
-  ) +
-  scale_x_date(
-    labels = scales::label_date_short()
+  summarise(count = sum(numerator)) %>%
+  mutate(
+    source = "opensafely_tpp",
+    count_method = "opensafely_tpp"
   )
 
-fig_validation_med_counts
+df_validation_med_counts <- bind_rows(df_opensafely_pfmed_sum, df_bsa_medication_validation_sum) |>
+  filter(date >= "2024-01-01" & date <= "2024-07-01")
+
+plot_validation_med_count <- df_validation_med_counts |>
+  mutate(
+    source = factor(source, levels = c("opensafely_tpp", "nhs_bsa"), labels = c("OpenSAFELY-TPP", "NHS BSA")),
+    count_method = factor(count_method, levels = c("opensafely_tpp", "count_40pct"), labels = c("OpenSAFELY-TPP", "NHS BSA (40%)"))
+  ) |>
+  ggplot(aes(
+    x = date,
+    y = count,
+    colour = count_method,
+    shape = count_method)) +
+  geom_point(size = 2) +
+  facet_wrap(~count_method, scales = "free_y") +
+  geom_line(size = 0.5) +
+  labs(
+    x = NULL,
+    y = "Count",
+    colour = NULL,
+    shape = NULL,
+  ) +
+  scale_x_date(
+    labels = scales::label_date_short(), breaks = "month"
+  ) +
+  theme(
+    text = element_text(size = 14)
+  ) +
+  geom_vline(
+    xintercept = lubridate::as_date("2024-02-01"),
+    linetype = "dotted",
+    colour = "orange",
+    linewidth = .7
+  ) +
+  scale_colour_brewer(palette = "Dark2")
+
+# Another plot visualising the percentage
+plot_validation_med_pct <- df_validation_med_counts %>%
+  filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+  pivot_wider(names_from = c(source, count_method), values_from = count) %>%
+  mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY") %>%
+  ggplot(
+    aes(
+      x = date,
+      y = opensafely_tpp_opensafely_tpp / nhs_bsa_count_40pct,
+      shape = source,
+      color = source,
+      fill = source,
+      group = source
+    )
+  ) +
+  geom_point(size = 2.5) +
+  geom_line(size = 0.5) +
+  facet_wrap(~source, scales = "free_y") +
+  scale_x_date(
+    labels = scales::label_date_short(), breaks = "month"
+  ) +
+  labs(x = NULL, y = "Percent", colour = NULL, shape = NULL, fill = NULL) +
+  scale_color_viridis_d(
+    option = "plasma",
+    end = 0.9
+  ) +
+  scale_fill_viridis_d(
+    option = "plasma",
+    end = 0.9
+  ) +
+  scale_shape_manual(
+    values = c("Percentage of NHS BSA (40%) in OpenSAFELY" = 15)
+  ) +
+  theme(
+    text = element_text(size = 14)
+  ) +
+  geom_vline(
+    xintercept = lubridate::as_date("2024-02-01"),
+    linetype = "dotted",
+    colour = "orange",
+    linewidth = .7
+  ) +
+  scale_y_continuous(labels = scales::percent)
+
+# Combining the plots with patchwork
+plot_validation_medication_count_pct <- (plot_validation_med_count + plot_validation_med_pct) +
+  plot_annotation(tag_levels = "A") +
+  plot_layout(guides = "collect", widths = c(2, 1)) &
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 15),
+    strip.background = element_rect(size = 0),
+    strip.text.x = element_text(size = 13, face = "bold")
+  )
+
+plot_validation_medication_count_pct
+
+ggsave(
+  here("released_output", "results", "figures", "plot_validation_medication_count_pct.png"),
+  plot_validation_medication_count_pct,
+  width = 15, height = 6
+)
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
 # GP vs PF provider graph
