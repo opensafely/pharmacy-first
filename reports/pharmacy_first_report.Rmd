@@ -227,21 +227,121 @@ To ensure comprehensive ethnicity data, we supplemented missing ethnicity values
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_service") %>%
-  filter(is.na(group_by))
+  filter(is.na(group_by)) |>
+  select(measure, interval_start, numerator) |>
+  mutate(measure = factor(measure,
+    levels = c("Consultation Service", "Pharmacy First Consultation"),
+    labels = c(
+      "Consultation Service for minor illness (1577041000000109)",
+      "Pharmacy First service (983341000000102)"
+    )
+  ))
 
-# Create visualisation
-plot_measures(
-  df_measures_selected,
-  select_value = numerator,
-  select_interval_date = interval_end,
-  colour_var = NULL,
-  guide_nrow = 1,
-  facet_wrap = TRUE,
-  facet_var = measure,
-  title = "Pharmacy First Consultations",
-  y_label = "Number of codes for FP consultations",
+
+
+
+plot_pf_individual_consultations_count <- df_measures_selected |>
+  select(measure, interval_start, numerator) |>
+  ggplot(aes(
+    x = interval_start,
+    y = numerator,
+    colour = measure,
+    shape = measure,
+  )) +
+  geom_point(size = 2) +
+  geom_line(alpha = .3) +
+  labs(
+    title = NULL,
+    x = NULL,
+    y = "Total count",
+    colour = NULL,
+    shape = NULL
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(),
+  ) +
+  theme(legend.position = "bottom") +
+  guides(
+    colour = guide_legend(ncol = 2),
+    shape = guide_legend(ncol = 2)
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  geom_vline(
+    xintercept = lubridate::as_date(c(
+      "2024-01-31"
+    )),
+    linetype = "dotted",
+    colour = "orange",
+    size = .7
+  ) +
+  scale_colour_viridis_d(end = .75) +
+  theme(
+    text = element_text(size = 14)
+  )
+
+
+ggsave(
+  here("released_output", "results", "figures", "plot_pf_individual_consultations_count.png"),
+  plot_pf_individual_consultations_count,
+  width = 10, height = 6
 )
-```
+
+
+plot_pf_grouped_consultations_count <- df_measures_selected |>
+  group_by(interval_start) |>
+  mutate(
+    pf_consultation_total = sum(numerator, na.rm = TRUE),
+    data_desc = "Pharmacy First Consultation") |>
+    ggplot(aes(
+    x = interval_start,
+    y = pf_consultation_total,
+    colour = data_desc,
+    shape = data_desc,
+  )) +
+  geom_point(size = 2) +
+  geom_line(alpha = .3) +
+  labs(
+    title = NULL,
+    x = NULL,
+    y = "Total count",
+    colour = NULL,
+    shape = NULL
+  ) +
+  scale_y_continuous(
+    labels = scales::label_number(),
+  ) +
+  theme(legend.position = "bottom") +
+  guides(
+    colour = guide_legend(ncol = 2),
+    shape = guide_legend(ncol = 2)
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  geom_vline(
+    xintercept = lubridate::as_date(c(
+      "2024-01-31"
+    )),
+    linetype = "dotted",
+    colour = "orange",
+    size = .7
+  ) +
+  scale_colour_viridis_d(end = .75) +
+  theme(
+    text = element_text(size = 14)
+  )
+
+
+ggsave(
+  here("released_output", "results", "figures", "plot_pf_consultation_count.png"),
+  plot_pf_consultation_count,
+  width = 10, height = 6
+)
+ ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=10, fig.width=8}
 # Select measures and breakdown
@@ -814,8 +914,8 @@ plot_pf_descriptive_stats <- df_descriptive_stats %>%
   labs(
     x = NULL,
     y = NULL,
-    shape = "PF consultation with:",
-    colour = "PF consultation with:"
+    shape = "PF consultation linked to:",
+    colour = "PF consultation linked to:"
   ) +
   scale_x_date(
     labels = scales::label_date_short(), breaks = "month"
@@ -877,7 +977,8 @@ plot_validation_med_count <- df_validation_med_counts |>
     x = date,
     y = count,
     colour = count_method,
-    shape = count_method)) +
+    shape = count_method
+  )) +
   geom_point(size = 2) +
   facet_wrap(~count_method, scales = "free_y") +
   geom_line(size = 0.5) +
@@ -970,32 +1071,49 @@ ggsave(
 df_condition_provider_grouped <- df_condition_provider %>%
   group_by(measure, interval_start, pf_status) %>%
   summarise(
-    count = sum(numerator),
-    .groups = "drop"
+    count = sum(numerator)
   ) %>%
   mutate(
-    measure = recode(measure,
-      "count_acute_sinusitis_total" = "Acute Sinusitis",
-      "count_infected_insect_bite_total" = "Infected Insect Bite",
-      "count_uncomplicated_urinary_tract_infection_total" = "Uncomplicated UTI",
-      "count_acute_otitis_media_total" = "Acute Otitis Media",
-      "count_acute_pharyngitis_total" = "Acute Pharyngitis",
-      "count_herpes_zoster_total" = "Herpes Zoster",
-      "count_impetigo_total" = "Impetigo",
+    measure = factor(measure,
+      levels = c(
+        "count_acute_sinusitis_total",
+        "count_infected_insect_bite_total",
+        "count_uncomplicated_urinary_tract_infection_total",
+        "count_acute_otitis_media_total",
+        "count_acute_pharyngitis_total",
+        "count_herpes_zoster_total",
+        "count_impetigo_total"
+      ),
+      labels = c(
+        "Acute Sinusitis",
+        "Infected Insect Bite",
+        "UTI",
+        "Acute Otitis Media",
+        "Acute Pharyngitis",
+        "Herpes Zoster",
+        "Impetigo"
+      )
     ),
-    pf_status = case_when(
-      pf_status == TRUE ~ "PF",
-      pf_status == FALSE ~ "GP"
+    pf_status = factor(pf_status,
+      levels = c(TRUE, FALSE),
+      labels = c("Linked to Pharmacy First consultation", "Not linked to Pharmacy First consultation")
     )
   )
 
-figure_gp_vs_pf <- ggplot(df_condition_provider_grouped, aes(x = interval_start, y = count, color = pf_status)) +
-  geom_point() +
+plot_pf_condition_provider_count <- ggplot(
+  df_condition_provider_grouped,
+  aes(
+    x = interval_start,
+    y = count,
+    colour = pf_status,
+    shape = pf_status
+  )
+) +
+  geom_point(size = 1.5) +
   geom_line(size = 0.5) +
   facet_wrap(~measure, scales = "free_y") +
   labs(
-    title = "Count of clinical events",
-    x = "Month", y = "Count", color = "Provider:"
+    x = NULL, y = "Count", color = NULL, shape = NULL
   ) +
   theme(
     plot.title = element_text(hjust = 0.5),
@@ -1004,9 +1122,31 @@ figure_gp_vs_pf <- ggplot(df_condition_provider_grouped, aes(x = interval_start,
   ) +
   scale_x_date(
     labels = scales::label_date_short()
+  ) +
+  geom_vline(
+    xintercept = lubridate::as_date("2024-02-01"),
+    linetype = "dotted",
+    colour = "orange",
+    linewidth = .7
+  ) +
+  scale_color_viridis_d(
+    option = "plasma",
+    end = 0.75
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 14),
+    strip.background = element_rect(size = 0),
+    # strip.text.x = element_text(size = 13, face = "bold")
   )
 
-figure_gp_vs_pf
+plot_pf_condition_provider_count
+
+ggsave(
+  here("released_output", "results", "figures", "plot_pf_condition_provider_count.png"),
+  plot_pf_condition_provider_count,
+  width = 13, height = 8
+)
 ```
 
 # References
