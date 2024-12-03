@@ -223,7 +223,7 @@ To ensure comprehensive ethnicity data, we supplemented missing ethnicity values
 
 ### Total population
 
-```{r, message=FALSE, warning=FALSE, fig.height=3, fig.width=8}
+```{r, message=FALSE, warning=FALSE, fig.height=6, fig.width=10}
 # Select measures and breakdown
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_service") %>%
@@ -237,7 +237,7 @@ df_measures_selected <- df_measures %>%
     )
   ))
 
-plot_pf_individual_consultations_count <- df_measures_selected |>
+fig_pf_individual_consultations_count <- df_measures_selected |>
   select(measure, interval_start, numerator) |>
   ggplot(aes(
     x = interval_start,
@@ -281,13 +281,14 @@ plot_pf_individual_consultations_count <- df_measures_selected |>
 
 
 ggsave(
-  here("released_output", "results", "figures", "plot_pf_individual_consultations_count.png"),
-  plot_pf_individual_consultations_count,
+  here("released_output", "results", "figures", "fig_pf_individual_consultations_count.png"),
+  fig_pf_individual_consultations_count,
   width = 10, height = 6
 )
 
+fig_pf_individual_consultations_count
 
-plot_pf_grouped_consultations_count <- df_measures_selected |>
+fig_pf_grouped_consultations_count <- df_measures_selected |>
   group_by(interval_start) |>
   mutate(
     pf_consultation_total = sum(numerator, na.rm = TRUE),
@@ -335,8 +336,8 @@ plot_pf_grouped_consultations_count <- df_measures_selected |>
 
 
 ggsave(
-  here("released_output", "results", "figures", "plot_pf_grouped_consultations_count.png"),
-  plot_pf_grouped_consultations_count,
+  here("released_output", "results", "figures", "fig_pf_grouped_consultations_count.png"),
+  fig_pf_grouped_consultations_count,
   width = 10, height = 6
 )
 ```
@@ -767,7 +768,7 @@ df_opensafely_validation <- df_measures %>%
 df_validation_condition_counts <- bind_rows(df_opensafely_validation, df_bsa_consultation_validation)
 
 # Line graph comparing clinical condition counts of BSA and OS data
-plot_validation_condition_count <- df_validation_condition_counts %>%
+fig_validation_condition_count <- df_validation_condition_counts %>%
   filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
   mutate(source = factor(source,
     levels = c("opensafely", "nhs_bsa"),
@@ -821,7 +822,7 @@ plot_validation_condition_count <- df_validation_condition_counts %>%
   scale_y_continuous(labels = scales::number)
 
 # Another plot visualising the percentage
-plot_validation_condition_pct <- df_validation_condition_counts %>%
+fig_validation_condition_pct <- df_validation_condition_counts %>%
   filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
   pivot_wider(names_from = c(source, count_method), values_from = count) %>%
   mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY") %>%
@@ -873,7 +874,7 @@ plot_validation_condition_pct <- df_validation_condition_counts %>%
   scale_y_continuous(labels = scales::percent)
 
 # Combining the plots with patchwork
-plot_validation_condition_count_pct <- (plot_validation_condition_count + plot_validation_condition_pct) +
+fig_validation_condition_count_pct <- (fig_validation_condition_count + fig_validation_condition_pct) +
   plot_annotation(tag_levels = "A") +
   plot_layout(guides = "collect", widths = c(2, 1)) &
   theme(
@@ -883,18 +884,18 @@ plot_validation_condition_count_pct <- (plot_validation_condition_count + plot_v
     strip.text.x = element_text(size = 13, face = "bold")
   )
 
-plot_validation_condition_count_pct
+fig_validation_condition_count_pct
 
 ggsave(
-  here("released_output", "results", "figures", "plot_validation_condition_count_pct.png"),
-  plot_validation_condition_count_pct,
+  here("released_output", "results", "figures", "fig_validation_condition_count_pct.png"),
+  fig_validation_condition_count_pct,
   width = 15, height = 6
 )
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
 # Line graph comparing clinical condition counts of BSA and OS data
-plot_pf_descriptive_stats <- df_descriptive_stats %>%
+fig_pf_descriptive_stats <- df_descriptive_stats %>%
   mutate(
     measure = factor(measure,
       levels = c("pf_with_pfmed", "pf_with_pfcondition", "pf_with_pfmed_and_pfcondition"),
@@ -933,11 +934,11 @@ plot_pf_descriptive_stats <- df_descriptive_stats %>%
   scale_colour_brewer(palette = "Dark2")
 
 
-plot_pf_descriptive_stats
+fig_pf_descriptive_stats
 
 ggsave(
-  here("released_output", "results", "figures", "plot_pf_descriptive_stats.png"),
-  plot_pf_descriptive_stats,
+  here("released_output", "results", "figures", "fig_pf_descriptive_stats.png"),
+  fig_pf_descriptive_stats,
   width = 10, height = 6
 )
 ```
@@ -966,7 +967,7 @@ df_opensafely_pfmed_sum <- df_pfmed %>%
 df_validation_med_counts <- bind_rows(df_opensafely_pfmed_sum, df_bsa_medication_validation_sum) |>
   filter(date >= "2024-01-01" & date <= "2024-07-01")
 
-plot_validation_med_count <- df_validation_med_counts |>
+fig_validation_med_count <- df_validation_med_counts |>
   mutate(
     source = factor(source, levels = c("opensafely_tpp", "nhs_bsa"), labels = c("OpenSAFELY-TPP", "NHS BSA")),
     count_method = factor(count_method, levels = c("opensafely_tpp", "count_40pct"), labels = c("OpenSAFELY-TPP", "NHS BSA (40%)"))
@@ -1001,7 +1002,7 @@ plot_validation_med_count <- df_validation_med_counts |>
   scale_colour_brewer(palette = "Dark2")
 
 # Another plot visualising the percentage
-plot_validation_med_pct <- df_validation_med_counts %>%
+fig_validation_med_pct <- df_validation_med_counts %>%
   filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
   pivot_wider(names_from = c(source, count_method), values_from = count) %>%
   mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY") %>%
@@ -1045,7 +1046,7 @@ plot_validation_med_pct <- df_validation_med_counts %>%
   scale_y_continuous(labels = scales::percent)
 
 # Combining the plots with patchwork
-plot_validation_medication_count_pct <- (plot_validation_med_count + plot_validation_med_pct) +
+fig_validation_medication_count_pct <- (fig_validation_med_count + fig_validation_med_pct) +
   plot_annotation(tag_levels = "A") +
   plot_layout(guides = "collect", widths = c(2, 1)) &
   theme(
@@ -1055,11 +1056,11 @@ plot_validation_medication_count_pct <- (plot_validation_med_count + plot_valida
     strip.text.x = element_text(size = 13, face = "bold")
   )
 
-plot_validation_medication_count_pct
+fig_validation_medication_count_pct
 
 ggsave(
-  here("released_output", "results", "figures", "plot_validation_medication_count_pct.png"),
-  plot_validation_medication_count_pct,
+  here("released_output", "results", "figures", "fig_validation_medication_count_pct.png"),
+  fig_validation_medication_count_pct,
   width = 15, height = 6
 )
 ```
@@ -1098,7 +1099,7 @@ df_condition_provider_grouped <- df_condition_provider %>%
     )
   )
 
-plot_pf_condition_provider_count <- ggplot(
+fig_pf_condition_provider_count <- ggplot(
   df_condition_provider_grouped,
   aes(
     x = interval_start,
@@ -1138,11 +1139,11 @@ plot_pf_condition_provider_count <- ggplot(
     # strip.text.x = element_text(size = 13, face = "bold")
   )
 
-plot_pf_condition_provider_count
+fig_pf_condition_provider_count
 
 ggsave(
-  here("released_output", "results", "figures", "plot_pf_condition_provider_count.png"),
-  plot_pf_condition_provider_count,
+  here("released_output", "results", "figures", "fig_pf_condition_provider_count.png"),
+  fig_pf_condition_provider_count,
   width = 13, height = 8
 )
 ```
