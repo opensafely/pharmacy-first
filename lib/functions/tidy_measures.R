@@ -1,3 +1,38 @@
+# Define dictionaries with tidy names and mappings for measures
+pf_measures_name_dict <- list(
+  consultation_service = "Consultation Service",
+  pharmacy_first_service = "Pharmacy First Consultation",
+  combined_pf_service = "Pharmacy First Consultations (Combined)",
+  acute_otitis_media = "Acute Otitis Media",
+  herpes_zoster = "Herpes Zoster",
+  acute_sinusitis = "Acute Sinusitis",
+  impetigo = "Impetigo",
+  infected_insect_bite = "Infected Insect Bite",
+  acute_pharyngitis = "Acute Pharyngitis",
+  uncomplicated_urinary_tract_infection = "UTI"
+)
+
+pf_measures_name_mapping <- list(
+  consultation_service = "clinical_service",
+  pharmacy_first_service = "clinical_service",
+  combined_pf_service = "pharmacy_first_services",
+  acute_otitis_media = "clinical_condition",
+  herpes_zoster = "clinical_condition",
+  acute_sinusitis = "clinical_condition",
+  impetigo = "clinical_condition",
+  infected_insect_bite = "clinical_condition",
+  acute_pharyngitis = "clinical_condition",
+  uncomplicated_urinary_tract_infection = "clinical_condition"
+)
+
+pf_measures_groupby_dict <- list(
+  age_band = "Age band",
+  sex = "Sex",
+  imd = "IMD",
+  region = "Region",
+  ethnicity = "Ethnicity"
+)
+
 #' Tidy measures data
 #'
 #' Creates a tidier dataframe of measures data.
