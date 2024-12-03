@@ -237,9 +237,6 @@ df_measures_selected <- df_measures %>%
     )
   ))
 
-
-
-
 plot_pf_individual_consultations_count <- df_measures_selected |>
   select(measure, interval_start, numerator) |>
   ggplot(aes(
@@ -294,8 +291,9 @@ plot_pf_grouped_consultations_count <- df_measures_selected |>
   group_by(interval_start) |>
   mutate(
     pf_consultation_total = sum(numerator, na.rm = TRUE),
-    data_desc = "Pharmacy First Consultation") |>
-    ggplot(aes(
+    data_desc = "Pharmacy First Consultation"
+  ) |>
+  ggplot(aes(
     x = interval_start,
     y = pf_consultation_total,
     colour = data_desc,
@@ -337,11 +335,11 @@ plot_pf_grouped_consultations_count <- df_measures_selected |>
 
 
 ggsave(
-  here("released_output", "results", "figures", "plot_pf_consultation_count.png"),
-  plot_pf_consultation_count,
+  here("released_output", "results", "figures", "plot_pf_grouped_consultations_count.png"),
+  plot_pf_grouped_consultations_count,
   width = 10, height = 6
 )
- ```
+```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=10, fig.width=8}
 # Select measures and breakdown
