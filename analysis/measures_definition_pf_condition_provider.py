@@ -8,8 +8,7 @@ from analysis.measures_definition_pf_breakdown import (
     pharmacy_first_conditions_codes,
     imd_quintile,
 )
-from pf_dataset import pharmacy_first_event_codes
-
+from codelists import pharmacy_first_consultation_codelist
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -26,7 +25,7 @@ selected_events = clinical_events.where(
 # Create variable which contains boolean values of whether pharmacy first event exists for patient
 has_pharmacy_first = selected_events.where(
     selected_events.snomedct_code.is_in(
-        pharmacy_first_event_codes["combined_pf_service"]
+        pharmacy_first_consultation_codelist
     )
 ).exists_for_patient()
 

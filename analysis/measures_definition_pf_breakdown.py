@@ -11,7 +11,8 @@ from codelists import (
     ethnicity_codelist,
 )
 
-from pf_dataset import pharmacy_first_event_codes, get_latest_ethnicity
+from pf_dataset import get_latest_ethnicity
+from codelists import pharmacy_first_event_codes, pharmacy_first_consultation_codelist
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -58,7 +59,7 @@ latest_region = case(
 
 pharmacy_first_ids = clinical_events.where(
     clinical_events.snomedct_code.is_in(
-        pharmacy_first_event_codes["combined_pf_service"]
+        pharmacy_first_consultation_codelist
     )
 ).consultation_id
 

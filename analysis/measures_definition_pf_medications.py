@@ -5,19 +5,7 @@ from ehrql.tables.tpp import (
     practice_registrations,
 )
 from ehrql.tables.raw.tpp import medications
-
-from pf_dataset import pharmacy_first_event_codes
 from codelists import *
-
-pharmacy_first_med_codes = (
-    acute_otitis_media_tx_cod
-    + impetigo_treatment_tx_cod
-    + infected_insect_bites_tx_cod
-    + shingles_treatment_tx_cod
-    + sinusitis_tx_cod
-    + sore_throat_tx_cod
-    + urinary_tract_infection_tx_cod
-)
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -34,7 +22,7 @@ pharmacy_first_events = clinical_events.where(
     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
 ).where(
     clinical_events.snomedct_code.is_in(
-        pharmacy_first_event_codes["combined_pf_service"]
+        pharmacy_first_consultation_codelist
     )
 )
 
@@ -53,7 +41,7 @@ first_selected_medication = (
 
 # Check if a medication is from our PF codelists 
 has_pharmacy_first_medication = first_selected_medication.is_in(
-    pharmacy_first_med_codes
+    pharmacy_first_med_codelist
 )
 
 # Numerator, patients with a PF medication
