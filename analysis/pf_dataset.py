@@ -2,6 +2,9 @@ from ehrql.tables.tpp import case, when
 
 from pf_variables_library import check_pregnancy_status, count_past_events
 
+# This file contains functions for the denominators of the patient population for each clinical condition.
+# It will be used to calculate rates, and is separate from pf_variables_library
+
 # Create denominator variables for each clinical condition
 # These are based on NHS England rules using sex, age, pregnancy status and repeated diagnoses
 # NOTE: The following exclusions have not been added:

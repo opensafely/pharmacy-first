@@ -13,12 +13,14 @@ from codelists import (
 
 from pf_dataset import get_latest_ethnicity
 from codelists import pharmacy_first_event_codes, pharmacy_first_consultation_codelist
+from config import start_date_measure1, monthly_intervals_measure1
+from pf_variables_library import get_events_between, get_events
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
 
-start_date = "2023-11-01"
-monthly_intervals = 12
+start_date = start_date_measure1
+monthly_intervals = monthly_intervals_measure1
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 ethnicity_combined = get_latest_ethnicity(
@@ -57,16 +59,22 @@ latest_region = case(
     otherwise="Missing",
 )
 
-pharmacy_first_ids = clinical_events.where(
-    clinical_events.snomedct_code.is_in(
-        pharmacy_first_consultation_codelist
-    )
-).consultation_id
+# pharmacy_first_ids = clinical_events.where(
+#     clinical_events.snomedct_code.is_in(
+#         pharmacy_first_consultation_codelist
+#     )
+# ).consultation_id
 
-# Select clinical events in interval date range
-selected_events = clinical_events.where(
-    clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
-).where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
+pharmacy_first_ids = get_events(clinical_events, pharmacy_first_consultation_codelist).consultation_id
+
+# # Select clinical events in interval date range
+# selected_events = clinical_events.where(
+#     clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
+# ).where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
+
+selected_events = get_events_between(clinical_events, INTERVAL.start_date, INTERVAL.end_date).where(
+    clinical_events.consultation_id.is_in(pharmacy_first_ids)
+)
 
 # Breakdown metrics to be produced as graphs
 breakdown_metrics = {
