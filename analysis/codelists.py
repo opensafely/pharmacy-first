@@ -68,3 +68,16 @@ pharmacy_first_med_codelist = (
 # Community Pharmacist Consultation Service for minor illness - 1577041000000109
 # Pharmacy First service - 983341000000102
 pharmacy_first_consultation_codelist = ["1577041000000109", "983341000000102"]
+
+# PF codes separated for individual analysis
+pharmacy_first_event_codes = {
+    # # Community Pharmacy (CP) Blood Pressure (BP) Check Service (procedure)
+    # "blood_pressure_service": ["1659111000000107"],
+    # # Community Pharmacy (CP) Contraception Service (procedure)
+    # "contraception_service": ["1659121000000101"],
+    # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
+    "consultation_service": ["1577041000000109"],
+    # Pharmacy First service (qualifier value)
+    "pharmacy_first_service": ["983341000000102"],
+    "combined_pf_service": ["1577041000000109", "983341000000102"],
+}
