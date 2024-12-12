@@ -37,179 +37,6 @@ source(here("lib", "functions", "load_validation_data.R"))
 source(here("lib", "functions", "load_opensafely_outputs.R"))
 ```
 
-# Background
-
-Add background here.
-
-# Methods
-
-## Data source
-
-Primary care records managed by the GP software provider TPP were accessed through OpenSAFELY (https://opensafely.org).
-OpenSAFELY-TPP covers approximately 40% of the population of England, for a detailed description of the representativeness see @Andrews2022.
-
-Between 1st November 2023 and 1st September 2024, we identified individuals aged between 0 and 120 years who were registered at a TPP practice each month across the study period. 
-From this cohort, we counted the number of patients with at least one SNOMED CT code indicating a consultation using the Pharmacy First Service. 
-Patients with more than one instance of the same clinical code within a month were counted only once.
-
-Our study relied on the correct entry of relevant Pharmacy First codes in patients' GP records. 
-The Pharmacy First service uses [GP Connect - Update Record](https://digital.nhs.uk/services/gp-connect/gp-connect-in-your-organisation/gp-connect-update-record) to update a patient's GP record with consultation information from community pharmacies. 
-Following the launch of the Pharmacy First service, there has been a [Gradual roll-out of GP Connect - Update Record](https://cpe.org.uk/our-news/gp-connect-update-record-rollout-and-flow-of-information/) across approved community pharmacy IT system suppliers.
-
-### Population
-
-The eligible patient population for each clinical condition associated with Pharmacy First is detailed in the table below.
-Currently, we have not yet applied any of the inclusion or exlusion citeria to restrict the population used in this report.
-This will initially help us to understand the underlying data.
-
-```{r echo=FALSE, message=FALSE}
-# Create clinical pathways dataframe
-clinical_pathways_table <- data.frame(
-  Condition = c(
-    "Uncomplicated Urinary Tract Infection",
-    "Shingles",
-    "Impetigo",
-    "Infected Insect Bites",
-    "Acute Sore Throat",
-    "Acute Sinusitis",
-    "Acute Otitis Media"
-  ),
-  Age = c(
-    "16 to 64 years",
-    "18 years and over",
-    "1 year and over",
-    "1 year and over",
-    "5 years and over",
-    "12 years and over",
-    "1 to 17 years"
-  ),
-  Sex = c(
-    "Female",
-    "Any",
-    "Any",
-    "Any",
-    "Any",
-    "Any",
-    "Any"
-  ),
-  Exclusions = c(
-    "Pregnant individuals, urinary catheter, recurrent UTI (2 episodes in last 6 months, or 3 episodes in last 12 months)",
-    "Pregnant individuals",
-    "Bullous impetigo, recurrent impetigo (2 or more episodes in the same year), pregnant individuals under 16 years",
-    "Pregnant individuals under 16 years",
-    "Pregnant individuals under 16 years",
-    "Immunosuppressed individuals, chronic sinusitis (symptoms lasting more than 12 weeks), pregnant individuals under 16 years",
-    "Recurrent acute otitis media (3 or more episodes in 6 months or four or more episodes in 12 months), pregnant individuals under 16 years"
-  )
-)
-
-# Create clinical pathways table
-clinical_pathways_table %>%
-  gt() %>%
-  tab_header(
-    title = "Table 1. Pharmacy First population criteria"
-    # subtitle = "Inclusion and exclusion criteria for clinical pathway/conditions"
-  ) %>%
-  cols_label(
-    Condition = "Condition",
-    Age = "Age Range",
-    Sex = "Sex",
-    Exclusions = "Exclusions"
-  ) %>%
-  tab_options(
-    table.font.size = "medium",
-    heading.title.font.size = "large",
-    heading.subtitle.font.size = "small"
-  ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_column_labels(columns = everything())
-  )
-```
-
-### Codelists
-
-We used the following codelists to identify Pharmacy First consultations, conditions, and demographic breakdowns.
-
-#### Pharmacy First consultation codes
-
-The following two SNOMED codes were used to identify Pharmacy First consultations.
-For clarity, we combined these codes for the presentation of the results.
-
-```{r echo=FALSE}
-# Create pharmacy first service codes dataframe
-pharmacy_first_table <- data.frame(
-  codelist = c(
-    "Community Pharmacist (CP) Consultation Service for minor illness (procedure)",
-    "Pharmacy First service (qualifier value)"
-  ),
-  code = c(
-    "1577041000000109",
-    "983341000000102"
-  )
-)
-
-# Create pharmacy first service codes table
-pharmacy_first_table %>%
-  gt() %>%
-  tab_header(
-    title = "Table 2. Pharmacy First consultation codes",
-    # subtitle = "Codelist descriptions and their respective SNOMED codes"
-  ) %>%
-  cols_label(
-    codelist = md("**Codelist Description**"),
-    code = md("**SNOMED Code**")
-  ) %>%
-  tab_options(
-    table.font.size = "medium",
-    heading.title.font.size = "large",
-    heading.subtitle.font.size = "small"
-  )
-```
-
-#### Pharmacy First condition codes
-
-To categorise clinical events related to Pharmacy First services used the Pharmacy First [Clinical Pathways Codelist](https://www.opencodelists.org/codelist/opensafely/pharmacy-first-clinical-pathway-conditions/7ec97762/#full-list).
-
-```{r echo=FALSE, message=FALSE}
-clinical_codes_table <- data.frame(
-  condition = c(
-    "Acute otitis media",
-    "Herpes zoster",
-    "Acute sinusitis",
-    "Impetigo",
-    "Infected insect bite",
-    "Acute pharyngitis",
-    "Uncomplicated urinary tract infection"
-  ),
-  code = c(
-    "3110003",
-    "4740000",
-    "15805002",
-    "48277006",
-    "262550002",
-    "363746003",
-    "1090711000000102"
-  )
-)
-
-clinical_codes_table %>%
-  gt() %>%
-  tab_header(
-    title = "Table 3. Pharmacy First condition codes"
-    # subtitle = "Clinical conditions and their corresponding SNOMED codes"
-  ) %>%
-  cols_label(
-    condition = md("**Clinical Condition**"),
-    code = md("**SNOMED Code**")
-  ) %>%
-  tab_options(
-    table.font.size = "medium",
-    heading.title.font.size = "large",
-    heading.subtitle.font.size = "small"
-  )
-```
-
 #### Pregnancy Codelist
 
 The [Pregnancy Codelist](https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/preg_cod/20200812/#full-list) was used to identify patients who were pregnant during each month.
@@ -279,7 +106,6 @@ fig_pf_individual_consultations_count <- df_measures_selected |>
     text = element_text(size = 14)
   )
 
-
 ggsave(
   here("released_output", "results", "figures", "fig_pf_individual_consultations_count.png"),
   fig_pf_individual_consultations_count,
@@ -333,7 +159,6 @@ fig_pf_grouped_consultations_count <- df_measures_selected |>
   theme(
     text = element_text(size = 14)
   )
-
 
 ggsave(
   here("released_output", "results", "figures", "fig_pf_grouped_consultations_count.png"),
