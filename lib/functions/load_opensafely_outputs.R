@@ -29,6 +29,8 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
   )
 }
 
+# str(df_measures$ethnicity)
+
 df_measures <- tidy_measures(
   data = df_measures,
   pf_measures_name_dict = pf_measures_name_dict,
@@ -36,18 +38,8 @@ df_measures <- tidy_measures(
   pf_measures_groupby_dict = pf_measures_groupby_dict
 )
 
-df_measures$ethnicity <- factor(
-  df_measures$ethnicity,
-  levels = c(
-    "White",
-    "Mixed",
-    "Asian or Asian British",
-    "Black or Black British",
-    "Chinese or Other Ethnic Groups",
-    "Missing"
-  ),
-  ordered = TRUE
-)
+# str(df_measures$ethnicity)
+
 
 df_measures$age_band <- factor(
   df_measures$age_band,

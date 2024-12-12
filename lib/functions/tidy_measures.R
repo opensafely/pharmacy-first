@@ -33,6 +33,16 @@ pf_measures_groupby_dict <- list(
   ethnicity = "Ethnicity"
 )
 
+pf_measures_ethnicity_list <- list(
+  "White",
+  "Mixed",
+  "Asian or Asian British",
+  "Black or Black British",
+  "Chinese or Other Ethnic Groups",
+  "Missing"
+)
+
+
 #' Tidy measures data
 #'
 #' Creates a tidier dataframe of measures data.
@@ -56,7 +66,8 @@ tidy_measures <- function(data, pf_measures_name_dict, pf_measures_name_mapping,
     mutate(
       measure_desc = recode(factor(measure), !!!pf_measures_name_mapping),
       measure = recode(factor(measure), !!!pf_measures_name_dict),
-      group_by = recode(factor(group_by), !!!pf_measures_groupby_dict)
+      group_by = recode(factor(group_by), !!!pf_measures_groupby_dict),
+      ethnicity = factor(ethnicity, levels = pf_measures_ethnicity_list, labels = pf_measures_ethnicity_list)
     )
 
   data_tmp
