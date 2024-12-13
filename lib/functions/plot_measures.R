@@ -29,14 +29,17 @@ plot_measures <- function(
     facet_wrap = FALSE,
     facet_var = NULL,
     colour_var = NULL,
+    shape_var = NULL,
+    save_path = NULL,
+    colour_palette = NULL,
     legend_position = "bottom") {
   # Test if all columns expected in output from generate measures exist
-  expected_names <- c("measure", "interval_start", "interval_end", "ratio", "numerator", "denominator")
-  missing_columns <- setdiff(expected_names, colnames(data))
+  # expected_names <- c("measure", "interval_start", "interval_end", "ratio", "numerator", "denominator")
+  # missing_columns <- setdiff(expected_names, colnames(data))
 
-  if (length(missing_columns) > 0) {
-    stop("Data does not have expected column(s): ", paste(missing_columns, collapse = ", "), call. = FALSE)
-  }
+  # if (length(missing_columns) > 0) {
+  #   stop("Data does not have expected column(s): ", paste(missing_columns, collapse = ", "), call. = FALSE)
+  # }
 
   plot_tmp <- ggplot(
     data,
@@ -44,11 +47,12 @@ plot_measures <- function(
       x = {{ select_interval_date }},
       y = {{ select_value }},
       colour = {{ colour_var }},
-      group = {{ colour_var }}
+      group = {{ colour_var }},
+      shape = {{ colour_var }}
     )
   ) +
-    geom_point() +
-    geom_line(alpha = .5) +
+    geom_point(size = 2) +
+    geom_line(alpha = .3) +
     geom_vline(
       xintercept = lubridate::as_date("2024-02-01"),
       linetype = "dotted",
@@ -60,32 +64,41 @@ plot_measures <- function(
       labels = scales::label_date_short()
     ) +
     guides(
-      color = guide_legend(nrow = guide_nrow)
+      color = guide_legend(nrow = guide_nrow),
+      shape = guide_legend(nrow = guide_nrow)
     ) +
     labs(
       title = title,
       x = x_label,
       y = y_label,
       colour = guide_label,
+      shape = guide_label
     ) +
     theme(
       legend.position = legend_position,
-      plot.title = element_text(hjust = 0.5)
-    )
+      plot.title = element_text(hjust = 0.5),
+      text = element_text(size = 14)
+    ) 
+
+  if(!is.null(colour_palette)) {
+    plot_tmp <- plot_tmp + scale_colour_manual(values = colour_palette)
+  } else {
+    plot_tmp <- plot_tmp + scale_colour_viridis_d(end = .75)
+  }
 
   # Automatically change y scale depending selected value
-  if (rlang::as_label(enquo(select_value)) %in% c("numerator", "denominator")) {
-    plot_tmp <- plot_tmp + scale_y_continuous(
-      limits = c(0, NA),
-      labels = scales::label_number()
-    )
-  } else {
+  if (rlang::as_label(enquo(select_value)) == "ratio") {
     plot_tmp <- plot_tmp + scale_y_continuous(
       limits = c(0, NA),
       # scale = 1000 to calculate rate per 1000 people
       labels = scales::label_number(scale = 1000)
     )
-  }
+  } else {
+      plot_tmp <- plot_tmp + scale_y_continuous(
+        limits = c(0, NA),
+        labels = scales::label_number()
+      )
+        }
 
   # Add facets if requested
   # Ideally we would want to check facet_var instead of having an additional argument facet_wrap
@@ -94,6 +107,15 @@ plot_measures <- function(
     plot_tmp <- plot_tmp +
       facet_wrap(vars({{ facet_var }}), ncol = 2)
   }
+
+  if (!is.null(save_path)) {
+    ggsave(
+      filename = here("released_output", "results", "figures", save_path),
+      plot = plot_tmp,
+      width = 10,
+      height = 6
+    )
+  } 
 
   plot_tmp
 }

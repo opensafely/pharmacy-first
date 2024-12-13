@@ -51,7 +51,8 @@ To ensure comprehensive ethnicity data, we supplemented missing ethnicity values
 ### Total population
 
 ```{r, message=FALSE, warning=FALSE, fig.height=6, fig.width=10}
-# Select measures and breakdown
+
+# Create figure for total count of Pharmacy First consultations for each code (3 codes)
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_service") %>%
   filter(is.na(group_by)) |>
@@ -64,111 +65,44 @@ df_measures_selected <- df_measures %>%
     )
   ))
 
-fig_pf_individual_consultations_count <- df_measures_selected |>
-  select(measure, interval_start, numerator) |>
-  ggplot(aes(
-    x = interval_start,
-    y = numerator,
-    colour = measure,
-    shape = measure,
-  )) +
-  geom_point(size = 2) +
-  geom_line(alpha = .3) +
-  labs(
-    title = NULL,
-    x = NULL,
-    y = "Total count",
-    colour = NULL,
-    shape = NULL
-  ) +
-  scale_y_continuous(
-    labels = scales::label_number(),
-  ) +
-  theme(legend.position = "bottom") +
-  guides(
-    colour = guide_legend(ncol = 2),
-    shape = guide_legend(ncol = 2)
-  ) +
-  scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
-  ) +
-  geom_vline(
-    xintercept = lubridate::as_date(c(
-      "2024-01-31"
-    )),
-    linetype = "dotted",
-    colour = "orange",
-    size = .7
-  ) +
-  scale_colour_viridis_d(end = .75) +
-  theme(
-    text = element_text(size = 14)
-  )
+plot_measures(
+  df_measures_selected,
+  select_value = numerator,
+  select_interval_date = interval_start,
+  legend_position = "bottom",
+  facet_wrap = FALSE,
+  facet_var = measure,
+  y_label = "Total Count",
+  colour_var = measure,
+  guide_nrow = 1,
+  save_path = "fig_pf_individual_consultations_count.png"
+) 
 
-ggsave(
-  here("released_output", "results", "figures", "fig_pf_individual_consultations_count.png"),
-  fig_pf_individual_consultations_count,
-  width = 10, height = 6
-)
-
-fig_pf_individual_consultations_count
-
-fig_pf_grouped_consultations_count <- df_measures_selected |>
+# Create figure for total count of Pharmacy First Consultations (GROUPED)
+df_measures_selected <- df_measures_selected |>
   group_by(interval_start) |>
   mutate(
     pf_consultation_total = sum(numerator, na.rm = TRUE),
     data_desc = "Pharmacy First Consultation"
-  ) |>
-  ggplot(aes(
-    x = interval_start,
-    y = pf_consultation_total,
-    colour = data_desc,
-    shape = data_desc,
-  )) +
-  geom_point(size = 2) +
-  geom_line(alpha = .3) +
-  labs(
-    title = NULL,
-    x = NULL,
-    y = "Total count",
-    colour = NULL,
-    shape = NULL
-  ) +
-  scale_y_continuous(
-    labels = scales::label_number(),
-  ) +
-  theme(legend.position = "bottom") +
-  guides(
-    colour = guide_legend(ncol = 2),
-    shape = guide_legend(ncol = 2)
-  ) +
-  scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
-  ) +
-  geom_vline(
-    xintercept = lubridate::as_date(c(
-      "2024-01-31"
-    )),
-    linetype = "dotted",
-    colour = "orange",
-    size = .7
-  ) +
-  scale_colour_viridis_d(end = .75) +
-  theme(
-    text = element_text(size = 14)
-  )
+  ) 
 
-ggsave(
-  here("released_output", "results", "figures", "fig_pf_grouped_consultations_count.png"),
-  fig_pf_grouped_consultations_count,
-  width = 10, height = 6
+plot_measures(
+  df_measures_selected,
+  select_value = pf_consultation_total,
+  select_interval_date = interval_start,
+  legend_position = "bottom",
+  facet_wrap = FALSE,
+  facet_var = data_desc,
+  y_label = "Total Count",
+  colour_var = data_desc,
+  guide_nrow = 1,
+  save_path = "fig_pf_grouped_consultations_count.png",
 )
+
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=10, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of Pharmacy First grouped conditions (no breakdowns)
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(is.na(group_by))
@@ -183,13 +117,14 @@ plot_measures(
   facet_var = measure,
   title = "Pharmacy First Conditions",
   y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_grouped_conditions_count.png"
 )
 ```
 
 ### Breakdown by age
 
 ```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF consultations by age
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Age band")
@@ -204,10 +139,12 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Consultations",
-  y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = gradient_palette)
+  y_label = "Number of codes for PF consultations",
+  save_path = "fig_pf_consultations_by_age_count.png",
+  colour_palette = gradient_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF consultations by age
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Age band")
@@ -223,11 +160,13 @@ plot_measures(
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = gradient_palette)
+  save_path = "fig_pf_consultations_by_age_rate.png",
+  colour_palette = gradient_palette
+)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF clinical conditions broken down by age
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "Age band")
@@ -242,10 +181,12 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = gradient_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_age_count.png",
+  colour_palette = gradient_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF clinical conditions broken down by age
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "Age band")
@@ -260,14 +201,16 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Conditions per 1000 people",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = gradient_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_age_rate.png",
+  colour_palette = gradient_palette
+)
 ```
 
 ### Breakdown by sex
 
 ```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF consultations broken down by sex
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Sex")
@@ -283,9 +226,11 @@ plot_measures(
   facet_var = measure,
   title = "Pharmacy First Consultations",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = sex_palette)
+  save_path = "fig_pf_consultations_by_sex_count.png",
+  colour_palette = sex_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF consultations broken down by sex
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Sex")
@@ -301,11 +246,14 @@ plot_measures(
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = sex_palette)
+  save_path = "fig_pf_consultations_by_sex_rate.png",
+  colour_palette = sex_palette
+)
+
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF clinical conditions by sex
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "Sex")
@@ -320,10 +268,12 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = sex_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_sex_count.png",
+  colour_palette = sex_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF clinical conditions by sex
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "Sex")
@@ -338,14 +288,15 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Conditions per 1000 people",
-  y_label = "Number of codes for PF conditions"
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_sex_rate.png"
 ) + scale_color_manual(values = sex_palette)
 ```
 
 ### Breakdown by IMD
 
 ```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF consultations by IMD
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "IMD")
@@ -361,9 +312,11 @@ plot_measures(
   facet_var = measure,
   title = "Pharmacy First Consultations",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = gradient_palette)
+  save_path = "fig_pf_consultations_by_imd_count.png",
+  colour_palette = gradient_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF consultations by IMD
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "IMD")
@@ -379,11 +332,13 @@ plot_measures(
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = gradient_palette)
+  save_path = "fig_pf_consultations_by_imd_rate.png",
+  colour_palette = gradient_palette
+)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF clinical conditions by IMD
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "IMD")
@@ -398,10 +353,12 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = gradient_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_imd_count.png",
+  colour_palette = gradient_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF clinical conditions by IMD
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "IMD")
@@ -416,14 +373,16 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Conditions per 1000 people",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = gradient_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_imd_rate.png",
+  colour_palette = gradient_palette
+)
 ```
 
 ### Breakdown by region
 
 ```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF consultations by region
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Region")
@@ -439,9 +398,11 @@ plot_measures(
   facet_var = measure,
   title = "Pharmacy First Consultations",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = region_palette)
+  save_path = "fig_pf_consultations_by_region_count.png",
+  colour_palette = region_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF consultations by IMD
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Region")
@@ -457,11 +418,13 @@ plot_measures(
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = region_palette)
+  save_path = "fig_pf_consultations_by_region_rate.png",
+  colour_palette = region_palette
+)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF clinical conditions by region
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "Region")
@@ -476,10 +439,12 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = region_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_region_count.png",
+  colour_palette = region_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF clinical conditions by region
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "Region")
@@ -494,14 +459,16 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Conditions per 1000 people",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = region_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_region_rate.png",
+  colour_palette = region_palette
+)
 ```
 
 ### Breakdown by ethnicity
 
 ```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF consultations by ethnicity
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Ethnicity")
@@ -517,9 +484,11 @@ plot_measures(
   facet_var = measure,
   title = "Pharmacy First Consultations",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = ethnicity_palette)
+  save_path = "fig_pf_consultations_by_ethnicity_count.png",
+  colour_palette = ethnicity_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF consultations by ethnicity
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Ethnicity")
@@ -535,11 +504,13 @@ plot_measures(
   facet_var = measure,
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
-) + scale_color_manual(values = ethnicity_palette)
+  save_path = "fig_pf_consultations_by_ethnicity_rate.png",
+  colour_palette = ethnicity_palette
+)
 ```
 
 ```{r, message=FALSE, warning=FALSE, fig.height=8, fig.width=8}
-# Select measures and breakdown
+# Create figure for total count of PF clinical conditions by ethnicity
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "Ethnicity")
@@ -554,10 +525,12 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Pharmacy First Conditions",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = ethnicity_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_ethnicity_count.png",
+  colour_palette = ethnicity_palette
+)
 
-# Select measures and breakdown
+# Create figure for rate of PF clinical conditions by ethnicity
 df_measures_selected <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
   filter(group_by == "Ethnicity")
@@ -572,8 +545,10 @@ plot_measures(
   facet_wrap = TRUE,
   facet_var = measure,
   title = "Rate of Pharmacy First Conditions per 1000 people",
-  y_label = "Number of codes for PF conditions"
-) + scale_color_manual(values = ethnicity_palette)
+  y_label = "Number of codes for PF conditions",
+  save_path = "fig_pf_conditions_by_ethnicity_rate.png",
+  colour_palette = ethnicity_palette
+)
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
 # OpenSAFELY data for clinical conditions into a tidy df
