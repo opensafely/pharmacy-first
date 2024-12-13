@@ -5,46 +5,32 @@ from ehrql.tables.tpp import (
     practice_registrations,
 )
 from ehrql.tables.raw.tpp import medications
-
-from pf_dataset import pharmacy_first_event_codes
-from codelists import *
-
-pharmacy_first_med_codes = (
-    acute_otitis_media_tx_cod
-    + impetigo_treatment_tx_cod
-    + infected_insect_bites_tx_cod
-    + shingles_treatment_tx_cod
-    + sinusitis_tx_cod
-    + sore_throat_tx_cod
-    + urinary_tract_infection_tx_cod
-)
+from codelists import pharmacy_first_consultation_codelist, pharmacy_first_med_codelist
+from config import start_date_measure_medications, monthly_intervals_measure_medications
+from pf_variables_library import select_events
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
 # Turn off during code development, but turn on before running against on the server
 measures.configure_disclosure_control(enabled=True)
 
-start_date = "2023-11-01"
-monthly_intervals = 9
+start_date = start_date_measure_medications
+monthly_intervals = monthly_intervals_measure_medications
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
 # Select Pharmacy First consultations during interval date range
-pharmacy_first_events = clinical_events.where(
-    clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
-).where(
-    clinical_events.snomedct_code.is_in(
-        pharmacy_first_event_codes["combined_pf_service"]
-    )
+pharmacy_first_events = select_events(clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date).where(
+    clinical_events.snomedct_code.is_in(pharmacy_first_consultation_codelist)
 )
 
 pharmacy_first_ids = pharmacy_first_events.consultation_id
 has_pharmacy_first_consultation = pharmacy_first_events.exists_for_patient()
 
 # Select medications prescribed with PF consultation ID
-selected_medications = medications.where(
-    medications.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
-).where(medications.consultation_id.is_in(pharmacy_first_ids))
+selected_medications = select_events(medications, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date).where(
+    medications.consultation_id.is_in(pharmacy_first_ids)
+)
 
 # Select first medication for group_by argument in measures
 first_selected_medication = (
@@ -53,7 +39,7 @@ first_selected_medication = (
 
 # Check if a medication is from our PF codelists 
 has_pharmacy_first_medication = first_selected_medication.is_in(
-    pharmacy_first_med_codes
+    pharmacy_first_med_codelist
 )
 
 # Numerator, patients with a PF medication
