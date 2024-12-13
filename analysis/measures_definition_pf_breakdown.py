@@ -14,7 +14,7 @@ from codelists import (
 from pf_dataset import get_latest_ethnicity
 from codelists import pharmacy_first_event_codes, pharmacy_first_consultation_codelist
 from config import start_date_measure_pf_breakdown, monthly_intervals_measure_pf_breakdown
-from pf_variables_library import get_events_between, select_events_from_codelist
+from pf_variables_library import select_events
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -59,10 +59,10 @@ latest_region = case(
     otherwise="Missing",
 )
 
-pharmacy_first_ids = select_events_from_codelist(clinical_events, pharmacy_first_consultation_codelist).consultation_id
+pharmacy_first_ids = select_events(clinical_events, codelist=pharmacy_first_consultation_codelist).consultation_id
 
 # # Select clinical events in interval date range
-selected_events = get_events_between(clinical_events, INTERVAL.start_date, INTERVAL.end_date).where(
+selected_events = select_events(clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date).where(
     clinical_events.consultation_id.is_in(pharmacy_first_ids)
 )
 

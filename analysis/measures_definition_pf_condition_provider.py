@@ -10,7 +10,7 @@ from analysis.measures_definition_pf_breakdown import (
 )
 from codelists import pharmacy_first_consultation_codelist
 from config import start_date_measure_condition_provider, monthly_intervals_measure_condition_provider
-from pf_variables_library import get_events_between, select_events_from_codelist
+from pf_variables_library import select_events
 
 measures = create_measures()
 measures.configure_dummy_data(population_size=1000)
@@ -20,10 +20,10 @@ monthly_intervals = monthly_intervals_measure_condition_provider
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
-selected_events = get_events_between(clinical_events, INTERVAL.start_date, INTERVAL.end_date)
+selected_events = select_events(clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date)
 
 # Create variable which contains boolean values of whether pharmacy first event exists for patient
-has_pharmacy_first = select_events_from_codelist(selected_events, pharmacy_first_consultation_codelist).exists_for_patient()
+has_pharmacy_first = select_events(selected_events, codelist=pharmacy_first_consultation_codelist).exists_for_patient()
 
 for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     condition_events = selected_events.where(
