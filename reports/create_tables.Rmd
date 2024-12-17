@@ -1,0 +1,29 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(here)
+library(readr)
+library(gt)
+library(patchwork)
+```
+
+```{r echo=FALSE, message=FALSE}
+source(here("lib", "functions", "create_tables.R"))
+```
+
+```{r echo=FALSE, message=FALSE}
+# Create clinical pathways table
+tab_clinical_pathways <- create_clinical_pathways_table()
+gtsave(tab_clinical_pathways, filename = here("released_output", "results", "tables", "tab_pf_condition_criteria.png"))
+```
+
+```{r echo=FALSE}
+# Create pharmacy first service codes dataframe
+tab_pf_service_codes <- create_pf_service_codes()
+gtsave(tab_pf_service_codes, filename = here("released_output", "results", "tables", "tab_pf_service_codelist.png"))
+```
+
+```{r echo=FALSE, message=FALSE}
+tab_pf_condition_codes <- create_clinical_conditions_codes_table()
+gtsave(tab_pf_condition_codes, filename = here("released_output", "results", "tables", "tab_pf_condition_codes.png"))
+```
