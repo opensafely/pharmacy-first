@@ -84,7 +84,7 @@ plot_measures <- function(
       legend.position = legend_position,
       plot.title = element_text(hjust = 0.5),
       text = element_text(size = 14)
-    ) 
+    )
 
   # Change colour based on specified colour palette
   if (!is.null(colour_palette)) {
@@ -99,7 +99,7 @@ plot_measures <- function(
     plot_tmp <- plot_tmp + scale_colour_viridis_d(end = .75)
   }
 
-  if (!is.null(shapes) && shapes == "condition_shapes") { 
+  if (!is.null(shapes) && shapes == "condition_shapes") {
     plot_tmp <- plot_tmp + scale_shape_manual(values = condition_shapes)
   }
 
@@ -137,7 +137,7 @@ plot_measures <- function(
       facet_wrap(~source, scales = "free_y")
   }
 
-  # Add save_path option 
+  # Add save_path option
   if (!is.null(save_path)) {
     ggsave(
       filename = here("released_output", "results", "figures", save_path),
@@ -145,13 +145,13 @@ plot_measures <- function(
       width = 10,
       height = 6
     )
-  } 
+  }
 
   plot_tmp
 }
 
 # Combining two figures into one using patchwork
-patch_figures <- function(figure_1, figure_2, save_path=NULL) {
+patch_figures <- function(figure_1, figure_2, save_path = NULL) {
   combined_figure <- (figure_1 + figure_2) +
     plot_annotation(tag_levels = "A") +
     plot_layout(guides = "collect", widths = c(2, 1)) &
@@ -169,7 +169,7 @@ patch_figures <- function(figure_1, figure_2, save_path=NULL) {
       width = 15,
       height = 6
     )
-  } 
+  }
   combined_figure
 }
 
@@ -178,10 +178,10 @@ gradient_palette <- c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "gr
 region_palette <- c("red", "navy", "#018701", "#ffa600ca", "purple", "brown", "#f4a5b2", "cyan", "green", "grey")
 ethnicity_palette <- c("#42db0188", "#0056B3", "#ff0000c2", "#a52a2a5a", "purple", "grey")
 sex_palette <- c("red", "blue")
-dark2_palette    <- RColorBrewer::brewer.pal(n = 8, name = "Dark2")
+dark2_palette <- RColorBrewer::brewer.pal(n = 8, name = "Dark2")
 
 # Custom shapes
-condition_shapes = c(
+condition_shapes <- c(
   "Acute Sinusitis" = 15,
   "Infected Insect Bite" = 19,
   "UTI" = 4,

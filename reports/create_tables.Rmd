@@ -24,7 +24,6 @@ gtsave(tab_pf_service_codes, filename = here("released_output", "results", "tabl
 ```
 
 ```{r echo=FALSE, message=FALSE}
-
 tab_pf_condition_codes <- create_clinical_conditions_codes_table()
 gtsave(tab_pf_condition_codes, filename = here("released_output", "results", "tables", "tab_pf_condition_codes.png"))
 ```
