@@ -32,6 +32,10 @@ plot_measures <- function(
     shape_var = NULL,
     save_path = NULL,
     colour_palette = NULL,
+    y_scale = NULL,
+    scale_measure = NULL,
+    shapes = NULL,
+    date_breaks = "1 month",
     legend_position = "bottom") {
   # Test if all columns expected in output from generate measures exist
   # expected_names <- c("measure", "interval_start", "interval_end", "ratio", "numerator", "denominator")
@@ -48,7 +52,8 @@ plot_measures <- function(
       y = {{ select_value }},
       colour = {{ colour_var }},
       group = {{ colour_var }},
-      shape = {{ colour_var }}
+      shape = {{ colour_var }},
+      fill = {{ colour_var }}
     )
   ) +
     geom_point(size = 2) +
@@ -60,7 +65,7 @@ plot_measures <- function(
       linewidth = .7
     ) +
     scale_x_date(
-      date_breaks = "1 month",
+      date_breaks = {{ date_breaks }},
       labels = scales::label_date_short()
     ) +
     guides(
@@ -72,7 +77,8 @@ plot_measures <- function(
       x = x_label,
       y = y_label,
       colour = guide_label,
-      shape = guide_label
+      shape = NULL,
+      fill = NULL
     ) +
     theme(
       legend.position = legend_position,
@@ -80,25 +86,43 @@ plot_measures <- function(
       text = element_text(size = 14)
     ) 
 
-  if(!is.null(colour_palette)) {
-    plot_tmp <- plot_tmp + scale_colour_manual(values = colour_palette)
+  # Change colour based on specified colour palette
+  if (!is.null(colour_palette)) {
+    if (length(colour_palette) == 1 && colour_palette == "plasma") {
+      plot_tmp <- plot_tmp + scale_colour_viridis_d(option = "plasma", end = .75) +
+        geom_line(size = 0.5) +
+        geom_point(size = 2.5)
+    } else {
+      plot_tmp <- plot_tmp + scale_colour_manual(values = colour_palette)
+    }
   } else {
     plot_tmp <- plot_tmp + scale_colour_viridis_d(end = .75)
   }
 
+  if (!is.null(shapes) && shapes == "condition_shapes") { 
+    plot_tmp <- plot_tmp + scale_shape_manual(values = condition_shapes)
+  }
+
   # Automatically change y scale depending selected value
-  if (rlang::as_label(enquo(select_value)) == "ratio") {
+  scale_label <- rlang::as_label(enquo(scale_measure))
+  if (is.null(scale_measure)) {
     plot_tmp <- plot_tmp + scale_y_continuous(
       limits = c(0, NA),
-      # scale = 1000 to calculate rate per 1000 people
+      labels = scales::label_number()
+    )
+  } else if (scale_measure == "rate") {
+    plot_tmp <- plot_tmp + scale_y_continuous(
+      limits = c(0, NA),
       labels = scales::label_number(scale = 1000)
     )
+  } else if (scale_measure == "percent") {
+    plot_tmp <- plot_tmp + scale_y_continuous(labels = scales::percent)
   } else {
-      plot_tmp <- plot_tmp + scale_y_continuous(
-        limits = c(0, NA),
-        labels = scales::label_number()
-      )
-        }
+    plot_tmp <- plot_tmp + scale_y_continuous(
+      limits = c(0, NA),
+      labels = scales::label_number()
+    )
+  }
 
   # Add facets if requested
   # Ideally we would want to check facet_var instead of having an additional argument facet_wrap
@@ -107,7 +131,13 @@ plot_measures <- function(
     plot_tmp <- plot_tmp +
       facet_wrap(vars({{ facet_var }}), ncol = 2)
   }
+  # Add y_scale to add option for free_y
+  if (!is.null(y_scale) && y_scale == "free_y") {
+    plot_tmp <- plot_tmp +
+      facet_wrap(~source, scales = "free_y")
+  }
 
+  # Add save_path option 
   if (!is.null(save_path)) {
     ggsave(
       filename = here("released_output", "results", "figures", save_path),
@@ -120,8 +150,43 @@ plot_measures <- function(
   plot_tmp
 }
 
+# Combining two figures into one using patchwork
+patch_figures <- function(figure_1, figure_2, save_path=NULL) {
+  combined_figure <- (figure_1 + figure_2) +
+    plot_annotation(tag_levels = "A") +
+    plot_layout(guides = "collect", widths = c(2, 1)) &
+    theme(
+      legend.position = "bottom",
+      text = element_text(size = 15),
+      strip.background = element_rect(size = 0),
+      strip.text.x = element_text(size = 13, face = "bold")
+    )
+
+  if (!is.null(save_path)) {
+    ggsave(
+      filename = here("released_output", "results", "figures", save_path),
+      plot = combined_figure,
+      width = 15,
+      height = 6
+    )
+  } 
+  combined_figure
+}
+
 # Colour palettes
 gradient_palette <- c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey")
 region_palette <- c("red", "navy", "#018701", "#ffa600ca", "purple", "brown", "#f4a5b2", "cyan", "green", "grey")
 ethnicity_palette <- c("#42db0188", "#0056B3", "#ff0000c2", "#a52a2a5a", "purple", "grey")
 sex_palette <- c("red", "blue")
+dark2_palette    <- RColorBrewer::brewer.pal(n = 8, name = "Dark2")
+
+# Custom shapes
+condition_shapes = c(
+  "Acute Sinusitis" = 15,
+  "Infected Insect Bite" = 19,
+  "UTI" = 4,
+  "Acute Otitis Media" = 23,
+  "Acute Pharyngitis" = 3,
+  "Herpes Zoster" = 17,
+  "Impetigo" = 8
+)

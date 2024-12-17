@@ -37,20 +37,7 @@ source(here("lib", "functions", "load_validation_data.R"))
 source(here("lib", "functions", "load_opensafely_outputs.R"))
 ```
 
-#### Pregnancy Codelist
-
-The [Pregnancy Codelist](https://www.opencodelists.org/codelist/nhsd-primary-care-domain-refsets/preg_cod/20200812/#full-list) was used to identify patients who were pregnant during each month.
-
-#### Ethnicity Codelist
-
-We used the [Ethnicity Codelist](https://www.opencodelists.org/codelist/opensafely/ethnicity-snomed-0removed/2e641f61/) identify ethnicity in Electronic Health Records.
-To ensure comprehensive ethnicity data, we supplemented missing ethnicity values with data from the Secondary Uses Service (SUS).
-
-# Results
-
-### Total population
-
-```{r, message=FALSE, warning=FALSE, fig.height=6, fig.width=10}
+```{r, message=FALSE, warning=FALSE}
 
 # Create figure for total count of Pharmacy First consultations for each code (3 codes)
 df_measures_selected <- df_measures %>%
@@ -158,6 +145,7 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
   save_path = "fig_pf_consultations_by_age_rate.png",
@@ -200,6 +188,7 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions",
   save_path = "fig_pf_conditions_by_age_rate.png",
@@ -244,6 +233,7 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
   save_path = "fig_pf_consultations_by_sex_rate.png",
@@ -287,6 +277,7 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions",
   save_path = "fig_pf_conditions_by_sex_rate.png"
@@ -330,6 +321,7 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
   save_path = "fig_pf_consultations_by_imd_rate.png",
@@ -372,6 +364,7 @@ plot_measures(
   guide_nrow = 1,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions",
   save_path = "fig_pf_conditions_by_imd_rate.png",
@@ -416,6 +409,7 @@ plot_measures(
   guide_nrow = 2,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
   save_path = "fig_pf_consultations_by_region_rate.png",
@@ -458,6 +452,7 @@ plot_measures(
   guide_nrow = 2,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions",
   save_path = "fig_pf_conditions_by_region_rate.png",
@@ -502,6 +497,7 @@ plot_measures(
   guide_nrow = 2,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
   save_path = "fig_pf_consultations_by_ethnicity_rate.png",
@@ -544,6 +540,7 @@ plot_measures(
   guide_nrow = 2,
   facet_wrap = TRUE,
   facet_var = measure,
+  scale_measure = "rate",
   title = "Rate of Pharmacy First Conditions per 1000 people",
   y_label = "Number of codes for PF conditions",
   save_path = "fig_pf_conditions_by_ethnicity_rate.png",
@@ -551,6 +548,8 @@ plot_measures(
 )
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
+# Create figure to compare OS and BSA counts for PF clinical conditions
+
 # OpenSAFELY data for clinical conditions into a tidy df
 df_opensafely_validation <- df_measures %>%
   filter(measure_desc == "clinical_condition") %>%
@@ -565,187 +564,97 @@ df_opensafely_validation <- df_measures %>%
   relocate(date, consultation_type, source, count_method, count)
 
 # Combining rows from OS and BSA validation dataframes
-df_validation_condition_counts <- bind_rows(df_opensafely_validation, df_bsa_consultation_validation)
+df_validation_condition <- bind_rows(df_opensafely_validation, df_bsa_consultation_validation)
 
 # Line graph comparing clinical condition counts of BSA and OS data
-fig_validation_condition_count <- df_validation_condition_counts %>%
+df_validation_condition_counts <- df_validation_condition %>%
   filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+  filter(date >= "2024-01-01") %>%
   mutate(source = factor(source,
     levels = c("opensafely", "nhs_bsa"),
     labels = c("OpenSAFELY-TPP", "NHS BSA (40%)")
-  )) %>%
-  ggplot(
-    aes(
-      x = date,
-      y = count,
-      shape = consultation_type,
-      color = consultation_type,
-      fill = consultation_type,
-      group = consultation_type
-    )
-  ) +
-  geom_point(size = 2.5) +
-  geom_line(size = 0.5) +
-  facet_wrap(~source, scales = "free_y") +
-  scale_x_date(
-    labels = scales::label_date_short()
-  ) +
-  labs(x = NULL, y = "Count", colour = NULL, shape = NULL, fill = NULL) +
-  scale_color_viridis_d(
-    option = "plasma",
-    end = 0.9
-  ) +
-  scale_fill_viridis_d(
-    option = "plasma",
-    end = 0.9
-  ) +
-  scale_shape_manual(
-    values = c(
-      "Acute Sinusitis" = 15,
-      "Infected Insect Bite" = 19,
-      "UTI" = 4,
-      "Acute Otitis Media" = 23,
-      "Acute Pharyngitis" = 3,
-      "Herpes Zoster" = 17,
-      "Impetigo" = 8
-    )
-  ) +
-  theme(
-    text = element_text(size = 14)
-  ) +
-  geom_vline(
-    xintercept = lubridate::as_date("2024-02-01"),
-    linetype = "dotted",
-    colour = "orange",
-    linewidth = .7
-  ) +
-  scale_y_continuous(labels = scales::number)
+  ))
+
+# Create visualisation
+fig_validation_condition_count <- plot_measures(
+  df_validation_condition_counts,
+  select_value = count,
+  select_interval_date = date,
+  colour_var = consultation_type,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = source,
+  y_label = "Count",
+  save_path = "fig_validation_conditions.png",
+  y_scale = "free_y",
+  shapes = "condition_shapes",
+  colour_palette = "plasma",
+  date_breaks = "2 month"
+)
 
 # Another plot visualising the percentage
-fig_validation_condition_pct <- df_validation_condition_counts %>%
+df_validation_condition_pct <- df_validation_condition %>%
   filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+  filter(date >= "2024-01-01") %>%
   pivot_wider(names_from = c(source, count_method), values_from = count) %>%
-  mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY") %>%
-  ggplot(
-    aes(
-      x = date,
-      y = opensafely_opensafely_tpp / nhs_bsa_count_40pct,
-      shape = consultation_type,
-      color = consultation_type,
-      fill = consultation_type,
-      group = consultation_type
-    )
-  ) +
-  geom_point(size = 2.5) +
-  geom_line(size = 0.5) +
-  facet_wrap(~source, scales = "free_y") +
-  scale_x_date(
-    labels = scales::label_date_short()
-  ) +
-  labs(x = NULL, y = "Percent", colour = NULL, shape = NULL, fill = NULL) +
-  scale_color_viridis_d(
-    option = "plasma",
-    end = 0.9
-  ) +
-  scale_fill_viridis_d(
-    option = "plasma",
-    end = 0.9
-  ) +
-  scale_shape_manual(
-    values = c(
-      "Acute Sinusitis" = 15,
-      "Infected Insect Bite" = 19,
-      "UTI" = 4,
-      "Acute Otitis Media" = 23,
-      "Acute Pharyngitis" = 3,
-      "Herpes Zoster" = 17,
-      "Impetigo" = 8
-    )
-  ) +
-  theme(
-    text = element_text(size = 14)
-  ) +
-  geom_vline(
-    xintercept = lubridate::as_date("2024-02-01"),
-    linetype = "dotted",
-    colour = "orange",
-    linewidth = .7
-  ) +
-  scale_y_continuous(labels = scales::percent)
+  mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY")
 
-# Combining the plots with patchwork
-fig_validation_condition_count_pct <- (fig_validation_condition_count + fig_validation_condition_pct) +
-  plot_annotation(tag_levels = "A") +
-  plot_layout(guides = "collect", widths = c(2, 1)) &
-  theme(
-    legend.position = "bottom",
-    text = element_text(size = 15),
-    strip.background = element_rect(size = 0),
-    strip.text.x = element_text(size = 13, face = "bold")
+fig_validation_condition_pct <- plot_measures(
+  df_validation_condition_pct,
+  select_value = opensafely_opensafely_tpp / nhs_bsa_count_40pct,
+  select_interval_date = date,
+  colour_var = consultation_type,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = source,
+  scale_measure = "percent",
+  y_label = "Percent",
+  save_path = "fig_validation_conditions_pct.png",
+  y_scale = "free_y",
+  shapes = "condition_shapes",
+  colour_palette = "plasma",
+  date_breaks = "2 month"
+)
+
+# Combining the plots with patchwork function
+patch_figures(
+  fig_validation_condition_count,
+  fig_validation_condition_pct,
+  "fig_validation_condition_count_pct.png"
   )
 
-fig_validation_condition_count_pct
-
-ggsave(
-  here("released_output", "results", "figures", "fig_validation_condition_count_pct.png"),
-  fig_validation_condition_count_pct,
-  width = 15, height = 6
-)
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
-# Line graph comparing clinical condition counts of BSA and OS data
-fig_pf_descriptive_stats <- df_descriptive_stats %>%
+# Create figure to show & of PF Med, Condition and both with linked PF consultations
+
+df_descriptive_stats <- df_descriptive_stats %>%
   mutate(
     measure = factor(measure,
       levels = c("pf_with_pfmed", "pf_with_pfcondition", "pf_with_pfmed_and_pfcondition"),
       labels = c("PF Med", "PF Condition", "PF Med & PF Condition")
     )
-  ) |>
-  ggplot(aes(
-    x = interval_start,
-    y = ratio,
-    colour = measure,
-    shape = measure,
-  )) +
-  geom_point(size = 2.5) +
-  geom_line(size = 0.5) +
-  labs(
-    x = NULL,
-    y = NULL,
-    shape = "PF consultation linked to:",
-    colour = "PF consultation linked to:"
-  ) +
-  scale_x_date(
-    labels = scales::label_date_short(), breaks = "month"
-  ) +
-  scale_y_continuous(
-    labels = scales::percent,
-  ) +
-  theme(
-    text = element_text(size = 14)
-  ) +
-  geom_vline(
-    xintercept = lubridate::as_date("2024-02-01"),
-    linetype = "dotted",
-    colour = "orange",
-    linewidth = .7
-  ) +
-  scale_colour_brewer(palette = "Dark2")
+  ) 
 
-
-fig_pf_descriptive_stats
-
-ggsave(
-  here("released_output", "results", "figures", "fig_pf_descriptive_stats.png"),
-  fig_pf_descriptive_stats,
-  width = 10, height = 6
+plot_measures(
+  df_descriptive_stats,
+  select_value = ratio,
+  select_interval_date = interval_start,
+  colour_var = measure,
+  guide_nrow = 2,
+  facet_wrap = FALSE,
+  facet_var = measure,
+  scale_measure = "percent",
+  y_label = "Percent",
+  save_path = "fig_pf_descriptive_stats.png",
+  colour_palette = dark2_palette,
+  date_breaks = "1 month"
 )
+
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
-# Validation of pharmacy first medication counts figure
-# OS data - waiting on released output
+# Create figure to compare OS and BSA counts for PF medication
 
 df_bsa_medication_validation_sum <- df_bsa_medication_validation %>%
   group_by(date) %>%
@@ -767,105 +676,55 @@ df_opensafely_pfmed_sum <- df_pfmed %>%
 df_validation_med_counts <- bind_rows(df_opensafely_pfmed_sum, df_bsa_medication_validation_sum) |>
   filter(date >= "2024-01-01" & date <= "2024-07-01")
 
-fig_validation_med_count <- df_validation_med_counts |>
+df_validation_med_counts <- df_validation_med_counts %>%
   mutate(
     source = factor(source, levels = c("opensafely_tpp", "nhs_bsa"), labels = c("OpenSAFELY-TPP", "NHS BSA")),
     count_method = factor(count_method, levels = c("opensafely_tpp", "count_40pct"), labels = c("OpenSAFELY-TPP", "NHS BSA (40%)"))
-  ) |>
-  ggplot(aes(
-    x = date,
-    y = count,
-    colour = count_method,
-    shape = count_method
-  )) +
-  geom_point(size = 2) +
-  facet_wrap(~count_method, scales = "free_y") +
-  geom_line(size = 0.5) +
-  labs(
-    x = NULL,
-    y = "Count",
-    colour = NULL,
-    shape = NULL,
-  ) +
-  scale_x_date(
-    labels = scales::label_date_short(), breaks = "month"
-  ) +
-  theme(
-    text = element_text(size = 14)
-  ) +
-  geom_vline(
-    xintercept = lubridate::as_date("2024-02-01"),
-    linetype = "dotted",
-    colour = "orange",
-    linewidth = .7
-  ) +
-  scale_colour_brewer(palette = "Dark2")
+  ) 
+
+fig_validation_med_count <- plot_measures(
+  df_validation_med_counts,
+  select_value = count,
+  select_interval_date = date,
+  colour_var = count_method,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = source,
+  y_scale = "free_y",
+  y_label = "Count",
+  save_path = "fig_validation_med_counts.png",
+  colour_palette = "plasma",
+  date_breaks = "1 month"
+)
 
 # Another plot visualising the percentage
-fig_validation_med_pct <- df_validation_med_counts %>%
-  filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+df_validation_med_pct <- df_validation_med_counts %>%
+  filter(count_method %in% c("OpenSAFELY-TPP", "NHS BSA (40%)")) %>%
   pivot_wider(names_from = c(source, count_method), values_from = count) %>%
-  mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY") %>%
-  ggplot(
-    aes(
-      x = date,
-      y = opensafely_tpp_opensafely_tpp / nhs_bsa_count_40pct,
-      shape = source,
-      color = source,
-      fill = source,
-      group = source
-    )
-  ) +
-  geom_point(size = 2.5) +
-  geom_line(size = 0.5) +
-  facet_wrap(~source, scales = "free_y") +
-  scale_x_date(
-    labels = scales::label_date_short(), breaks = "month"
-  ) +
-  labs(x = NULL, y = "Percent", colour = NULL, shape = NULL, fill = NULL) +
-  scale_color_viridis_d(
-    option = "plasma",
-    end = 0.9
-  ) +
-  scale_fill_viridis_d(
-    option = "plasma",
-    end = 0.9
-  ) +
-  scale_shape_manual(
-    values = c("Percentage of NHS BSA (40%) in OpenSAFELY" = 15)
-  ) +
-  theme(
-    text = element_text(size = 14)
-  ) +
-  geom_vline(
-    xintercept = lubridate::as_date("2024-02-01"),
-    linetype = "dotted",
-    colour = "orange",
-    linewidth = .7
-  ) +
-  scale_y_continuous(labels = scales::percent)
+  mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY") 
+
+fig_validation_med_pct <- plot_measures(
+  df_validation_med_pct,
+  select_value = `OpenSAFELY-TPP_OpenSAFELY-TPP` / `NHS BSA_NHS BSA (40%)`,
+  select_interval_date = date,
+  colour_var = source,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = source,
+  scale_measure = "percent",
+  y_scale = "free_y",
+  y_label = "Count",
+  save_path = "fig_validation_med_pct.png",
+  colour_palette = "plasma",
+  date_breaks = "1 month"
+)
 
 # Combining the plots with patchwork
-fig_validation_medication_count_pct <- (fig_validation_med_count + fig_validation_med_pct) +
-  plot_annotation(tag_levels = "A") +
-  plot_layout(guides = "collect", widths = c(2, 1)) &
-  theme(
-    legend.position = "bottom",
-    text = element_text(size = 15),
-    strip.background = element_rect(size = 0),
-    strip.text.x = element_text(size = 13, face = "bold")
-  )
+patch_figures(fig_validation_med_count, fig_validation_med_pct, "fig_validation_medication_count_pct.png")
 
-fig_validation_medication_count_pct
-
-ggsave(
-  here("released_output", "results", "figures", "fig_validation_medication_count_pct.png"),
-  fig_validation_medication_count_pct,
-  width = 15, height = 6
-)
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
-# GP vs PF provider graph
+# Create figure to compare clinical events linked to PF consultation and not linked
 
 df_condition_provider_grouped <- df_condition_provider %>%
   group_by(measure, interval_start, pf_status) %>%
@@ -899,53 +758,20 @@ df_condition_provider_grouped <- df_condition_provider %>%
     )
   )
 
-fig_pf_condition_provider_count <- ggplot(
+fig_validation_med_count <- plot_measures(
   df_condition_provider_grouped,
-  aes(
-    x = interval_start,
-    y = count,
-    colour = pf_status,
-    shape = pf_status
-  )
-) +
-  geom_point(size = 1.5) +
-  geom_line(size = 0.5) +
-  facet_wrap(~measure, scales = "free_y") +
-  labs(
-    x = NULL, y = "Count", color = NULL, shape = NULL
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5),
-    legend.position = "bottom",
-    axis.title.x = element_blank()
-  ) +
-  scale_x_date(
-    labels = scales::label_date_short()
-  ) +
-  geom_vline(
-    xintercept = lubridate::as_date("2024-02-01"),
-    linetype = "dotted",
-    colour = "orange",
-    linewidth = .7
-  ) +
-  scale_color_viridis_d(
-    option = "plasma",
-    end = 0.75
-  ) +
-  theme(
-    legend.position = "bottom",
-    text = element_text(size = 14),
-    strip.background = element_rect(size = 0),
-    # strip.text.x = element_text(size = 13, face = "bold")
-  )
-
-fig_pf_condition_provider_count
-
-ggsave(
-  here("released_output", "results", "figures", "fig_pf_condition_provider_count.png"),
-  fig_pf_condition_provider_count,
-  width = 13, height = 8
+  select_value = count,
+  select_interval_date = interval_start,
+  colour_var = pf_status,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  y_label = "Count",
+  save_path = "fig_pf_condition_provider_count.png",
+  date_breaks = "6 month",
+  colour_palette = "plasma"
 )
+
 ```
 
 # References
