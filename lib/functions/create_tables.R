@@ -1,5 +1,5 @@
 # Function to create clinical pathways table
-create_clinical_pathways_table <- function() {
+create_clinical_pathways_table <- function(title) {
   data <- tibble(
     Condition = c(
       "Uncomplicated Urinary Tract Infection",
@@ -42,7 +42,7 @@ create_clinical_pathways_table <- function() {
   data %>%
     gt() %>%
     tab_header(
-      title = "Table 1. Pharmacy First population criteria"
+      title = title
       # subtitle = "Inclusion and exclusion criteria for clinical pathway/conditions"
     ) %>%
     cols_label(
@@ -63,7 +63,7 @@ create_clinical_pathways_table <- function() {
 }
 
 # Function to create pharmacy first service codes table
-create_pf_service_codes <- function() {
+create_pf_service_codes_table <- function(title) {
   data <- tibble(
     codelist = c(
       "Community Pharmacist (CP) Consultation Service for minor illness (procedure)",
@@ -78,7 +78,7 @@ create_pf_service_codes <- function() {
   data %>%
     gt() %>%
     tab_header(
-      title = "Table 2. Pharmacy First consultation codes",
+      title = title,
       # subtitle = "Codelist descriptions and their respective SNOMED codes"
     ) %>%
     cols_label(
@@ -92,7 +92,7 @@ create_pf_service_codes <- function() {
     )
 }
 
-create_clinical_conditions_codes_table <- function() {
+create_clinical_conditions_codes_table <- function(title) {
   data <- tibble(
     condition = c(
       "Acute otitis media",
@@ -116,7 +116,7 @@ create_clinical_conditions_codes_table <- function() {
   data %>%
     gt() %>%
     tab_header(
-      title = "Table 3. Pharmacy First condition codes"
+      title = title
       # subtitle = "Clinical conditions and their corresponding SNOMED codes"
     ) %>%
     cols_label(
