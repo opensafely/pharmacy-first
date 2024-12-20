@@ -6,8 +6,6 @@ output:
     toc_depth: 4
   pdf_document: default
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-bibliography: references.bib
-link-citations: true
 ---
 
 ```{r setup, include=FALSE}
