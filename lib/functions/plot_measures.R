@@ -30,7 +30,6 @@ plot_measures <- function(
     facet_var = NULL,
     colour_var = NULL,
     shape_var = NULL,
-    save_path = NULL,
     colour_palette = NULL,
     y_scale = NULL,
     scale_measure = NULL,
@@ -137,22 +136,11 @@ plot_measures <- function(
       facet_wrap(~source, scales = "free_y")
   }
 
-  # Add save_path option
-  if (!is.null(save_path)) {
-    ggsave(
-      filename = here("released_output", "results", "figures", save_path),
-      plot = plot_tmp,
-      width = 10,
-      height = 6
-    )
-  }
-
   plot_tmp
 }
 
-# Combining two figures into one using patchwork
-patch_figures <- function(figure_1, figure_2, save_path = NULL) {
-  combined_figure <- (figure_1 + figure_2) +
+set_patchwork_theme <- function(patchwork_figure) {
+  patchwork_figure +
     plot_annotation(tag_levels = "A") +
     plot_layout(guides = "collect", widths = c(2, 1)) &
     theme(
@@ -161,16 +149,16 @@ patch_figures <- function(figure_1, figure_2, save_path = NULL) {
       strip.background = element_rect(size = 0),
       strip.text.x = element_text(size = 13, face = "bold")
     )
+}
 
-  if (!is.null(save_path)) {
-    ggsave(
-      filename = here("released_output", "results", "figures", save_path),
-      plot = combined_figure,
-      width = 15,
-      height = 6
-    )
-  }
-  combined_figure
+save_figure <- function(figure, width = 10, height = 6) {
+  # this uses the 'figure' argument as a string to later generate a filename
+  figure_name <- deparse(substitute(figure))
+  ggsave(
+    filename = here("released_output", "results", "figures", paste(figure_name, "png",sep = ".")),
+    figure,
+    width = width, height = height
+  )
 }
 
 # Colour palettes
