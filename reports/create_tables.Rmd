@@ -1,0 +1,96 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(here)
+library(readr)
+library(gt)
+library(patchwork)
+```
+
+```{r echo=FALSE, message=FALSE}
+source(here("lib", "functions", "create_tables.R"))
+```
+
+```{r echo=FALSE, message=FALSE}
+# Create clinical pathways table
+tab_clinical_pathways <- create_clinical_pathways_table("Table 1. Pharmacy First population criteria")
+gtsave(tab_clinical_pathways, filename = here("released_output", "results", "tables", "tab_pf_condition_criteria.png"))
+```
+
+```{r echo=FALSE}
+# Create pharmacy first service codes dataframe
+tab_pf_service_codes <- create_pf_service_codes_table("Table 2. Pharmacy First consultation codes")
+gtsave(tab_pf_service_codes, filename = here("released_output", "results", "tables", "tab_pf_service_codelist.png"))
+```
+
+```{r echo=FALSE, message=FALSE}
+tab_pf_condition_codes <- create_clinical_conditions_codes_table("Table 3. Pharmacy First condition codes")
+gtsave(tab_pf_condition_codes, filename = here("released_output", "results", "tables", "tab_pf_condition_codes.png"))
+```
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
+
+df_consultation_med_counts <- read_csv(
+  here("released_output", "measures", "consultation_med_counts_measures.csv"),
+  col_types = cols(dmd_code = col_character())
+)
+
+codelist_file_names <- list.files(
+  here("codelists"),
+  pattern = "\\.csv$",
+  full.names = FALSE
+)
+
+pf_med_code_desc <- here("codelists", codelist_file_names) |>
+  map(~ read_csv(.x, col_types = cols(
+    code = col_character()
+  ))) |>
+  bind_rows() |>
+  select(code, term) |>
+  distinct()
+
+top10_nonpf_med_code_desc  <- tribble(
+  ~code, ~term,
+  "37388111000001102", "Macrobid 100mg modified-release capsules",
+  "531611000001106", "Difflam 0.15% spray",
+  "3697711000001104", "EarCalm 2% spray",
+  "42533911000001101", "Coryen 27.5micrograms/dose nasal spray",
+  "623911000001105", "Hydrocortisone 1% cream",
+  "4530711000001104", "Covonia Sore Throat 0.2%/0.05% oromucosal spray menthol",
+  "42100111000001106", "Benzydamine 0.15% oromucosal spray sugar free",
+  "29311000001104", "Piriton 2mg/5ml syrup",
+  "17290311000001107", "Benzydamine 0.15% oromucosal spray sugar free",
+  "4648111000001108", "Robitussin Chesty Cough 100mg/5ml oral solution"
+)
+
+combined_med_code_desc <- pf_med_code_desc |>
+  dplyr::bind_rows(top10_nonpf_med_code_desc)
+
+df_pf_med_counts <- df_consultation_med_counts |>
+  select(numerator, code = dmd_code, pharmacy_first_med) |>
+  left_join(combined_med_code_desc, by = "code") |>
+  filter(numerator > 0) |>
+  select(-code) %>%
+  group_by(pharmacy_first_med, term) |>
+  summarise(count = sum(numerator, na.rm = TRUE)) |>
+  filter(!is.na(term)) %>%
+  ungroup() |>
+  group_by(pharmacy_first_med) |>
+  mutate(ratio_by_group = count / sum(count, na.na.rm = TRUE)) |>
+  slice_max(order_by = ratio_by_group, n = 5) |>
+  ungroup()
+
+df_pf_and_non_pf_med_counts <- df_pf_med_counts %>%
+  arrange(!pharmacy_first_med) %>%
+  mutate(pharmacy_first_med = factor(pharmacy_first_med,
+  levels = c(FALSE, TRUE),
+  labels = c(("Medication not included in codelists"), "Medication included in codelists"))) %>%
+  group_by(pharmacy_first_med)
+  
+gt_top_meds(df_pf_and_non_pf_med_counts)
+
+gtsave(
+  tab_pf_med_counts,
+  here("released_output", "results", "tables", "tab_pf_med_counts.png"),
+)
+```

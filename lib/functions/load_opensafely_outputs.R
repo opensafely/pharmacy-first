@@ -36,53 +36,9 @@ df_measures <- tidy_measures(
   pf_measures_groupby_dict = pf_measures_groupby_dict
 )
 
-df_measures$ethnicity <- factor(
-  df_measures$ethnicity,
-  levels = c(
-    "White",
-    "Mixed",
-    "Asian or Asian British",
-    "Black or Black British",
-    "Chinese or Other Ethnic Groups",
-    "Missing"
-  ),
-  ordered = TRUE
-)
-
-df_measures$age_band <- factor(
-  df_measures$age_band,
-  levels = c(
-    "0-19",
-    "20-39",
-    "40-59",
-    "60-79",
-    "80+",
-    "Missing"
-  ),
-  ordered = TRUE
-)
-
-df_measures$region <- factor(
-  df_measures$region,
-  levels = c(
-    "East",
-    "East Midlands",
-    "London",
-    "North East",
-    "North West",
-    "South East",
-    "South West",
-    "West Midlands",
-    "Yorkshire and The Humber",
-    "Missing"
-  ),
-  ordered = TRUE
-)
-
-df_measures <- df_measures %>%
-  mutate(sex = factor(sex,
-    levels = c("female", "male"),
-    labels = c("Female", "Male")
-  ))
+# str(df_measures$ethnicity)
+# str(df_measures$age_band)
+# str(df_measures$region)
+# str(df_measures$sex)
 
 df_measures$age_band[is.na(df_measures$age_band)] <- "Missing"
