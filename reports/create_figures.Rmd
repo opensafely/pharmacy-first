@@ -520,7 +520,6 @@ fig_pf_consultations_by_ethnicity_rate <- plot_measures(
   scale_measure = "rate",
   title = "Rate of Pharmacy First Consultations per 1000 people",
   y_label = "Number of codes for FP consultations",
-  save_path = "fig_pf_consultations_by_ethnicity_rate.png",
   colour_palette = ethnicity_palette
 )
 
@@ -643,12 +642,6 @@ fig_validation_condition_comparison <- (fig_validation_condition_count + fig_val
 set_patchwork_theme()
 save_figure(fig_validation_condition_comparison, width = 15)
 
-# Combining the plots with patchwork function
-patch_figures(
-  fig_validation_condition_count,
-  fig_validation_condition_pct,
-  "fig_validation_condition_count_pct.png"
-)
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
@@ -747,8 +740,6 @@ fig_validation_med_comparison <- (fig_validation_med_count + fig_validation_med_
 set_patchwork_theme()
 save_figure(fig_validation_med_comparison, width = 15)
 
-# Combining the plots with patchwork
-patch_figures(fig_validation_med_count, fig_validation_med_pct, "fig_validation_medication_count_pct.png")
 ```
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
 # Create figure to compare clinical events linked to PF consultation and not linked
