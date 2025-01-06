@@ -48,3 +48,12 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/population/pf_population.csv.gz
+
+  generate_pf_med_counts_measures:
+    run: >
+      ehrql:v1 generate-measures analysis/measures_definition_pf_consultation_med_counts.py
+      --dummy-tables dummy_tables
+      --output output/measures/consultation_med_counts_measures.csv
+    outputs:
+      moderately_sensitive:
+        measure: output/measures/consultation_med_counts_measures.csv

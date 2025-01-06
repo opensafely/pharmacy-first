@@ -13,3 +13,7 @@ monthly_intervals_measure_descriptive_stats = 9
 # measures_definition_pf_medications.py
 start_date_measure_medications = "2023-11-01"
 monthly_intervals_measure_medications = 9
+
+# measures_definition_pf_consultation_pf_counts.py
+start_date_measure_med_counts = "2024-02-01"
+monthly_intervals_measure_med_counts = 6
