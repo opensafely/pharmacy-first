@@ -34,6 +34,10 @@ selected_med_events = select_events(
     medications.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
 )
 
+selected_clinical_pathways = select_events(
+    clinical_events, codelist=pharmacy_first_conditions_codelist
+).where(clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date))
+
 # Create variable which contains boolean values of whether pharmacy first event exists for patient
 has_pf_consultation = select_events(
     selected_clinical_events, codelist=pharmacy_first_consultation_codelist).exists_for_patient()
@@ -43,15 +47,15 @@ has_pf_condition = select_events(
     selected_clinical_events, codelist=pharmacy_first_conditions_codelist).exists_for_patient()
 
 # Dates of pharmacy first consultations
-pharmacy_first_dates = select_events(clinical_events, codelist=pharmacy_first_ids).date
+pharmacy_first_dates = select_events(clinical_events, codelist=pharmacy_first_consultation_codelist).date
 
 # Specify whether a patient has been prescribed a PF medication on the same day as a PF consultation code
-has_pfmed_on_pfdate = selected_med_events.where(medications.date.is_in(pharmacy_first_dates))
+has_pfmed_on_pfdate = selected_med_events.where(medications.date.is_in(pharmacy_first_dates)).exists_for_patient()
 
 # Specify whether a patient has a PF condition
-has_pfpathway_on_pfdate = has_pf_condition.where(
-    has_pf_condition.date.is_in(pharmacy_first_dates)
-)
+has_pfpathway_on_pfdate = selected_clinical_pathways.where(
+    selected_clinical_pathways.date.is_in(pharmacy_first_dates)
+).exists_for_patient()
 
 # PF consultations with prescribed PF medication
 has_pf_medication = selected_med_events.where(
