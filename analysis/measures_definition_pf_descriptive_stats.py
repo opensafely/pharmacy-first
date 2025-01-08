@@ -8,10 +8,13 @@ from codelists import (
     pharmacy_first_consultation_codelist,
     pharmacy_first_conditions_codelist,
 )
-from config import start_date_measure_descriptive_stats, monthly_intervals_measure_descriptive_stats
+from config import (
+    start_date_measure_descriptive_stats,
+    monthly_intervals_measure_descriptive_stats,
+)
 
 measures = create_measures()
-measures.configure_dummy_data(population_size=1000)
+measures.configure_dummy_data(population_size=100)
 measures.configure_disclosure_control(enabled=True)
 
 start_date = start_date_measure_descriptive_stats
@@ -19,101 +22,98 @@ monthly_intervals = monthly_intervals_measure_descriptive_stats
 
 registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
-# Function to retrieve consultation ids from clinical events that are PF consultations
-pharmacy_first_ids = select_events(
-    clinical_events, codelist=pharmacy_first_consultation_codelist
-).consultation_id
-
-# Dates of pharmacy first consultations
-pharmacy_first_dates = select_events(clinical_events, codelist=pharmacy_first_consultation_codelist).date
-
-# Function to retrieve selected events using pharmacy first ids
-selected_clinical_events = select_events(
-    clinical_events, consultation_ids=pharmacy_first_ids
-).where(clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date))
-
-# Med events linked to pharmacy first consultation IDs
-selected_pfid_med_events = select_events(
-    medications, consultation_ids=pharmacy_first_ids).where(
-    medications.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
+# Select clinical events and medications for measures INTERVAL
+selected_events = clinical_events.where(
+    clinical_events.date.is_on_or_between(
+        INTERVAL.start_date,
+        INTERVAL.end_date,
+    )
+)
+selected_medications = medications.where(
+    medications.date.is_on_or_between(
+        INTERVAL.start_date,
+        INTERVAL.end_date,
+    )
 )
 
-# Med events that are not linked by ID but are linked to PF Med codelist
-selected_med_events = medications.where(medications.dmd_code.is_in(pharmacy_first_med_codelist)
-    ).where(medications.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date)
+# Select all Pharmacy First consultation events
+pf_consultation_events = select_events(
+    selected_events,
+    codelist=pharmacy_first_consultation_codelist,
 )
 
-# Events linked to a PF clinical pathway, and not by PF ID
-selected_clinical_pathways = select_events(
-    clinical_events, codelist=pharmacy_first_conditions_codelist
-).where(clinical_events.date.is_on_or_between(INTERVAL.start_date, INTERVAL.end_date))
+# Extract Pharmacy First consultation IDs and dates
+pf_ids = pf_consultation_events.consultation_id
+pf_dates = pf_consultation_events.date
 
-# Create variable which contains boolean values of whether pharmacy first event exists for patient
-has_pf_consultation = select_events(
-    selected_clinical_events, codelist=pharmacy_first_consultation_codelist).exists_for_patient()
+has_pf_consultation = pf_consultation_events.exists_for_patient()
 
-# PF consultations with PF clinical condition
-has_pf_condition = select_events(
-    selected_clinical_events, codelist=pharmacy_first_conditions_codelist).exists_for_patient()
+# Select Pharmacy First conditions by ID and date
+selected_pf_id_conditions = selected_events.where(
+    selected_events.consultation_id.is_in(pf_ids)
+).where(selected_events.snomedct_code.is_in(pharmacy_first_conditions_codelist))
 
-# Specify whether a patient has been prescribed a PF medication on the same day as a PF consultation code
-has_pfmed_on_pfdate = selected_med_events.where(medications.date.is_in(pharmacy_first_dates)).exists_for_patient()
-
-# Specify whether a patient has a PF condition
-has_pfpathway_on_pfdate = selected_clinical_pathways.where(
-    selected_clinical_pathways.date.is_in(pharmacy_first_dates)
-).exists_for_patient()
-
-# PF consultations with prescribed PF medication
-has_pf_medication = selected_pfid_med_events.where(
-    selected_pfid_med_events.dmd_code.is_in(pharmacy_first_med_codelist)
-).exists_for_patient()
-
-# Define the denominator as the number of patients registered
-denominator = (
-    registration.exists_for_patient()
-    & patients.sex.is_in(["male", "female"])
-    & has_pf_consultation
+selected_pf_date_conditions = (
+    selected_events.where(selected_events.consultation_id.is_not_in(pf_ids))
+    .where(selected_events.date.is_in(pf_dates))
+    .where(selected_events.snomedct_code.is_in(pharmacy_first_conditions_codelist))
 )
-measures.define_defaults(denominator=denominator)
 
-# Measures for PF consultations with PF medication
-measures.define_measure(
-    name="pf_with_pfmed",
-    numerator=has_pf_medication,
-    intervals=months(monthly_intervals).starting_on(start_date),
+has_pf_id_condition = selected_pf_id_conditions.exists_for_patient()
+has_pf_date_condition = selected_pf_date_conditions.exists_for_patient()
+
+# Select Pharmacy First Medications by ID and date
+selected_pf_id_medications = selected_medications.where(
+    selected_medications.consultation_id.is_in(pf_ids)
+).where(selected_medications.dmd_code.is_in(pharmacy_first_med_codelist))
+
+selected_pf_date_medications = (
+    selected_medications.where(selected_medications.consultation_id.is_not_in(pf_ids))
+    .where(selected_medications.date.is_in(pf_dates))
+    .where(selected_medications.dmd_code.is_in(pharmacy_first_med_codelist))
 )
-# Measures for PF consultations with PF condition
-measures.define_measure(
-    name="pf_with_pfcondition",
-    numerator=has_pf_condition,
+
+has_pf_id_medication = selected_pf_id_medications.exists_for_patient()
+has_pf_date_medication = selected_pf_date_medications.exists_for_patient()
+
+# Define measures
+measures.define_defaults(
+    denominator=(
+        registration.exists_for_patient()
+        & patients.sex.is_in(["male", "female"])
+        & has_pf_consultation
+    ),
     intervals=months(monthly_intervals).starting_on(start_date),
 )
 
-# Measures for PF consultations with both PF medication and condition
+# Measures linked by Pharmacy First consultation ID
 measures.define_measure(
-    name="pf_with_pfmed_and_pfcondition",
-    numerator=has_pf_condition & has_pf_medication,
-    intervals=months(monthly_intervals).starting_on(start_date),
+    name="pfmed_with_pfid",
+    numerator=has_pf_id_medication,
 )
 
-# Measures for PF medications prescribed on the same day as PF consultation 
+measures.define_measure(
+    name="pfcondition_with_pfid",
+    numerator=has_pf_id_condition,
+)
+
+measures.define_measure(
+    name="pfmed_and_pfcondition_with_pfid",
+    numerator=has_pf_id_medication & has_pf_id_condition,
+)
+
+# Measures linked by Pharmacy First consultation date
 measures.define_measure(
     name="pfmed_on_pfdate",
-    numerator=has_pfmed_on_pfdate,
-    intervals=months(monthly_intervals).starting_on(start_date),
+    numerator=has_pf_date_medication,
 )
 
-# Measures for PF conditions diagnosed on the same day as PF consultation 
 measures.define_measure(
-    name="pfpathway_on_pfdate",
-    numerator=has_pfpathway_on_pfdate,
-    intervals=months(monthly_intervals).starting_on(start_date),
+    name="pfcondition_on_pfdate",
+    numerator=has_pf_date_condition,
 )
 
-# Measures for PF conditions diagnosed and PF med prescribed on the same day as PF consultation 
 measures.define_measure(
-    name="pfmed_and_pfpathway_on_pfdate",
-    numerator=has_pfmed_on_pfdate & has_pfpathway_on_pfdate,
-    intervals=months(monthly_intervals).starting_on(start_date),
+    name="pfmed_and_pfcondition_on_pfdate",
+    numerator=has_pf_date_medication & has_pf_date_condition,
 )
