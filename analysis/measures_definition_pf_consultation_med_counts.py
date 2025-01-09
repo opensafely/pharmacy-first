@@ -8,7 +8,7 @@ from ehrql.tables.raw.tpp import medications
 
 from config import start_date_measure_med_counts, monthly_intervals_measure_med_counts
 from codelists import (
-    pharmacy_first_consultation_codelist,
+    pharmacy_first_event_codelist,
     pharmacy_first_med_codelist,
 )
 from pf_variables_library import select_events
@@ -29,7 +29,7 @@ pharmacy_first_events = select_events(
     start_date=INTERVAL.start_date, 
     end_date=INTERVAL.end_date).where(
         clinical_events.snomedct_code.is_in(
-            pharmacy_first_consultation_codelist
+            pharmacy_first_event_codelist["pf_consultation_services_combined"]
         )
     )
 

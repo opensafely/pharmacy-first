@@ -12,7 +12,7 @@ from codelists import (
 )
 
 from pf_dataset import get_latest_ethnicity
-from codelists import pharmacy_first_event_codes, pharmacy_first_consultation_codelist
+from codelists import pharmacy_first_event_codelist
 from config import start_date_measure_pf_breakdown, monthly_intervals_measure_pf_breakdown
 from pf_variables_library import select_events
 
@@ -59,7 +59,7 @@ latest_region = case(
     otherwise="Missing",
 )
 
-pharmacy_first_ids = select_events(clinical_events, codelist=pharmacy_first_consultation_codelist).consultation_id
+pharmacy_first_ids = select_events(clinical_events, codelist=pharmacy_first_event_codelist["pf_consultation_services_combined"]).consultation_id
 
 # # Select clinical events in interval date range
 selected_events = select_events(clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date).where(
@@ -79,7 +79,7 @@ breakdown_metrics = {
 denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"])
 
 # Create measures for pharmacy first services
-for pharmacy_first_event, codelist in pharmacy_first_event_codes.items():
+for pharmacy_first_event, codelist in pharmacy_first_event_codelist.items():
     condition_events = selected_events.where(
         selected_events.snomedct_code.is_in(codelist)
     )

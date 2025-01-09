@@ -5,7 +5,7 @@ from ehrql.tables.tpp import (
     practice_registrations,
 )
 from ehrql.tables.raw.tpp import medications
-from codelists import pharmacy_first_consultation_codelist, pharmacy_first_med_codelist
+from codelists import pharmacy_first_event_codelist, pharmacy_first_med_codelist
 from config import start_date_measure_medications, monthly_intervals_measure_medications
 from pf_variables_library import select_events
 
@@ -21,7 +21,7 @@ registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
 # Select Pharmacy First consultations during interval date range
 pharmacy_first_events = select_events(clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date).where(
-    clinical_events.snomedct_code.is_in(pharmacy_first_consultation_codelist)
+    clinical_events.snomedct_code.is_in(pharmacy_first_event_codelist["pf_consultation_services_combined"])
 )
 
 pharmacy_first_ids = pharmacy_first_events.consultation_id

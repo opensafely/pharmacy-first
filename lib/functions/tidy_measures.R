@@ -1,9 +1,9 @@
 # Define dictionaries with tidy names and mappings for measures
 pf_measures_name_dict <- list(
-  consultation_service = "Consultation Service",
-  pharmacy_first_service = "Pharmacy First Consultation",
-  community_pharmacy_first_service = "Community Pharmacy First Service",
-  combined_pf_service = "Pharmacy First Consultations (Combined)",
+  pf_consultation_cp_minorillness = "Consultation Service",
+  pf_consultation_service = "Pharmacy First Consultation",
+  pf_consultation_cp_service = "Community Pharmacy First Service",
+  pf_consultation_services_combined = "Pharmacy First Consultations (Combined)",
   acute_otitis_media = "Acute Otitis Media",
   herpes_zoster = "Herpes Zoster",
   acute_sinusitis = "Acute Sinusitis",
@@ -14,10 +14,10 @@ pf_measures_name_dict <- list(
 )
 
 pf_measures_name_mapping <- list(
-  consultation_service = "clinical_service",
-  pharmacy_first_service = "clinical_service",
-  community_pharmacy_first_service = "clinical_service",
-  combined_pf_service = "pharmacy_first_services",
+  pf_consultation_cp_minorillness = "clinical_service",
+  pf_consultation_service = "clinical_service",
+  pf_consultation_cp_service = "clinical_service",
+  pf_consultation_services_combined = "pharmacy_first_services",
   acute_otitis_media = "clinical_condition",
   herpes_zoster = "clinical_condition",
   acute_sinusitis = "clinical_condition",

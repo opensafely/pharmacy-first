@@ -8,7 +8,7 @@ from analysis.measures_definition_pf_breakdown import (
     pharmacy_first_conditions_codes,
     imd_quintile,
 )
-from codelists import pharmacy_first_consultation_codelist
+from codelists import pharmacy_first_event_codelist
 from config import start_date_measure_condition_provider, monthly_intervals_measure_condition_provider
 from pf_variables_library import select_events
 
@@ -23,7 +23,7 @@ registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 selected_events = select_events(clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date)
 
 # Create variable which contains boolean values of whether pharmacy first event exists for patient
-has_pharmacy_first = select_events(selected_events, codelist=pharmacy_first_consultation_codelist).exists_for_patient()
+has_pharmacy_first = select_events(selected_events, codelist=pharmacy_first_event_codelist["pf_consultation_services_combined"]).exists_for_patient()
 
 for condition_name, condition_code in pharmacy_first_conditions_codes.items():
     condition_events = selected_events.where(

@@ -5,7 +5,7 @@ from ehrql.tables.tpp import practice_registrations, patients, clinical_events
 from pf_variables_library import select_events
 from codelists import (
     pharmacy_first_med_codelist,
-    pharmacy_first_consultation_codelist,
+    pharmacy_first_event_codelist,
     pharmacy_first_conditions_codelist,
 )
 from config import (
@@ -39,7 +39,7 @@ selected_medications = medications.where(
 # Select all Pharmacy First consultation events
 pf_consultation_events = select_events(
     selected_events,
-    codelist=pharmacy_first_consultation_codelist,
+    codelist=pharmacy_first_event_codelist["pf_consultation_services_combined"],
 )
 
 # Extract Pharmacy First consultation IDs and dates
