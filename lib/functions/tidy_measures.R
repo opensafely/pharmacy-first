@@ -2,6 +2,7 @@
 pf_measures_name_dict <- list(
   consultation_service = "Consultation Service",
   pharmacy_first_service = "Pharmacy First Consultation",
+  community_pharmacy_first_service = "Community Pharmacy First Service",
   combined_pf_service = "Pharmacy First Consultations (Combined)",
   acute_otitis_media = "Acute Otitis Media",
   herpes_zoster = "Herpes Zoster",
@@ -15,6 +16,7 @@ pf_measures_name_dict <- list(
 pf_measures_name_mapping <- list(
   consultation_service = "clinical_service",
   pharmacy_first_service = "clinical_service",
+  community_pharmacy_first_service = "clinical_service",
   combined_pf_service = "pharmacy_first_services",
   acute_otitis_media = "clinical_condition",
   herpes_zoster = "clinical_condition",
