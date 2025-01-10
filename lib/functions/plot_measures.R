@@ -161,6 +161,17 @@ save_figure <- function(figure, width = 10, height = 6) {
   )
 }
 
+compute_deciles <- function(data, column, measure_column, date_column) {
+  decile_probs <- seq(10, 90, 10)
+  data %>%
+      reframe(
+        measure = first(measure_column),
+        date = first(date_column),
+        decile_values = quantile(column, decile_probs),
+        decile_labels = decile_probs
+      )
+}
+
 # Colour palettes
 gradient_palette <- c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey")
 region_palette <- c("red", "navy", "#018701", "#ffa600ca", "purple", "brown", "#f4a5b2", "cyan", "green", "grey")
