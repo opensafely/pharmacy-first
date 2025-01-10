@@ -1,7 +1,7 @@
 from ehrql import codelist_from_csv
 
 # Import pharmacy first conditions codelist
-pharmacy_first_conditions_codelist = codelist_from_csv(
+pf_conditions_codelist = codelist_from_csv(
     "codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv",
     column="code",
     category_column="term",
@@ -56,7 +56,7 @@ urinary_tract_infection_tx_codelist = codelist_from_csv(
     column="code",
 )
 
-pharmacy_first_med_codelist = (
+pf_med_codelist = (
     acute_otitis_media_tx_codelist
     + impetigo_treatment_tx_codelist
     + infected_insect_bites_tx_codelist
@@ -66,14 +66,19 @@ pharmacy_first_med_codelist = (
     + urinary_tract_infection_tx_codelist
 )
 # Community Pharmacist Consultation Service for minor illness - 1577041000000109
+pf_consultation_cp_minorillness = ["1577041000000109"]
 # Pharmacy First service - 983341000000102
+pf_consultation_service = ["983341000000102"]
 # Community Pharmacy First Service - 2129921000000100
-pharmacy_first_event_codelist = {
+pf_consultation_cp_service = ["2129921000000100"]
+
+pf_consultation_events_dict = {
     # Community Pharmacist (CP) Consultation Service for minor illness (procedure)
-    "pf_consultation_cp_minorillness": ["1577041000000109"],
+    "pf_consultation_cp_minorillness": pf_consultation_cp_minorillness,
     # Pharmacy First service (qualifier value)
-    "pf_consultation_service": ["983341000000102"],
+    "pf_consultation_service": pf_consultation_service,
     # Community Pharmacy Pharmacy First Service
-    "pf_consultation_cp_service": ["2129921000000100"],
-    "pf_consultation_services_combined": ["1577041000000109", "983341000000102", "2129921000000100"],
+    "pf_consultation_cp_service": pf_consultation_cp_service,
+    "pf_consultation_services_combined": pf_consultation_cp_minorillness
+    + pf_consultation_service + pf_consultation_cp_service,
 }

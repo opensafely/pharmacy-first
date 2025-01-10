@@ -8,8 +8,8 @@ from ehrql.tables.raw.tpp import medications
 
 from config import start_date_measure_med_counts, monthly_intervals_measure_med_counts
 from codelists import (
-    pharmacy_first_event_codelist,
-    pharmacy_first_med_codelist,
+    pf_consultation_events_dict,
+    pf_med_codelist,
 )
 from pf_variables_library import select_events
 
@@ -29,7 +29,7 @@ pharmacy_first_events = select_events(
     start_date=INTERVAL.start_date, 
     end_date=INTERVAL.end_date).where(
         clinical_events.snomedct_code.is_in(
-            pharmacy_first_event_codelist["pf_consultation_services_combined"]
+            pf_consultation_events_dict["pf_consultation_services_combined"]
         )
     )
 
@@ -47,7 +47,7 @@ first_selected_medication = (
     selected_medications.sort_by(selected_medications.date).first_for_patient().dmd_code
 )
 # Boolean variable that selected medication is part of pharmacy first med codelists
-has_pharmacy_first_medication = first_selected_medication.is_in(pharmacy_first_med_codelist)
+has_pharmacy_first_medication = first_selected_medication.is_in(pf_med_codelist)
 
 # Numerator, patients with a PF medication
 # This allows me to count all (first) medications linked to a PF consultation
