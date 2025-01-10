@@ -4,9 +4,9 @@ from ehrql.tables.tpp import practice_registrations, patients, clinical_events
 
 from pf_variables_library import select_events
 from codelists import (
-    pharmacy_first_med_codelist,
-    pharmacy_first_consultation_codelist,
-    pharmacy_first_conditions_codelist,
+    pf_med_codelist,
+    pf_consultation_events_dict,
+    pf_conditions_codelist,
 )
 from config import (
     start_date_measure_descriptive_stats,
@@ -39,7 +39,7 @@ selected_medications = medications.where(
 # Select all Pharmacy First consultation events
 pf_consultation_events = select_events(
     selected_events,
-    codelist=pharmacy_first_consultation_codelist,
+    codelist=pf_consultation_events_dict["pf_consultation_services_combined"],
 )
 
 # Extract Pharmacy First consultation IDs and dates
@@ -51,12 +51,12 @@ has_pf_consultation = pf_consultation_events.exists_for_patient()
 # Select Pharmacy First conditions by ID and date
 selected_pf_id_conditions = selected_events.where(
     selected_events.consultation_id.is_in(pf_ids)
-).where(selected_events.snomedct_code.is_in(pharmacy_first_conditions_codelist))
+).where(selected_events.snomedct_code.is_in(pf_conditions_codelist))
 
 selected_pf_date_conditions = (
     selected_events.where(selected_events.consultation_id.is_not_in(pf_ids))
     .where(selected_events.date.is_in(pf_dates))
-    .where(selected_events.snomedct_code.is_in(pharmacy_first_conditions_codelist))
+    .where(selected_events.snomedct_code.is_in(pf_conditions_codelist))
 )
 
 has_pf_id_condition = selected_pf_id_conditions.exists_for_patient()
@@ -65,12 +65,12 @@ has_pf_date_condition = selected_pf_date_conditions.exists_for_patient()
 # Select Pharmacy First Medications by ID and date
 selected_pf_id_medications = selected_medications.where(
     selected_medications.consultation_id.is_in(pf_ids)
-).where(selected_medications.dmd_code.is_in(pharmacy_first_med_codelist))
+).where(selected_medications.dmd_code.is_in(pf_med_codelist))
 
 selected_pf_date_medications = (
     selected_medications.where(selected_medications.consultation_id.is_not_in(pf_ids))
     .where(selected_medications.date.is_in(pf_dates))
-    .where(selected_medications.dmd_code.is_in(pharmacy_first_med_codelist))
+    .where(selected_medications.dmd_code.is_in(pf_med_codelist))
 )
 
 has_pf_id_medication = selected_pf_id_medications.exists_for_patient()
