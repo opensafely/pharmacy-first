@@ -7,6 +7,7 @@ library("dplyr")
 library("lubridate")
 library("tidyverse")
 library("readr")
+library("retry")
 
 base_endpoint <- "https://opendata.nhsbsa.net/api/3/action/"
 package_list_method <- "package_list"
@@ -79,8 +80,10 @@ get_nhsbsa_data <- function(dataset_id, sql, start_date = NULL, end_date = NULL)
   base_endpoint <- "https://opendata.nhsbsa.net/api/3/action/"
   action_method <- "datastore_search_sql?"
 
+  # Retrieve table names for specified dataset and data range
   table_names <- get_dataset_table_names(dataset_id, start_date, end_date)$table_name
 
+  # Construct URLs for querying the API, one URL per table, modifying each table with table_name
   async_api_calls <- paste0(
     base_endpoint,
     action_method,
@@ -88,9 +91,50 @@ get_nhsbsa_data <- function(dataset_id, sql, start_date = NULL, end_date = NULL)
     "&sql=", URLencode(map_chr(table_names, construct_sql_query, sql))
   )
 
-  responses <- crul::Async$new(urls = async_api_calls)$get()
+  # Initialise an empty list to store API responses
+  responses <- list()
 
-  df_tmp <- bind_rows(map(responses, ~ as_tibble(jsonlite::fromJSON(.x$parse("UTF-8"))$result$result$records)))
+  # Loop over each API call URL, by:
+  # 1) getting URL for current table, 
+  # 2) initialise retry counter, 
+  # 3) set max number of retry attempts, 
+  # 4) flag to track if request was successful
+  for (i in seq_along(async_api_calls)) {
+    url <- async_api_calls[i]
+    attempt <- 1
+    max_attempts <- 5
+    success <- FALSE
+
+    # Retry logic: keep trying until request is successful or max attempts reached
+    while (attempt <= max_attempts && !success) {
+      response <- tryCatch({
+        crul::HttpClient$new(url)$get()
+      }, error = function(e) {
+        NULL
+      })
+
+      if (!is.null(response) && response$status_code == 200) {
+        # If response is valid and status code = 200, mark as successful
+        success <- TRUE
+        responses[[i]] <- response
+      } else {
+        message(sprintf("Attempt %d failed for URL: %s", attempt, url))
+        Sys.sleep(2 ^ attempt)
+        attempt <- attempt + 1
+      }
+    }
+
+    if (!success) {
+      stop(sprintf("Failed to fetch data from URL: %s after %d attempts", url, max_attempts))
+    }
+  }
+  # Parse the successful responses to extract the data
+  results <- map(responses, ~ {
+    content_raw <- .x$parse("UTF-8")
+    fromJSON(readLines(textConnection(content_raw), warn = FALSE))$result$result$records
+  })
+
+  df_tmp <- bind_rows(map(results, ~ as_tibble(.x, .default = tibble())))
 
   df_tmp |>
     janitor::clean_names() |>
