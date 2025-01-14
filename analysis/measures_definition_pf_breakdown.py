@@ -59,7 +59,6 @@ latest_region = case(
     otherwise="Missing",
 )
 
-msoa_code = addresses.for_patient_on(INTERVAL.start_date).msoa_code
 pharmacy_first_ids = select_events(clinical_events, codelist=pf_consultation_events_dict["pf_consultation_services_combined"]).consultation_id
 
 # # Select clinical events in interval date range
@@ -74,7 +73,6 @@ breakdown_metrics = {
     "imd": imd_quintile,
     "region": latest_region,
     "ethnicity": ethnicity_combined,
-    "msoa_code": msoa_code
 }
 
 # Define the denominator as the number of patients registered
