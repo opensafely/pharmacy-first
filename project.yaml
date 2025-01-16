@@ -46,7 +46,7 @@ actions:
        --test-data-file analysis/test_pf_dataset_definition.py
        --output output/population/pf_population.csv.gz
     outputs:
-      moderately_sensitive:
+      highly_sensitive:
         cohort: output/population/pf_population.csv.gz
 
   generate_pf_med_counts_measures:
