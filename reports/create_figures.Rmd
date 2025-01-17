@@ -790,6 +790,12 @@ fig_pf_condition_provider_count <- plot_measures(
 )
 
 save_figure(fig_pf_condition_provider_count)
+
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "msoa_code")
+
+df_msoa_deciles <- compute_deciles(df_measures_selected, numerator, measure, interval_start)
 ```
 
 # References

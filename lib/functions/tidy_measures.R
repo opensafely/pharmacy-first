@@ -32,7 +32,8 @@ pf_measures_groupby_dict <- list(
   sex = "Sex",
   imd = "IMD",
   region = "Region",
-  ethnicity = "Ethnicity"
+  ethnicity = "Ethnicity",
+  msoa_code = "MSOA"
 )
 
 pf_measures_ethnicity_list <- list(
