@@ -125,6 +125,15 @@ def get_acute_otitis_media_denominator(
 
     return inclusion_criteria & ~exclusion_criteria
 
+def get_numerator(selected_events, condition_code, condition_denominator):
+    condition_events = selected_events.where(
+        selected_events.snomedct_code.is_in(condition_code)
+    ).where(
+        condition_denominator
+    ).count_for_patient()
+
+    return condition_events
+
 def get_age_band(patients, index_date):
     age = patients.age_on(index_date)
     age_band = case(
