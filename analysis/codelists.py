@@ -8,10 +8,17 @@ pf_conditions_codelist = codelist_from_csv(
 )
 
 # Import ethnicity codelist
-ethnicity_codelist = codelist_from_csv(
+ethnicity_group6_codelist = codelist_from_csv(
     "codelists/opensafely-ethnicity-snomed-0removed.csv",
     column="snomedcode",
     category_column="Grouping_6",
+)
+
+# Import ethnicity codelist
+ethnicity_group16_codelist = codelist_from_csv(
+    "codelists/opensafely-ethnicity-snomed-0removed.csv",
+    column="snomedcode",
+    category_column="Grouping_16",
 )
 
 # Import pregnancy codelist

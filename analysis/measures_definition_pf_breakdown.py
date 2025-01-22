@@ -8,7 +8,7 @@ from ehrql.tables.tpp import (
 )
 from codelists import (
     pf_conditions_codelist,
-    ethnicity_codelist,
+    ethnicity_group6_codelist,
 )
 
 from pf_dataset import get_latest_ethnicity
@@ -26,7 +26,7 @@ registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 ethnicity_combined = get_latest_ethnicity(
     index_date=INTERVAL.start_date,
     clinical_events=clinical_events,
-    ethnicity_codelist=ethnicity_codelist,
+    ethnicity_codelist=ethnicity_group6_codelist,
     ethnicity_from_sus=ethnicity_from_sus,
 )
 # Age bands for age breakdown
