@@ -23,6 +23,11 @@ df_demographics_counts <- map_dfr(
     rename(subcategory = 1)
 )
 
+readr::write_csv(
+  df_demographics_counts,
+  here::here("output", "population", "pf_demographics.csv")
+)
+
 # gt_table <- df_demographics_counts[1:2] %>%
 #   gt() %>%
 #   tab_header(
