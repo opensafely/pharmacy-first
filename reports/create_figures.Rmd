@@ -42,10 +42,11 @@ df_measures_selected <- df_measures %>%
   filter(is.na(group_by)) |>
   select(measure, interval_start, numerator) |>
   mutate(measure = factor(measure,
-    levels = c("Consultation Service", "Pharmacy First Consultation"),
+    levels = c("Consultation Service", "Pharmacy First Consultation", "Community Pharmacy First Service"),
     labels = c(
       "Consultation Service for minor illness (1577041000000109)",
-      "Pharmacy First service (983341000000102)"
+      "Pharmacy First service (983341000000102)",
+      "Community Pharmacy First Service (2129921000000100)"
     )
   ))
 
@@ -58,7 +59,7 @@ fig_pf_individual_consultations_count <- plot_measures(
   facet_var = measure,
   y_label = "Total Count",
   colour_var = measure,
-  guide_nrow = 1,
+  guide_nrow = 2,
 )
 
 save_figure(fig_pf_individual_consultations_count)
@@ -647,16 +648,16 @@ save_figure(fig_validation_condition_comparison, width = 15)
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
 # Create figure to show & of PF Med, Condition and both with linked PF consultations
 
-df_descriptive_stats <- df_descriptive_stats %>%
+df_pf_descriptive_stats <- df_descriptive_stats %>%
   mutate(
     measure = factor(measure,
-      levels = c("pf_with_pfmed", "pf_with_pfcondition", "pf_with_pfmed_and_pfcondition"),
-      labels = c("PF Med", "PF Condition", "PF Med & PF Condition")
+      levels = c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid", "pfmed_on_pfdate", "pfcondition_on_pfdate", "pfmed_and_pfcondition_on_pfdate"),
+      labels = c("PF Med", "PF Condition", "PF Med & PF Condition", "Same Day PF Med", "Same Day PF Condition", "Same Day PF Med & PF Condition")
     )
   )
 
 fig_pf_descriptive_stats <- plot_measures(
-  df_descriptive_stats,
+  df_pf_descriptive_stats,
   select_value = ratio,
   select_interval_date = interval_start,
   colour_var = measure,
@@ -693,7 +694,7 @@ df_opensafely_pfmed_sum <- df_pfmed %>%
   )
 
 df_validation_med_counts <- bind_rows(df_opensafely_pfmed_sum, df_bsa_medication_validation_sum) |>
-  filter(date >= "2024-01-01" & date <= "2024-07-01")
+  filter(date >= "2024-01-01" & date <= "2024-10-01")
 
 df_validation_med_counts <- df_validation_med_counts %>%
   mutate(

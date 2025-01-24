@@ -16,7 +16,7 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
 } else {
   # Load data from released_output directory
   df_measures <- readr::read_csv(
-    here("released_output", "measures", "pf_codes_conditions_measures.csv")
+    here("released_output", "measures", "pf_breakdown_measures.csv")
   )
   df_descriptive_stats <- read_csv(
     here("released_output", "measures", "pf_descriptive_stats_measures.csv")
