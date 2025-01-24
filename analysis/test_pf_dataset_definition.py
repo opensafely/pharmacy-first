@@ -12,6 +12,7 @@ test_data = {
         "clinical_events": [
             {},
         ],
+        "addresses": {},
         "ethnicity_from_sus": {},
         "practice_registrations": [{"start_date": date(2024, 3, 1)}],
         "expected_in_population": True,
@@ -37,6 +38,7 @@ test_data = {
                 "snomedct_code": "77386006",
             },
         ],
+        "addresses": {},
         "ethnicity_from_sus": {},
         "practice_registrations": [{"start_date": date(2024, 3, 1)}],
         "expected_in_population": True,
@@ -72,6 +74,7 @@ test_data = {
                 "snomedct_code": "1090711000000102",
             },
         ],
+        "addresses": {},
         "ethnicity_from_sus": {},
         "practice_registrations": [{"start_date": date(2024, 3, 1)}],
         "expected_in_population": True,
