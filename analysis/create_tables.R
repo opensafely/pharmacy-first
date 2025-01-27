@@ -8,14 +8,14 @@ library(purrr)
 df <- read_csv(here("output", "population", "pf_table1.csv.gz"))
 
 df_demographics <- df %>%
-    select(sex, age_band, region, imd, ethnicity)
+  select(sex, age_band, region, imd, ethnicity)
 
 # map_dfr maps function to each elevent and combines result in single df
 df_demographics_counts <- map_dfr(
-    # Column names sex, age_band, region, imd, ethnicity are inputs (.x) 
+  # Column names sex, age_band, region, imd, ethnicity are inputs (.x)
   names(df_demographics),
   ~ df_demographics %>%
-  # Group by each column 
+    # Group by each column
     group_by(across(all_of(.x))) %>%
     # summarises df with a new column which counts occurences (n)
     summarise(n = n()) %>%
@@ -68,4 +68,4 @@ readr::write_csv(
 # gt_table
 
 
-#output/population/pf_population.csv.gz
+# output/population/pf_population.csv.gz
