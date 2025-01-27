@@ -25,7 +25,7 @@ pharmacy_first_events = select_events(clinical_events, start_date=INTERVAL.start
 )
 
 pharmacy_first_ids = pharmacy_first_events.consultation_id
-has_pharmacy_first_consultation = pharmacy_first_events.exists_for_patient()
+has_pf_consultation = pharmacy_first_events.exists_for_patient()
 
 # Select medications prescribed with PF consultation ID
 selected_medications = select_events(medications, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date).where(
@@ -51,6 +51,7 @@ denominator = (
     registration.exists_for_patient()
     & patients.sex.is_in(["male", "female"])
     & has_pharmacy_first_medication
+    & has_pf_consultation
 )
 
 measures.define_measure(
