@@ -89,3 +89,11 @@ pf_consultation_events_dict = {
     "pf_consultation_services_combined": pf_consultation_cp_minorillness
     + pf_consultation_service + pf_consultation_cp_service,
 }
+
+uti_code = ["1090711000000102"]
+sinusitis_code = ["15805002"]
+insectbite_code = ["262550002"]
+otitismedia_code = ["3110003"]
+sorethroat_code = ["363746003"]
+shingles_code = ["4740000"]
+impetigo_code = ["48277006"]
