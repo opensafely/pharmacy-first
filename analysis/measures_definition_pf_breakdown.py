@@ -75,8 +75,11 @@ breakdown_metrics = {
     "ethnicity": ethnicity_combined,
 }
 
+pf_consultation_events = select_events(selected_events, codelist=pf_consultation_events_dict["pf_consultation_services_combined"])
+has_pf_consultation = pf_consultation_events.exists_for_patient()
+
 # Define the denominator as the number of patients registered
-denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"])
+denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"]) & has_pf_consultation
 
 # Create measures for pharmacy first services
 for pharmacy_first_event, codelist in pf_consultation_events_dict.items():

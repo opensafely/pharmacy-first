@@ -34,7 +34,7 @@ pharmacy_first_events = select_events(
     )
 
 pharmacy_first_ids = pharmacy_first_events.consultation_id
-has_pharmacy_first_consultation = pharmacy_first_events.exists_for_patient()
+has_pf_consultation = pharmacy_first_events.exists_for_patient()
 
 # Select Pharmacy First consultations during interval date range
 selected_medications = select_events(
@@ -57,7 +57,7 @@ numerator = first_selected_medication.is_not_null()
 denominator = (
     registration.exists_for_patient()
     & patients.sex.is_in(["male", "female"])
-    & has_pharmacy_first_consultation
+    & has_pf_consultation
 )
 
 measures.define_measure(
