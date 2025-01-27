@@ -1,5 +1,5 @@
 from datetime import date
-from analysis.pf_dataset_definition import dataset
+from analysis.dataset_definition_table1 import dataset
 
 # Run the following command in the terminal to test the dataset definition dataset_definition_med_status_data_development
 # opensafely exec ehrql:v1 assure analysis/test_pf_dataset_definition.py

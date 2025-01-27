@@ -5,7 +5,7 @@ library(gt)
 library(purrr)
 
 # Dataset definition file path output/population/pf_population.csv.gz
-df <- read_csv(here("output", "population", "pf_population.csv.gz"))
+df <- read_csv(here("output", "population", "pf_table1.csv.gz"))
 
 df_demographics <- df %>%
     select(sex, age_band, region, imd, ethnicity)
