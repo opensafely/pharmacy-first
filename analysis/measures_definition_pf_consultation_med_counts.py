@@ -25,21 +25,19 @@ registration = practice_registrations.for_patient_on(INTERVAL.end_date)
 
 # Select Pharmacy First events during interval date range
 pharmacy_first_events = select_events(
-    clinical_events, 
-    start_date=INTERVAL.start_date, 
-    end_date=INTERVAL.end_date).where(
-        clinical_events.snomedct_code.is_in(
-            pf_consultation_events_dict["pf_consultation_services_combined"]
-        )
+    clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date
+).where(
+    clinical_events.snomedct_code.is_in(
+        pf_consultation_events_dict["pf_consultation_services_combined"]
     )
+)
 
 pharmacy_first_ids = pharmacy_first_events.consultation_id
 has_pf_consultation = pharmacy_first_events.exists_for_patient()
 
 # Select Pharmacy First consultations during interval date range
 selected_medications = select_events(
-    medications,
-    start_date=INTERVAL.start_date, end_date=INTERVAL.end_date
+    medications, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date
 ).where(medications.consultation_id.is_in(pharmacy_first_ids))
 
 # First medication for each patient
@@ -62,7 +60,7 @@ denominator = (
 
 measures.define_measure(
     name="pf_medication_count",
-    numerator = first_selected_medication.is_not_null(),
+    numerator=first_selected_medication.is_not_null(),
     denominator=denominator,
     group_by={
         "dmd_code": first_selected_medication,

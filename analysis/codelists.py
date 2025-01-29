@@ -87,7 +87,8 @@ pf_consultation_events_dict = {
     # Community Pharmacy Pharmacy First Service
     "pf_consultation_cp_service": pf_consultation_cp_service,
     "pf_consultation_services_combined": pf_consultation_cp_minorillness
-    + pf_consultation_service + pf_consultation_cp_service,
+    + pf_consultation_service
+    + pf_consultation_cp_service,
 }
 
 uti_code = ["1090711000000102"]
