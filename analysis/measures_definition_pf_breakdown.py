@@ -13,7 +13,10 @@ from codelists import (
 
 from pf_dataset import get_latest_ethnicity
 from codelists import pf_consultation_events_dict
-from config import start_date_measure_pf_breakdown, monthly_intervals_measure_pf_breakdown
+from config import (
+    start_date_measure_pf_breakdown,
+    monthly_intervals_measure_pf_breakdown,
+)
 from pf_variables_library import select_events
 
 measures = create_measures()
@@ -59,12 +62,15 @@ latest_region = case(
     otherwise="Missing",
 )
 
-pharmacy_first_ids = select_events(clinical_events, codelist=pf_consultation_events_dict["pf_consultation_services_combined"]).consultation_id
+pharmacy_first_ids = select_events(
+    clinical_events,
+    codelist=pf_consultation_events_dict["pf_consultation_services_combined"],
+).consultation_id
 
 # # Select clinical events in interval date range
-selected_events = select_events(clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date).where(
-    clinical_events.consultation_id.is_in(pharmacy_first_ids)
-)
+selected_events = select_events(
+    clinical_events, start_date=INTERVAL.start_date, end_date=INTERVAL.end_date
+).where(clinical_events.consultation_id.is_in(pharmacy_first_ids))
 
 # Breakdown metrics to be produced as graphs
 breakdown_metrics = {
@@ -75,11 +81,18 @@ breakdown_metrics = {
     "ethnicity": ethnicity_combined,
 }
 
-pf_consultation_events = select_events(selected_events, codelist=pf_consultation_events_dict["pf_consultation_services_combined"])
+pf_consultation_events = select_events(
+    selected_events,
+    codelist=pf_consultation_events_dict["pf_consultation_services_combined"],
+)
 has_pf_consultation = pf_consultation_events.exists_for_patient()
 
 # Define the denominator as the number of patients registered
-denominator = registration.exists_for_patient() & patients.sex.is_in(["male", "female"]) & has_pf_consultation
+denominator = (
+    registration.exists_for_patient()
+    & patients.sex.is_in(["male", "female"])
+    & has_pf_consultation
+)
 
 # Create measures for pharmacy first services
 for pharmacy_first_event, codelist in pf_consultation_events_dict.items():
