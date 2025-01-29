@@ -113,7 +113,11 @@ df_results_pf_total_counts <- df_measures  %>%
   select(interval_start, pf_consultation_total) %>%
   distinct() %>%
   ungroup() %>%
-  mutate(pf_consultation_diff = pf_consultation_total - lag(pf_consultation_total))
+  mutate(pf_consultation_diff = pf_consultation_total - lag(pf_consultation_total)) %>%
+  filter(interval_start >= "2024-02-01")
+
+# Sum of consultations from feb to dec 2024
+sum(df_results_pf_total_counts$pf_consultation_total)
 
 df_results_pf_total_counts %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
@@ -192,10 +196,13 @@ df_results_pf_linkage <- df_pf_descriptive_stats %>%
     ratio_total_unlinked = 1 - sum(ratio)
   ) %>%
   mutate(
+    ratio_linked = percent(ratio, accuracy = 0.1),
     ratio_total_linked = percent(ratio_total_linked, accuracy = 0.1),
     ratio_total_unlinked = percent(ratio_total_unlinked, accuracy = 0.1)
   )
 
 df_results_pf_linkage %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
+
+View(df_results_pf_linkage)
 ```
