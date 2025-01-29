@@ -1,0 +1,389 @@
+---
+title: "Pharmacy First Manuscript Results"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+  pdf_document: default
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(here)
+library(readr)
+library(gt)
+library(patchwork)
+```
+
+```{r load-data, message=FALSE, warning=FALSE}
+# Load functions
+source(here("lib", "functions", "tidy_measures.R"))
+source(here("lib", "functions", "plot_measures.R"))
+
+# Load validation data:
+# - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
+# - df_bsa_consultation_validation: date, consultation_type, source, count_method, count
+source(here("lib", "functions", "load_validation_data.R"))
+
+# Load opensafely ouputs:
+# - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
+# - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
+# - df_pfmed: measure, interval_start, interval_end, ratio, numerator, denominator, dmd_code
+# - df_condition_provider: measure, interval_start, interval_end, ratio, numerator, denominator, pf_status, imd
+source(here("lib", "functions", "load_opensafely_outputs.R"))
+```
+
+# Figures
+## Figure 1. OpenSAFELY total counts
+
+```{r, message=FALSE, warning=FALSE}
+# Create figure for total count of Pharmacy First consultations for each code (3 codes)
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(is.na(group_by)) |>
+  select(measure, interval_start, numerator) |>
+  mutate(measure = factor(measure,
+    levels = c("Consultation Service", "Pharmacy First Consultation", "Community Pharmacy First Service"),
+    labels = c(
+      "Consultation Service for minor illness (1577041000000109)",
+      "Pharmacy First service (983341000000102)",
+      "Community Pharmacy First Service (2129921000000100)"
+    )
+  ))
+
+df_measures_selected <- df_measures_selected |>
+  group_by(interval_start) |>
+  mutate(
+    pf_consultation_total = sum(numerator, na.rm = TRUE),
+    data_desc = "Pharmacy First Consultation"
+  ) %>%
+  filter(interval_start >= "2024-02-01")
+
+fig_pf_grouped_consultations_count <- plot_measures(
+  df_measures_selected,
+  select_value = pf_consultation_total,
+  select_interval_date = interval_start,
+  legend_position = "bottom",
+  facet_wrap = FALSE,
+  facet_var = data_desc,
+  y_label = NULL,
+  colour_var = data_desc,
+  guide_nrow = 1,
+  point_size = 2.6,
+  text_size = 14,
+  add_vline = FALSE
+) + theme(
+  legend.position = "none",
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey50")
+) +
+  scale_y_continuous(
+    limits = c(0, NA),
+    labels = scales::label_number(),
+    breaks = c(0, 10000, 20000, 30000, 40000, 50000)
+  )
+
+fig_pf_grouped_consultations_count
+
+ggsave(
+  filename = here("released_output", "results", "manuscript", "fig1_pf_consultation_count_total.png"),
+  fig_pf_grouped_consultations_count,
+  height = 4,
+  width = 8
+)
+```
+
+## Figure 2. OpenSAFELY Linkage
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+# Create figure to show & of PF Med, Condition and both with linked PF consultations
+
+df_pf_descriptive_stats <- df_descriptive_stats %>%
+  filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
+  mutate(
+    measure = factor(measure,
+      levels = c(
+        "pfmed_with_pfid",
+        "pfcondition_with_pfid",
+        "pfmed_and_pfcondition_with_pfid"
+      ),
+      labels = c(
+        "Medication",
+        "Clinical condition",
+        "Both"
+      )
+    )
+  )
+
+
+fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
+  x = interval_start,
+  y = ratio,
+  fill = measure
+)) +
+  geom_area(
+    alpha = 0.7,
+    size = .5,
+    colour = "white"
+  ) +
+  scale_fill_viridis_d() +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Pharmacy First consultations linked to: "
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "grey50"),
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  )
+
+ggsave(
+  filename = here("released_output", "results", "manuscript", "fig2_pf_med_condition.png"),
+  fig_pf_med_condition_linkage,
+  height = 4,
+  width = 8
+)
+```
+
+### Figure 3. Validation 
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
+# Create figure to compare OS and BSA counts for PF clinical conditions
+
+# OpenSAFELY data for clinical conditions into a tidy df
+df_opensafely_validation <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(is.na(group_by)) %>%
+  select(date = interval_start, consultation_type = measure, count = numerator) %>%
+  mutate(
+    source = "opensafely",
+    count_method = "opensafely_tpp"
+  ) |>
+  filter(date >= "2024-01-01") %>%
+  relocate(date, consultation_type, source, count_method, count)
+
+# Combining rows from OS and BSA validation dataframes
+df_validation_condition_total <- bind_rows(
+  df_opensafely_validation,
+  df_bsa_consultation_validation
+  ) %>%
+  filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+  group_by(date, source) %>%
+  mutate(total_count = sum(count, na.rm = TRUE)) %>%
+  select(date, source, count_method, total_count) %>%
+  distinct() %>%
+  filter(date >= "2024-02-01")
+
+# Line graph comparing clinical condition counts of BSA and OS data
+df_validation_condition_total_counts <- df_validation_condition_total %>%
+  filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+  filter(date >= "2024-01-01") %>%
+  mutate(source = factor(source,
+    levels = c("opensafely", "nhs_bsa"),
+    labels = c("OpenSAFELY-TPP", "NHS BSA (40%)")
+  ))
+
+# Create visualisation
+fig_validation_condition_total_count <- plot_measures(
+  df_validation_condition_total_counts,
+  select_value = total_count,
+  select_interval_date = date,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = source,
+  y_label = "Count",
+  y_scale = "free_y",
+  shapes = "condition_shapes",
+  colour_palette = "plasma",
+  add_vline = FALSE,
+  date_breaks = "1 month"
+)
+
+fig_validation_condition_total_count
+
+# Another plot visualising the percentage
+df_validation_condition_pct <- df_validation_condition_total %>%
+  filter(count_method %in% c("opensafely_tpp", "count_40pct")) %>%
+  filter(date >= "2024-01-01") %>%
+  pivot_wider(names_from = c(source, count_method), values_from = total_count) %>%
+  mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY")
+
+fig_validation_condition_pct <- plot_measures(
+  df_validation_condition_pct,
+  select_value = opensafely_opensafely_tpp / nhs_bsa_count_40pct,
+  select_interval_date = date,
+  guide_nrow = 2,
+  facet_wrap = TRUE,
+  facet_var = source,
+  scale_measure = "percent",
+  y_label = "Percent",
+  y_scale = "free_y",
+  shapes = "condition_shapes",
+  colour_palette = "plasma",
+  date_breaks = "2 month"
+)
+
+fig_validation_condition_comparison <- (fig_validation_condition_count + fig_validation_condition_pct) %>%
+  set_patchwork_theme()
+
+save_figure(fig_validation_condition_comparison, width = 15)
+```
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
+# Create figure to compare OS and BSA counts for PF medication
+
+df_bsa_medication_validation_sum <- df_bsa_medication_validation %>%
+  group_by(date) %>%
+  summarise(count = sum(count) * 0.4) %>%
+  mutate(
+    source = "nhs_bsa",
+    count_method = "count_40pct"
+  )
+range(df_pfmed$interval_start)
+df_opensafely_pfmed_sum <- df_pfmed %>%
+  rename(date = interval_start) %>%
+  group_by(date) %>%
+  summarise(count = sum(numerator)) %>%
+  mutate(
+    source = "opensafely_tpp",
+    count_method = "opensafely_tpp"
+  )
+
+df_validation_med_counts <- bind_rows(df_opensafely_pfmed_sum, df_bsa_medication_validation_sum) |>
+  filter(date >= "2024-01-01" & date <= "2024-10-01")
+
+df_validation_med_counts <- df_validation_med_counts %>%
+  mutate(
+    source = factor(source, levels = c("opensafely_tpp", "nhs_bsa"), labels = c("OpenSAFELY-TPP", "NHS BSA")),
+    count_method = factor(count_method, levels = c("opensafely_tpp", "count_40pct"), labels = c("OpenSAFELY-TPP", "NHS BSA (40%)"))
+  )
+
+fig_validation_med_count <- plot_measures(
+  df_validation_med_counts,
+  select_value = count,
+  select_interval_date = date,
+  colour_var = count_method,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = source,
+  y_scale = "free_y",
+  y_label = "Count",
+  colour_palette = "plasma",
+  date_breaks = "1 month"
+)
+
+# Another plot visualising the percentage
+df_validation_med_pct <- df_validation_med_counts %>%
+  filter(count_method %in% c("OpenSAFELY-TPP", "NHS BSA (40%)")) %>%
+  pivot_wider(names_from = c(source, count_method), values_from = count) %>%
+  mutate(source = "Percentage of NHS BSA (40%) in OpenSAFELY")
+
+fig_validation_med_pct <- plot_measures(
+  df_validation_med_pct,
+  select_value = `OpenSAFELY-TPP_OpenSAFELY-TPP` / `NHS BSA_NHS BSA (40%)`,
+  select_interval_date = date,
+  colour_var = source,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = source,
+  scale_measure = "percent",
+  y_scale = "free_y",
+  y_label = "Count",
+  colour_palette = "plasma",
+  date_breaks = "1 month"
+)
+
+fig_validation_med_comparison <- (fig_validation_med_count + fig_validation_med_pct) %>%
+  set_patchwork_theme()
+save_figure(fig_validation_med_comparison, width = 15)
+```
+
+
+## Figure A1
+
+```{r, message=FALSE, warning=FALSE, fig.height=10, fig.width=8}
+# Create figure for total count of Pharmacy First grouped conditions (no breakdowns)
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_condition") %>%
+  filter(is.na(group_by))
+
+# Create visualisation
+fig_pf_grouped_conditions_count <- plot_measures(
+  df_measures_selected,
+  select_value = numerator,
+  select_interval_date = interval_end,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  title = "Pharmacy First Conditions",
+  y_label = "Number of codes for PF conditions",
+)
+
+save_figure(fig_pf_grouped_conditions_count)
+```
+
+
+
+
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+# Create figure to compare clinical events linked to PF consultation and not linked
+
+df_condition_provider_grouped <- df_condition_provider %>%
+  group_by(measure, interval_start, pf_status) %>%
+  summarise(
+    count = sum(numerator)
+  ) %>%
+  mutate(
+    measure = factor(measure,
+      levels = c(
+        "count_acute_sinusitis_total",
+        "count_infected_insect_bite_total",
+        "count_uncomplicated_urinary_tract_infection_total",
+        "count_acute_otitis_media_total",
+        "count_acute_pharyngitis_total",
+        "count_herpes_zoster_total",
+        "count_impetigo_total"
+      ),
+      labels = c(
+        "Acute Sinusitis",
+        "Infected Insect Bite",
+        "UTI",
+        "Acute Otitis Media",
+        "Acute Pharyngitis",
+        "Herpes Zoster",
+        "Impetigo"
+      )
+    ),
+    pf_status = factor(pf_status,
+      levels = c(TRUE, FALSE),
+      labels = c("Linked to Pharmacy First consultation", "Not linked to Pharmacy First consultation")
+    )
+  )
+
+fig_pf_condition_provider_count <- plot_measures(
+  df_condition_provider_grouped,
+  select_value = count,
+  select_interval_date = interval_start,
+  colour_var = pf_status,
+  guide_nrow = 1,
+  facet_wrap = TRUE,
+  facet_var = measure,
+  y_label = "Count",
+  date_breaks = "6 month",
+  colour_palette = "plasma"
+)
+
+save_figure(fig_pf_condition_provider_count)
+```
+
+# References
