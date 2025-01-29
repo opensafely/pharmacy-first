@@ -1,5 +1,5 @@
 ---
-title: "Pharmacy First"
+title: "Pharmacy First Report"
 output:
   html_document:
     toc: true
@@ -649,10 +649,25 @@ save_figure(fig_validation_condition_comparison, width = 15)
 # Create figure to show & of PF Med, Condition and both with linked PF consultations
 
 df_pf_descriptive_stats <- df_descriptive_stats %>%
+  filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
   mutate(
     measure = factor(measure,
-      levels = c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid", "pfmed_on_pfdate", "pfcondition_on_pfdate", "pfmed_and_pfcondition_on_pfdate"),
-      labels = c("PF Med", "PF Condition", "PF Med & PF Condition", "Same Day PF Med", "Same Day PF Condition", "Same Day PF Med & PF Condition")
+      levels = c(
+        "pfmed_with_pfid",
+        "pfcondition_with_pfid",
+        "pfmed_and_pfcondition_with_pfid"
+        # "pfmed_on_pfdate",
+        # "pfcondition_on_pfdate",
+        # "pfmed_and_pfcondition_on_pfdate"
+        ),
+      labels = c(
+        "PF Med",
+        "PF Condition",
+        "PF Med & PF Condition"
+        # "Same Day PF Med",
+        # "Same Day PF Condition",
+        # "Same Day PF Med & PF Condition"
+      )
     )
   )
 
