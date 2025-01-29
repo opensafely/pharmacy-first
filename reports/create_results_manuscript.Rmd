@@ -1,0 +1,201 @@
+---
+title: "Pharmacy First Manuscript Results"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+  pdf_document: default
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(here)
+library(readr)
+library(gt)
+library(patchwork)
+library(scales)
+```
+
+```{r load-data, message=FALSE, warning=FALSE}
+# Load functions
+source(here("lib", "functions", "tidy_measures.R"))
+source(here("lib", "functions", "plot_measures.R"))
+
+# Load validation data:
+# - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
+# - df_bsa_consultation_validation: date, consultation_type, source, count_method, count
+source(here("lib", "functions", "load_validation_data.R"))
+
+# Load opensafely ouputs:
+# - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
+# - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
+# - df_pfmed: measure, interval_start, interval_end, ratio, numerator, denominator, dmd_code
+# - df_condition_provider: measure, interval_start, interval_end, ratio, numerator, denominator, pf_status, imd
+source(here("lib", "functions", "load_opensafely_outputs.R"))
+```
+
+# Results
+
+## OpenSAFELY total counts
+
+### Figure 1
+
+```{r, message=FALSE, warning=FALSE}
+# Create figure for total count of Pharmacy First consultations for each code (3 codes)
+df_measures_selected <- df_measures %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(is.na(group_by)) |>
+  select(measure, interval_start, numerator) |>
+  mutate(measure = factor(measure,
+    levels = c("Consultation Service", "Pharmacy First Consultation", "Community Pharmacy First Service"),
+    labels = c(
+      "Consultation Service for minor illness (1577041000000109)",
+      "Pharmacy First service (983341000000102)",
+      "Community Pharmacy First Service (2129921000000100)"
+    )
+  ))
+
+df_measures_selected <- df_measures_selected |>
+  group_by(interval_start) |>
+  mutate(
+    pf_consultation_total = sum(numerator, na.rm = TRUE),
+    data_desc = "Pharmacy First Consultation"
+  ) %>%
+  filter(interval_start >= "2024-02-01")
+
+fig_pf_grouped_consultations_count <- plot_measures(
+  df_measures_selected,
+  select_value = pf_consultation_total,
+  select_interval_date = interval_start,
+  legend_position = "bottom",
+  facet_wrap = FALSE,
+  facet_var = data_desc,
+  y_label = NULL,
+  colour_var = data_desc,
+  guide_nrow = 1,
+  point_size = 2.6,
+  text_size = 14,
+  add_vline = FALSE
+) + theme(
+  legend.position = "none",
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey50")
+) +
+  scale_y_continuous(
+    limits = c(0, NA),
+    labels = scales::label_number(),
+    breaks = c(0, 10000, 20000, 30000, 40000, 50000)
+  )
+
+fig_pf_grouped_consultations_count
+
+ggsave(
+  filename = here("released_output", "results", "manuscript", "fig1_pf_consultation_count_total.png"),
+  fig_pf_grouped_consultations_count,
+  height = 4,
+  width = 8
+)
+```
+
+### Results for Figure 1 description
+
+```{r, message=FALSE, warning=FALSE}
+df_results_pf_total_counts <- df_measures  %>%
+  filter(measure_desc == "clinical_service") %>%
+  filter(is.na(group_by)) |>
+  group_by(interval_start) |>
+  mutate(
+    pf_consultation_total = sum(numerator, na.rm = TRUE),
+    data_desc = "Pharmacy First Consultation"
+  ) %>%
+  select(interval_start, pf_consultation_total) %>%
+  distinct() %>%
+  ungroup() %>%
+  mutate(pf_consultation_diff = pf_consultation_total - lag(pf_consultation_total))
+
+df_results_pf_total_counts %>%
+  filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
+```
+
+
+## OpenSAFELY Linkage
+
+### Figure 2
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+# Create figure to show & of PF Med, Condition and both with linked PF consultations
+
+df_pf_descriptive_stats <- df_descriptive_stats %>%
+  filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
+  mutate(
+    measure = factor(measure,
+      levels = c(
+        "pfmed_with_pfid",
+        "pfcondition_with_pfid",
+        "pfmed_and_pfcondition_with_pfid"
+      ),
+      labels = c(
+        "Medication",
+        "Clinical condition",
+        "Both"
+      )
+    )
+  )
+
+
+fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
+  x = interval_start,
+  y = ratio,
+  fill = measure
+)) +
+  geom_area(
+    alpha = 0.7,
+    size = .5,
+    colour = "white"
+  ) +
+  scale_fill_viridis_d() +
+  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Pharmacy First consultations linked to: "
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "grey50"),
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  )
+
+ggsave(
+  filename = here("released_output", "results", "manuscript", "fig2_pf_med_condition.png"),
+  fig_pf_med_condition_linkage,
+  height = 4,
+  width = 8
+)
+```
+
+### Results for Figure 2 description
+
+```{r}
+df_results_pf_linkage <- df_pf_descriptive_stats %>%
+  select(measure, interval_start, ratio, numerator) %>%
+  group_by(interval_start) %>%
+  mutate(
+    ratio_total_linked = sum(ratio),
+    ratio_total_unlinked = 1 - sum(ratio)
+  ) %>%
+  mutate(
+    ratio_total_linked = percent(ratio_total_linked, accuracy = 0.1),
+    ratio_total_unlinked = percent(ratio_total_unlinked, accuracy = 0.1)
+  )
+
+df_results_pf_linkage %>%
+  filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
+```

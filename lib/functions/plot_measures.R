@@ -34,8 +34,11 @@ plot_measures <- function(
     y_scale = NULL,
     scale_measure = NULL,
     shapes = NULL,
+    add_vline = TRUE,
     date_breaks = "1 month",
-    legend_position = "bottom") {
+    legend_position = "bottom",
+    text_size = 14,
+    point_size = 2.5) {
   # Test if all columns expected in output from generate measures exist
   # expected_names <- c("measure", "interval_start", "interval_end", "ratio", "numerator", "denominator")
   # missing_columns <- setdiff(expected_names, colnames(data))
@@ -55,14 +58,8 @@ plot_measures <- function(
       fill = {{ colour_var }}
     )
   ) +
-    geom_point(size = 2) +
+    geom_point(size = point_size) +
     geom_line(alpha = .3) +
-    geom_vline(
-      xintercept = lubridate::as_date("2024-02-01"),
-      linetype = "dotted",
-      colour = "orange",
-      linewidth = .7
-    ) +
     scale_x_date(
       date_breaks = {{ date_breaks }},
       labels = scales::label_date_short()
@@ -82,15 +79,24 @@ plot_measures <- function(
     theme(
       legend.position = legend_position,
       plot.title = element_text(hjust = 0.5),
-      text = element_text(size = 14)
+      text = element_text(size = text_size)
     )
+
+  if (add_vline) {
+    plot_tmp <- plot_tmp + geom_vline(
+      xintercept = lubridate::as_date("2024-02-01"),
+      linetype = "dotted",
+      colour = "orange",
+      linewidth = .7
+    )
+  }
 
   # Change colour based on specified colour palette
   if (!is.null(colour_palette)) {
     if (length(colour_palette) == 1 && colour_palette == "plasma") {
       plot_tmp <- plot_tmp + scale_colour_viridis_d(option = "plasma", end = .75) +
         geom_line(size = 0.5) +
-        geom_point(size = 2.5)
+        geom_point(size = point_size)
     } else {
       plot_tmp <- plot_tmp + scale_colour_manual(values = colour_palette)
     }
@@ -155,7 +161,7 @@ save_figure <- function(figure, width = 10, height = 6) {
   # this uses the 'figure' argument as a string to later generate a filename
   figure_name <- deparse(substitute(figure))
   ggsave(
-    filename = here("released_output", "results", "figures", paste(figure_name, "png",sep = ".")),
+    filename = here("released_output", "results", "figures", paste(figure_name, "png", sep = ".")),
     figure,
     width = width, height = height
   )
