@@ -8,7 +8,8 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
     here("output", "measures", "pf_descriptive_stats_measures.csv")
   )
   df_pfmed <- read_csv(
-    here("output", "measures", "pf_medications_measures.csv")
+    here("output", "measures", "pf_medications_measures.csv"),
+    col_types = list(dmd_code = col_character())
   )
   df_condition_provider <- read_csv(
     here("output", "measures", "pf_condition_provider_measures.csv")
@@ -22,7 +23,8 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
     here("released_output", "measures", "pf_descriptive_stats_measures.csv")
   )
   df_pfmed <- read_csv(
-    here("released_output", "measures", "pf_medications_measures.csv")
+    here("released_output", "measures", "pf_medications_measures.csv"),
+    col_types = list(dmd_code = col_character())
   )
   df_condition_provider <- read_csv(
     here("released_output", "measures", "pf_condition_provider_measures.csv")
