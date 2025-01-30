@@ -44,7 +44,7 @@ source(here("lib", "functions", "load_opensafely_outputs.R"))
 
 ```{r, message=FALSE, warning=FALSE}
 # Create figure for total count of Pharmacy First consultations for each code (3 codes)
-df_measures_selected <- df_measures %>%
+df_pf_consultations <- df_measures %>%
   filter(measure_desc == "clinical_service") %>%
   filter(is.na(group_by)) |>
   select(measure, interval_start, numerator) |>
@@ -57,16 +57,19 @@ df_measures_selected <- df_measures %>%
     )
   ))
 
-df_measures_selected <- df_measures_selected |>
+df_pf_consultations_total <- df_pf_consultations |>
   group_by(interval_start) |>
   mutate(
     pf_consultation_total = sum(numerator, na.rm = TRUE),
     data_desc = "Pharmacy First Consultation"
   ) %>%
-  filter(interval_start >= "2024-02-01")
+  filter(interval_start >= "2024-02-01") %>%
+  select(interval_start, pf_consultation_total, data_desc) |>
+  ungroup() |>
+  distinct()
 
 fig_pf_grouped_consultations_count <- plot_measures(
-  df_measures_selected,
+  df_pf_consultations_total,
   select_value = pf_consultation_total,
   select_interval_date = interval_start,
   legend_position = "bottom",
@@ -102,7 +105,7 @@ ggsave(
 ### Results for Figure 1 description
 
 ```{r, message=FALSE, warning=FALSE}
-df_results_pf_total_counts <- df_measures  %>%
+df_results_pf_total_counts <- df_measures %>%
   filter(measure_desc == "clinical_service") %>%
   filter(is.na(group_by)) |>
   group_by(interval_start) |>
@@ -122,7 +125,6 @@ sum(df_results_pf_total_counts$pf_consultation_total)
 df_results_pf_total_counts %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
 ```
-
 
 ## OpenSAFELY Linkage
 
@@ -203,4 +205,119 @@ df_results_pf_linkage <- df_pf_descriptive_stats %>%
 
 df_results_pf_linkage %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
+```
+
+## Data comparison
+
+### Figure 3
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
+# Ideally I would like to load this at the top of this script
+# But this file uses datasets created further down so it easiest to load it here
+source(here("lib", "functions", "combine_os_nhsbsa_validation_data.R"))
+
+# Pharmacy First Consultations
+# Instead of only using the count of PF consultations in OS with a clinical
+# condition we are using all PF consultations with a consultation id
+df_pf_consultation_validatio_plot <- pf_validation |>
+  filter(
+    (data_source == "opensafely" &
+      data_desc == "pf_consultation" &
+      count_desc == "consultation_id") |
+      (data_source == "nhs_bsa" &
+        data_desc == "pf_consultation" &
+        count_desc == "consultation_type")
+  )
+
+# Pivot wider to calculate ratio
+df_pf_consultation_validatio_plot <- df_pf_consultation_validatio_plot |>
+  select(date, data_source, count_method, count_total) |>
+  pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
+  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_40pct)
+
+# Select colours for groups
+# Group 1: #CF4446FF
+colour_group_1 <- paletteer_c("viridis::inferno", n = 10)[6]
+# Group 1: #1B0C42FF
+colour_group_2 <- paletteer_c("viridis::inferno", n = 10)[2]
+
+# Create consultation validation plot
+pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
+  ggplot(aes(x = date)) +
+  geom_point(
+    aes(
+      y = nhs_bsa_count_40pct,
+      colour = "NHS BSA (40%)",
+      shape = "NHS BSA (40%)"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(y = nhs_bsa_count_40pct, colour = "NHS BSA (40%)"),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_point(
+    aes(
+      y = opensafely_opensafely_tpp,
+      colour = "OpenSAFELY-TPP",
+      shape = "OpenSAFELY-TPP"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(
+      y = opensafely_opensafely_tpp,
+      colour = "OpenSAFELY-TPP"
+    ),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_label(
+    aes(
+      y = opensafely_opensafely_tpp,
+      label = scales::percent(ratio, accuracy = .1),
+    ),
+    colour = colour_group_2,
+    vjust = -.5,
+    size = 3.5
+  ) +
+  scale_y_continuous(labels = scales::number) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  scale_colour_manual(
+    values = c(
+      "NHS BSA (40%)" = colour_group_1,
+      "OpenSAFELY-TPP" = colour_group_2
+    ),
+    name = NULL
+  ) +
+  scale_shape_manual(
+    values = c(
+      "NHS BSA (40%)" = 15,
+      "OpenSAFELY-TPP" = 16
+    ),
+    name = NULL
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    colour = NULL,
+    shape = NULL
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "grey50"),
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  )
+
+ggsave(
+  filename = here("released_output", "results", "manuscript", "fig3_pf_os_nhsbsa_comparison.png"),
+  pf_validatio_consultation_plot,
+  height = 4,
+  width = 8
+)
 ```
