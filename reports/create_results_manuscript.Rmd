@@ -17,6 +17,7 @@ library(gt)
 library(patchwork)
 library(scales)
 library(paletteer)
+library(ggrepel)
 ```
 
 ```{r load-data, message=FALSE, warning=FALSE}
@@ -151,6 +152,10 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
     )
   )
 
+df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  group_by(interval_start) %>%
+  arrange(desc(measure), .by_group = TRUE) %>%
+  mutate(cumulative_ratio = case_when(interval_start == "2024-12-01" ~ cumsum(ratio), TRUE ~ NA))
 
 fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
   x = interval_start,
@@ -161,6 +166,18 @@ fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
     alpha = 0.7,
     size = .5,
     colour = "white"
+  ) +
+  geom_label(
+    aes(
+      y = cumulative_ratio,
+      label = scales::percent(ratio, accuracy = .1),
+    ),
+    vjust = -0.05,
+    size = 3.5,
+    show.legend = FALSE,
+    color = "black",
+    fill = "white"
+
   ) +
   scale_fill_viridis_d() +
   scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
