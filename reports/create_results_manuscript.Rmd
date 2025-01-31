@@ -16,6 +16,8 @@ library(readr)
 library(gt)
 library(patchwork)
 library(scales)
+library(paletteer)
+library(ggrepel)
 ```
 
 ```{r load-data, message=FALSE, warning=FALSE}
@@ -97,7 +99,7 @@ fig_pf_grouped_consultations_count
 ggsave(
   filename = here("released_output", "results", "manuscript", "fig1_pf_consultation_count_total.png"),
   fig_pf_grouped_consultations_count,
-  height = 4,
+  height = 3.5,
   width = 8
 )
 ```
@@ -150,6 +152,10 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
     )
   )
 
+df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  group_by(interval_start) %>%
+  arrange(desc(measure), .by_group = TRUE) %>%
+  mutate(cumulative_ratio = case_when(interval_start == "2024-12-01" ~ cumsum(ratio), TRUE ~ NA))
 
 fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
   x = interval_start,
@@ -160,6 +166,18 @@ fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
     alpha = 0.7,
     size = .5,
     colour = "white"
+  ) +
+  geom_label(
+    aes(
+      y = cumulative_ratio,
+      label = scales::percent(ratio, accuracy = .1),
+    ),
+    vjust = -0.05,
+    size = 3.5,
+    show.legend = FALSE,
+    color = "black",
+    fill = "white"
+
   ) +
   scale_fill_viridis_d() +
   scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
@@ -178,6 +196,8 @@ fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
     legend.position = "bottom",
     text = element_text(size = 14)
   )
+
+fig_pf_med_condition_linkage
 
 ggsave(
   filename = here("released_output", "results", "manuscript", "fig2_pf_med_condition.png"),
@@ -319,5 +339,305 @@ ggsave(
   pf_validatio_consultation_plot,
   height = 4,
   width = 8
+)
+```
+# Appendix
+
+## Data comparison adjusted for % linkage
+
+### Consultation
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
+# Pharmacy First Consultations
+# Instead of only using the count of PF consultations in OS with a clinical
+# condition we are using all PF consultations with a consultation id
+df_pf_consultation_validation_plot <- pf_validation |>
+  filter(
+    (data_source == "opensafely" &
+      data_desc == "pf_consultation" &
+      count_desc == "consultation_type") |
+      (data_source == "nhs_bsa" &
+        data_desc == "pf_consultation" &
+        count_desc == "consultation_type")
+  )
+
+# Pivot wider to calculate ratio
+df_pf_consultation_validation_plot <- df_pf_consultation_validation_plot |>
+  select(date, data_source, count_method, count_total) |>
+  pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
+  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_40pct)
+
+join_ratio <- df_pf_descriptive_stats |>
+  select(date = interval_start, measure, ratio) |>
+  filter(measure %in% c("Clinical condition", "Both")) |>
+  group_by(date) |>
+  mutate(ratio_consultation_type_in_os = sum(ratio, na.rm = TRUE)) |>
+  ungroup() |>
+  select(date, ratio_consultation_type_in_os)
+
+df_pf_consultation_validation_adjusted_plot <- df_pf_consultation_validation_plot |>
+  left_join(join_ratio) |>
+  mutate(
+    os_tpp_adjusted = round((opensafely_opensafely_tpp / (ratio_consultation_type_in_os * 100)) * 100, 0),
+    ratio_adjusted = os_tpp_adjusted / nhs_bsa_count_40pct
+  )
+
+# Select colours for groups
+# Group 1: #CF4446FF
+colour_group_1 <- paletteer_c("viridis::inferno", n = 10)[6]
+# Group 1: #1B0C42FF
+colour_group_2 <- paletteer_c("viridis::inferno", n = 10)[2]
+# Group 1: #781C6DFF
+colour_group_3 <- paletteer_c("viridis::inferno", n = 10)[4]
+
+# Create consultation validation plot
+pf_validation_consultation_adjusted_plot <- df_pf_consultation_validation_adjusted_plot |>
+  ggplot(aes(x = date)) +
+  geom_point(
+    aes(
+      y = nhs_bsa_count_40pct,
+      colour = "NHS BSA (40%)",
+      shape = "NHS BSA (40%)"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(y = nhs_bsa_count_40pct, colour = "NHS BSA (40%)"),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_point(
+    aes(
+      y = opensafely_opensafely_tpp,
+      colour = "OpenSAFELY-TPP",
+      shape = "OpenSAFELY-TPP"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(
+      y = opensafely_opensafely_tpp,
+      colour = "OpenSAFELY-TPP"
+    ),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_label(
+    aes(
+      y = opensafely_opensafely_tpp,
+      label = scales::percent(ratio, accuracy = .1),
+    ),
+    colour = colour_group_2,
+    vjust = -.5,
+    size = 3.5
+  ) +
+  geom_point(
+    aes(
+      y = os_tpp_adjusted,
+      colour = "OpenSAFELY-TPP (Adjusted)",
+      shape = "OpenSAFELY-TPP (Adjusted)"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(
+      y = os_tpp_adjusted,
+      colour = "OpenSAFELY-TPP (Adjusted)"
+    ),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_label(
+    aes(
+      y = os_tpp_adjusted,
+      label = scales::percent(ratio_adjusted, accuracy = .1),
+    ),
+    colour = colour_group_3,
+    vjust = -.5,
+    size = 3.5
+  ) +
+  scale_y_continuous(labels = scales::number) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  scale_colour_manual(
+    values = c(
+      "NHS BSA (40%)" = colour_group_1,
+      "OpenSAFELY-TPP" = colour_group_2,
+      "OpenSAFELY-TPP (Adjusted)" = colour_group_3
+    ),
+    name = NULL
+  ) +
+  scale_shape_manual(
+    values = c(
+      "NHS BSA (40%)" = 15,
+      "OpenSAFELY-TPP" = 16,
+      "OpenSAFELY-TPP (Adjusted)" = 17
+    ),
+    name = NULL
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    colour = NULL,
+    shape = NULL
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "grey50"),
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  ) +
+  ggtitle("A. Pharmacy First Consultations")
+```
+
+### Medications
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
+df_pf_medication_validation <- pf_validation |>
+  filter(
+    (data_source == "opensafely" &
+      data_desc == "pf_medication" &
+      count_desc == "dmd_code") |
+      (data_source == "nhs_bsa" &
+        data_desc == "pf_medication" &
+        count_desc == "bnf_paragraph")
+  )
+
+df_pf_medication_validation_plot <- df_pf_medication_validation |>
+  select(date, data_source, count_method, count_total) |>
+  pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
+  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_40pct)
+
+linked_ratio <- df_pf_descriptive_stats |>
+  select(date = interval_start, measure, ratio) |>
+  filter(measure %in% c("Medication", "Both")) |>
+  group_by(date) |>
+  mutate(ratio_medication_in_os = sum(ratio, na.rm = TRUE)) |>
+  ungroup() |>
+  select(date, ratio_medication_in_os)
+
+
+df_pf_medication_validation_adjusted_plot <- df_pf_medication_validation_plot |>
+  left_join(linked_ratio) |>
+  mutate(
+    os_tpp_adjusted = round((opensafely_opensafely_tpp / (ratio_medication_in_os * 100)) * 100, 0),
+    ratio_adjusted = os_tpp_adjusted / nhs_bsa_count_40pct
+  )
+
+# Create consultation validation plot
+pf_medication_validation_adjusted_plot <- df_pf_medication_validation_adjusted_plot |>
+  ggplot(aes(x = date)) +
+  geom_point(
+    aes(
+      y = nhs_bsa_count_40pct,
+      colour = "NHS BSA (40%)",
+      shape = "NHS BSA (40%)"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(y = nhs_bsa_count_40pct, colour = "NHS BSA (40%)"),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_point(
+    aes(
+      y = opensafely_opensafely_tpp,
+      colour = "OpenSAFELY-TPP",
+      shape = "OpenSAFELY-TPP"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(
+      y = opensafely_opensafely_tpp,
+      colour = "OpenSAFELY-TPP"
+    ),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_label(
+    aes(
+      y = opensafely_opensafely_tpp,
+      label = scales::percent(ratio, accuracy = .1),
+    ),
+    colour = colour_group_2,
+    vjust = -.5,
+    size = 3.5
+  ) +
+  geom_point(
+    aes(
+      y = os_tpp_adjusted,
+      colour = "OpenSAFELY-TPP (Adjusted)",
+      shape = "OpenSAFELY-TPP (Adjusted)"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(
+      y = os_tpp_adjusted,
+      colour = "OpenSAFELY-TPP (Adjusted)"
+    ),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_label(
+    aes(
+      y = os_tpp_adjusted,
+      label = scales::percent(ratio_adjusted, accuracy = .1),
+    ),
+    colour = colour_group_3,
+    vjust = -.5,
+    size = 3.5
+  ) +
+  scale_y_continuous(labels = scales::number) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  scale_colour_manual(
+    values = c(
+      "NHS BSA (40%)" = colour_group_1,
+      "OpenSAFELY-TPP" = colour_group_2,
+      "OpenSAFELY-TPP (Adjusted)" = colour_group_3
+    ),
+    name = NULL
+  ) +
+  scale_shape_manual(
+    values = c(
+      "NHS BSA (40%)" = 15,
+      "OpenSAFELY-TPP" = 16,
+      "OpenSAFELY-TPP (Adjusted)" = 17
+    ),
+    name = NULL
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    colour = NULL,
+    shape = NULL
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "grey50"),
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  ) +
+  ggtitle("B. Pharmacy First Medications")
+```
+
+```{r}
+# Combine plots
+validation_combined_adjusted_plot <- pf_validation_consultation_adjusted_plot / pf_medication_validation_adjusted_plot + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+
+validation_combined_adjusted_plot
+
+ggsave(
+  filename = here("released_output", "results", "manuscript", "figX_pf_os_nhsbsa_adjusted_comparison.png"),
+  validation_combined_adjusted_plot,
+  height = 8,
+  width = 10
 )
 ```
