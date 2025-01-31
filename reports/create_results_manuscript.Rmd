@@ -206,7 +206,6 @@ df_results_pf_linkage <- df_pf_descriptive_stats %>%
 
 df_results_pf_linkage %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
-
 ```
 
 ## Data comparison
@@ -370,7 +369,6 @@ ggsave(
 ```
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
-
 df_pf_medication_validation <- pf_validation |>
   filter(
     (data_source == "opensafely" &
@@ -388,11 +386,11 @@ df_pf_medication_validation_plot <- df_pf_medication_validation |>
 
 linked_ratio <- df_pf_descriptive_stats |>
   select(date = interval_start, measure, ratio) |>
- filter(measure %in% c("Medication", "Both")) |>
- group_by(date) |>
- mutate(ratio_medication_in_os = sum(ratio, na.rm = TRUE)) |>
- ungroup() |>
- select(date, ratio_medication_in_os)
+  filter(measure %in% c("Medication", "Both")) |>
+  group_by(date) |>
+  mutate(ratio_medication_in_os = sum(ratio, na.rm = TRUE)) |>
+  ungroup() |>
+  select(date, ratio_medication_in_os)
 
 
 df_pf_medication_validation_plot <- df_pf_medication_validation_plot |>
@@ -510,7 +508,7 @@ ggsave(
   width = 8
 )
 
-validation_combined_plot <- pf_validation_consultation_plot / pf_medication_validation_plot + plot_layout(guides = "collect") & theme(legend.position = 'bottom')
+validation_combined_plot <- pf_validation_consultation_plot / pf_medication_validation_plot + plot_layout(guides = "collect") & theme(legend.position = "bottom")
 
 ggsave(
   filename = here("released_output", "results", "manuscript", "fig3_pf_combined_os_nhsbsa_comparison.png"),
