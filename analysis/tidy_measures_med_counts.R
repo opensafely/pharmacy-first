@@ -4,8 +4,8 @@ library(readr)
 library(gt)
 library(purrr)
 
-df <- read_csv(here("released_output", "measures", "pf_medications_measures.csv"))
-df1 <- read_csv(here("released_output", "measures", "consultation_med_counts_measures.csv"))
+df <- read_csv(here("output", "measures", "pf_medications_measures.csv"))
+df1 <- read_csv(here("output", "measures", "consultation_med_counts_measures.csv"))
 
 df_medications <- df %>%
     filter(numerator != 0)
