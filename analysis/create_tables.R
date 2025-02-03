@@ -22,8 +22,9 @@ df_demographics_counts <- map_dfr(
     mutate(category = .x) %>%
     rename(subcategory = 1) %>%
     filter(n > 7) %>%
-    mutate(n = (round(n / 5) * 5))
+    mutate(n = round(n / 5) * 5)
 )
+
 
 readr::write_csv(
   df_demographics_counts,
