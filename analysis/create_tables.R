@@ -20,8 +20,12 @@ df_demographics_counts <- map_dfr(
     # summarises df with a new column which counts occurences (n)
     summarise(n = n()) %>%
     mutate(category = .x) %>%
-    rename(subcategory = 1)
+    rename(subcategory = 1) %>%
+    filter(n > 7) %>%
+    mutate(n = (round(n / 5) * 5))
 )
+
+View(df_demographics_counts)
 
 readr::write_csv(
   df_demographics_counts,
