@@ -25,8 +25,6 @@ df_demographics_counts <- map_dfr(
     mutate(n = (round(n / 5) * 5))
 )
 
-View(df_demographics_counts)
-
 readr::write_csv(
   df_demographics_counts,
   here::here("output", "population", "pf_demographics.csv")
