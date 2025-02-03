@@ -65,3 +65,11 @@ actions:
     outputs:
       moderately_sensitive:
         measure: output/measures/consultation_med_counts_measures.csv
+
+  tidy_med_measures:
+    run: r:latest analysis/tidy_measures_med_counts.R
+    needs: [generate_pf_medications_measures, generate_pf_med_counts_measures]
+    outputs:
+      moderately_sensitive:
+        measure_pf_meds: output/measures/pf_medications_measures_tidy.csv 
+        measure_consult_meds: output/measures/consultation_med_counts_measures_tidy.csv
