@@ -8,7 +8,28 @@ library(purrr)
 df <- read_csv(here("output", "population", "pf_table1.csv.gz"))
 
 df_demographics <- df %>%
-  select(sex, age_band, region, imd, ethnicity)
+  select(
+    sex,
+    age_band,
+    region,
+    imd,
+    ethnicity,
+    uti_numerator,
+    uti_denominator,
+    shingles_numerator,
+    shingles_denominator,
+    impetigo_numerator,
+    impetigo_denominator,
+    insectbite_numerator,
+    insectbite_denominator,
+    sorethroat_numerator,
+    sorethroat_denominator,
+    sinusitis_numerator,
+    sinusitis_denominator,
+    otitismedia_numerator,
+    otitismedia_denominator
+  ) %>%
+  mutate(across(ends_with(("_numerator")) | ends_with(("_denominator")), as.character))
 
 # map_dfr maps function to each elevent and combines result in single df
 df_demographics_counts <- map_dfr(
@@ -21,10 +42,11 @@ df_demographics_counts <- map_dfr(
     summarise(n = n()) %>%
     mutate(category = .x) %>%
     rename(subcategory = 1) %>%
+    # filter out all FALSES
+    filter(across(everything(), ~ . != "FALSE")) %>%
     filter(n > 7) %>%
     mutate(n = round(n / 5) * 5)
 )
-
 
 readr::write_csv(
   df_demographics_counts,
