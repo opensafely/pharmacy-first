@@ -220,11 +220,20 @@ df_results_pf_linkage <- df_pf_descriptive_stats %>%
   mutate(
     ratio_linked = percent(ratio, accuracy = 0.1),
     ratio_total_linked = percent(ratio_total_linked, accuracy = 0.1),
-    ratio_total_unlinked = percent(ratio_total_unlinked, accuracy = 0.1)
+    ratio_total_unlinked = percent(ratio_total_unlinked, accuracy = 0.1),
   )
 
 df_results_pf_linkage %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
+
+linkage_feb_to_dec <- df_results_pf_linkage %>%
+    group_by(interval_start) %>% 
+    summarise(sum_ratio = sum(ratio)) %>% 
+    mutate(linkage_diff = sum_ratio - lag(sum_ratio),
+    pct_diff = percent(linkage_diff, accuracy = 0.1))
+
+
+
 ```
 
 ## Data comparison

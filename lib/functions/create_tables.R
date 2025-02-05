@@ -144,7 +144,7 @@ gt_top_meds <- function(data) {
     ) %>%
     tab_header(
       title = "Top 5 medications linked to Pharmacy First consultations",
-      subtitle = "Timeframe: 1st Feb 2024 to 31st July 2024"
+      subtitle = "Timeframe: 1st Feb 2024 to 31st December 2024"
     ) %>%
     cols_label(
       term = md("**Medication**"),
