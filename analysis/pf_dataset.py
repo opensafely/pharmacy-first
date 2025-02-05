@@ -131,7 +131,7 @@ def get_numerator(selected_events, condition_code, condition_denominator):
     numerator_counts = (
         selected_events.where(selected_events.snomedct_code.is_in(condition_code))
         .where(condition_denominator)
-        .count_for_patient()
+        .exists_for_patient()
     )
 
     return numerator_counts
