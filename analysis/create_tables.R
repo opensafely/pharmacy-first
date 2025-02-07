@@ -56,12 +56,12 @@ readr::write_csv(
 df_demographics_all <- read_csv(here("released_output", "population", "pf_demographics.csv"))
 
 # Demographics table with percentages
-df_demographics_table <- head(df_demographics_all, 39) %>%
+df_demographics_table <- head(df_demographics_counts, 39) %>%
   group_by(category) %>%
   mutate(pct = round(n / sum(n) * 100, digits = 1))
 
 # Clinical pathways table with percentages
-df_clinical_pathways_table <- tail(df_demographics_all, 14) %>%
+df_clinical_pathways_table <- tail(df_demographics_counts, 14) %>%
   separate(col=category, into=c("clinical_pathway", "metric"), sep = "_") %>%
   group_by(clinical_pathway) %>%
   mutate(pct = round(n / lead(n) * 100, digits = 1))

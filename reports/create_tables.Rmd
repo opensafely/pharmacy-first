@@ -31,7 +31,7 @@ gtsave(tab_pf_condition_codes, filename = here("released_output", "results", "ta
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
 
 df_consultation_med_counts <- read_csv(
-  here("released_output", "measures", "consultation_med_counts_measures.csv"),
+  here("released_output", "measures", "consultation_med_counts_measures_tidy.csv"),
   col_types = cols(dmd_code = col_character())
 )
 
