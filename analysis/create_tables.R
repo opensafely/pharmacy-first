@@ -58,13 +58,13 @@ df_demographics_all <- read_csv(here("released_output", "population", "pf_demogr
 # Demographics table with percentages
 df_demographics_table <- head(df_demographics_all, 39) %>%
   group_by(category) %>%
-  mutate(pct = percent(n/sum(n), accuracy = 0.1))
+  mutate(pct = round(n / sum(n) * 100, digits = 1))
 
 # Clinical pathways table with percentages
 df_clinical_pathways_table <- tail(df_demographics_all, 14) %>%
   separate(col=category, into=c("clinical_pathway", "metric"), sep = "_") %>%
   group_by(clinical_pathway) %>%
-  mutate(pct = percent(n/lead(n), accuracy = 0.1))
+  mutate(pct = round(n / lead(n) * 100, digits = 1))
 
 # View(df_clinical_pathways_table)
 # View(df_demographics_table)
