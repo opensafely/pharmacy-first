@@ -53,31 +53,47 @@ readr::write_csv(
   here::here("output", "population", "pf_demographics.csv")
 )
 
-# gt_table <- df_demographics_counts[1:2] %>%
+df_demographics_all <- read_csv(here("released_output", "population", "pf_demographics.csv"))
+
+# Demographics table with percentages
+df_demographics_table <- head(df_demographics_all, 39) %>%
+  group_by(category) %>%
+  mutate(pct = percent(n/sum(n), accuracy = 0.1))
+
+# Clinical pathways table with percentages
+df_clinical_pathways_table <- tail(df_demographics_all, 14) %>%
+  separate(col=category, into=c("clinical_pathway", "metric"), sep = "_") %>%
+  group_by(clinical_pathway) %>%
+  mutate(pct = percent(n/lead(n), accuracy = 0.1))
+
+# View(df_clinical_pathways_table)
+# View(df_demographics_table)
+
+# gt_table <- df_demographics_table %>%
 #   gt() %>%
 #   tab_header(
 #     title = "Demographics Table",
 #     subtitle = "Counts of individuals by category and subcategory"
 #   ) %>%
 #   tab_row_group(
-#     group = "sex",
-#     rows = df_counts$Category == "sex"
+#     label = "sex",
+#     rows = df_demographics_table$category == "sex",
 #   ) %>%
 #   tab_row_group(
-#     group = "age_band",
-#     rows = df_counts$Category == "age_band"
+#     label = "age_band",
+#     rows = df_demographics_table$category == "age_band"
 #   ) %>%
 #   tab_row_group(
-#     group = "region",
-#     rows = df_counts$Category == "region"
+#     label = "region",
+#     rows = df_demographics_table$category == "region"
 #   ) %>%
 #   tab_row_group(
-#     group = "imd",
-#     rows = df_counts$Category == "imd"
+#     label = "imd",
+#     rows = df_demographics_table$category == "imd"
 #   ) %>%
 #   tab_row_group(
-#     group = "ethnicity",
-#     rows = df_counts$Category == "ethnicity"
+#     label = "ethnicity",
+#     rows = df_demographics_table$category == "ethnicity"
 #   ) %>%
 #   tab_options(
 #     heading.title.font.size = "medium",
