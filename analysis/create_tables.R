@@ -53,8 +53,6 @@ readr::write_csv(
   here::here("output", "population", "pf_demographics.csv")
 )
 
-df_demographics_all <- read_csv(here("released_output", "population", "pf_demographics.csv"))
-
 # Demographics table with percentages
 df_demographics_table <- head(df_demographics_counts, 39) %>%
   group_by(category) %>%
