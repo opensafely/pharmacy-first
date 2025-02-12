@@ -16,7 +16,7 @@ actions:
       highly_sensitive:
         cohort: output/population/pf_table1.csv.gz
 
-  create_table1:
+  create_tables:
     run: r:latest analysis/create_tables.R
     needs: [generate_dataset_definition_table1]
     outputs:
