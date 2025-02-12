@@ -77,7 +77,7 @@ df_demographics_table_counts <- map_dfr(
   replace_na(list(subcategory = "Missing")) %>%
   group_by(category) %>%
   mutate(
-    pct = n / sum(n),
+    pct = round(n / sum(n), 4),
     table = "tab_demographics"
   ) %>%
   ungroup() %>%
@@ -114,11 +114,11 @@ df_pf_pathways_table_counts <- df_pf_pathways_table_long %>%
     values_from = n
   ) %>%
   mutate(
-    pct = numerator / denominator,
+    ratio = round(numerator / denominator, 4),
     table = "tab_pf_pathways"
   ) %>%
   pivot_longer(
-    cols = c(numerator, denominator, pct),
+    cols = c(numerator, denominator, ratio),
     names_to = "metric"
   ) %>%
   relocate(table)
