@@ -3,17 +3,25 @@ library(tidyverse)
 library(readr)
 library(gt)
 library(purrr)
+library(scales)
 
 # Dataset definition file path output/population/pf_population.csv.gz
 df <- read_csv(here("output", "population", "pf_table1.csv.gz"))
 
-df_demographics <- df %>%
+df_demographics_table <- df %>%
   select(
     sex,
     age_band,
     region,
     imd,
-    ethnicity,
+    ethnicity
+  )
+
+df_pf_pathways_table <- df %>%
+  select(
+    sex,
+    region,
+    imd,
     uti_numerator,
     uti_denominator,
     shingles_numerator,
@@ -28,83 +36,100 @@ df_demographics <- df %>%
     sinusitis_denominator,
     otitismedia_numerator,
     otitismedia_denominator
-  ) %>%
-  mutate(across(ends_with(("_numerator")) | ends_with(("_denominator")), as.character))
+  )
 
-# map_dfr maps function to each elevent and combines result in single df
-df_demographics_counts <- map_dfr(
-  # Column names sex, age_band, region, imd, ethnicity are inputs (.x)
-  names(df_demographics),
-  ~ df_demographics %>%
-    # Group by each column
+df_pf_pathways_breakdown_variables <- c(
+  "sex",
+  "region",
+  "imd"
+)
+df_pf_pathways_num_den_variables <- c(
+  "uti_numerator",
+  "uti_denominator",
+  "shingles_numerator",
+  "shingles_denominator",
+  "impetigo_numerator",
+  "impetigo_denominator",
+  "insectbite_numerator",
+  "insectbite_denominator",
+  "sorethroat_numerator",
+  "sorethroat_denominator",
+  "sinusitis_numerator",
+  "sinusitis_denominator",
+  "otitismedia_numerator",
+  "otitismedia_denominator"
+)
+
+# Table 1: Demographics
+# Count subcategories (e.g. female/male) for each variable/categories (e.g. sex)
+# Var names, referred to as .x in code: sex, age_band, region, imd, ethnicity
+df_demographics_table_counts <- map_dfr(
+  names(df_demographics_table),
+  ~ df_demographics_table %>%
     group_by(across(all_of(.x))) %>%
-    # summarises df with a new column which counts occurences (n)
     summarise(n = n()) %>%
     mutate(category = .x) %>%
-    rename(subcategory = 1) %>%
-    # filter out all FALSES
-    filter(across(everything(), ~ . != "FALSE")) %>%
-    filter(n > 7) %>%
-    mutate(n = round(n / 5) * 5)
+    rename(subcategory = 1)
+) %>%
+  filter(n > 7) %>%
+  mutate(n = round(n / 5) * 5) %>%
+  select(category, subcategory, n) %>%
+  replace_na(list(subcategory = "Missing")) %>%
+  group_by(category) %>%
+  mutate(
+    pct = round(n / sum(n), 4),
+    table = "tab_demographics"
+  ) %>%
+  ungroup() %>%
+  pivot_longer(
+    cols = c(n, pct),
+    names_to = "metric"
+  ) %>%
+  relocate(table)
+
+# Table 2: Clinical pathways
+df_pf_pathways_table_long <- df_pf_pathways_table %>%
+  pivot_longer(
+    cols = all_of(df_pf_pathways_num_den_variables),
+    names_to = "pf_pathway_count"
+  ) %>%
+  filter(value == TRUE)
+
+df_pf_pathways_table_counts <- df_pf_pathways_table_long %>%
+  group_by(sex, pf_pathway_count) %>%
+  count(value) %>%
+  ungroup() %>%
+  select(category = sex, subcategory = pf_pathway_count, n) %>%
+  filter(n > 7) %>%
+  mutate(n = round(n / 5) * 5) %>%
+  select(category, subcategory, n) %>%
+  separate(
+    col = subcategory,
+    into = c("subcategory", "metric"),
+    sep = "_"
+  ) %>%
+  pivot_wider(
+    id_cols = c("category", "subcategory"),
+    names_from = metric,
+    values_from = n
+  ) %>%
+  mutate(
+    ratio = round(numerator / denominator, 4),
+    table = "tab_pf_pathways"
+  ) %>%
+  pivot_longer(
+    cols = c(numerator, denominator, ratio),
+    names_to = "metric"
+  ) %>%
+  relocate(table)
+
+# Combine tables
+df_tables_combined <- bind_rows(
+  df_demographics_table_counts,
+  df_pf_pathways_table_counts
 )
 
 readr::write_csv(
-  df_demographics_counts,
-  here::here("output", "population", "pf_demographics.csv")
+  df_tables_combined,
+  here::here("output", "population", "pf_tables.csv")
 )
-
-# Demographics table with percentages
-df_demographics_table <- head(df_demographics_counts, 39) %>%
-  group_by(category) %>%
-  mutate(pct = round(n / sum(n) * 100, digits = 1))
-
-# Clinical pathways table with percentages
-df_clinical_pathways_table <- tail(df_demographics_counts, 14) %>%
-  separate(col=category, into=c("clinical_pathway", "metric"), sep = "_") %>%
-  group_by(clinical_pathway) %>%
-  mutate(pct = round(n / lead(n) * 100, digits = 1))
-
-# View(df_clinical_pathways_table)
-# View(df_demographics_table)
-
-# gt_table <- df_demographics_table %>%
-#   gt() %>%
-#   tab_header(
-#     title = "Demographics Table",
-#     subtitle = "Counts of individuals by category and subcategory"
-#   ) %>%
-#   tab_row_group(
-#     label = "sex",
-#     rows = df_demographics_table$category == "sex",
-#   ) %>%
-#   tab_row_group(
-#     label = "age_band",
-#     rows = df_demographics_table$category == "age_band"
-#   ) %>%
-#   tab_row_group(
-#     label = "region",
-#     rows = df_demographics_table$category == "region"
-#   ) %>%
-#   tab_row_group(
-#     label = "imd",
-#     rows = df_demographics_table$category == "imd"
-#   ) %>%
-#   tab_row_group(
-#     label = "ethnicity",
-#     rows = df_demographics_table$category == "ethnicity"
-#   ) %>%
-#   tab_options(
-#     heading.title.font.size = "medium",
-#     heading.subtitle.font.size = "small",
-#     table.font.size = "small"
-#   ) %>%
-#   tab_style(
-#     style = cell_text(weight = "bold"),
-#     locations = cells_row_groups(groups = everything())
-#   )
-
-# # Display the table
-# gt_table
-
-
-# output/population/pf_population.csv.gz
