@@ -21,7 +21,7 @@ actions:
     needs: [generate_dataset_definition_table1]
     outputs:
       moderately_sensitive:
-        dataset: output/population/pf_demographics.csv
+        dataset: output/population/pf_tables.csv
 
   generate_pf_breakdown_measures:
     run: >
