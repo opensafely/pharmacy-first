@@ -2,13 +2,13 @@
 if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
   # Load data from generate_pf_measures action
   df_measures <- readr::read_csv(
-    here("output", "measures", "pf_codes_conditions_measures.csv")
+    here("output", "measures", "pf_breakdown_measures.csv")
   )
   df_descriptive_stats <- read_csv(
     here("output", "measures", "pf_descriptive_stats_measures.csv")
   )
   df_pfmed <- read_csv(
-    here("output", "measures", "pf_medications_measures.csv"),
+    here("output", "measures", "pf_medications_measures_tidy.csv"),
     col_types = list(dmd_code = col_character())
   )
   df_condition_provider <- read_csv(
@@ -23,7 +23,7 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
     here("released_output", "measures", "pf_descriptive_stats_measures.csv")
   )
   df_pfmed <- read_csv(
-    here("released_output", "measures", "pf_medications_measures.csv"),
+    here("released_output", "measures", "pf_medications_measures_tidy.csv"),
     col_types = list(dmd_code = col_character())
   )
   df_condition_provider <- read_csv(

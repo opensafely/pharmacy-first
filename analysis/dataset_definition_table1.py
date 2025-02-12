@@ -25,6 +25,8 @@ import codelists
 
 index_date = "2024-12-31"
 dataset = create_dataset()
+dataset.configure_dummy_data(population_size=10000)
+
 
 registration = practice_registrations.for_patient_on(index_date)
 selected_events = clinical_events.where(
