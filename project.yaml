@@ -6,19 +6,19 @@ expectations:
 
 actions:
 
-  generate_dataset_definition_table1:
+  generate_dataset_definition_tables:
     run: >
       ehrql:v1
-       generate-dataset analysis/dataset_definition_table1.py
-       --test-data-file analysis/test_dataset_definition_table1.py
-       --output output/population/pf_table1.csv.gz
+       generate-dataset analysis/dataset_definition_tables.py
+       --test-data-file analysis/test_dataset_definition_tables.py
+       --output output/population/pf_tables.csv.gz
     outputs:
       highly_sensitive:
-        cohort: output/population/pf_table1.csv.gz
+        cohort: output/population/pf_tables.csv.gz
 
   create_tables:
     run: r:latest analysis/create_tables.R
-    needs: [generate_dataset_definition_table1]
+    needs: [generate_dataset_definition_tables]
     outputs:
       moderately_sensitive:
         dataset: output/population/pf_tables.csv

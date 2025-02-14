@@ -1,4 +1,4 @@
-# Dataset definition: dataset_definition_table1.py
+# Dataset definition: dataset_definition_tables.py
 # Timeframe: 31/01/2024 - 31/01/2025
 start_date_tables = "2024-01-31"
 index_date = "2025-01-31"
