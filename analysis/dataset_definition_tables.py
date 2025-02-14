@@ -6,7 +6,7 @@ from ehrql.tables.tpp import (
     addresses,
     ethnicity_from_sus,
 )
-from config import start_date_tables, index_date
+from config import start_date_dataset_tables, index_date_dataset_tables
 from pf_dataset import (
     get_numerator,
     get_latest_ethnicity,
@@ -16,8 +16,8 @@ from pf_dataset import (
 from pf_variables_library import select_events
 import codelists
 
-launch_date = start_date_tables
-index_date = index_date
+launch_date = start_date_dataset_tables
+index_date = index_date_dataset_tables
 
 dataset = create_dataset()
 dataset.configure_dummy_data(population_size=10000)
