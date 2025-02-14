@@ -6,6 +6,7 @@ from ehrql.tables.tpp import (
     addresses,
     ethnicity_from_sus,
 )
+from config import start_date_tables, index_date
 from pf_variables_library import check_pregnancy_status
 from pf_dataset import (
     get_uncomplicated_uti_denominator,
@@ -23,14 +24,16 @@ from pf_dataset import (
 from pf_variables_library import select_events
 import codelists
 
-index_date = "2024-12-31"
+launch_date = start_date_tables
+index_date = index_date
+
 dataset = create_dataset()
 dataset.configure_dummy_data(population_size=10000)
 
 
 registration = practice_registrations.for_patient_on(index_date)
 selected_events = clinical_events.where(
-    clinical_events.date.is_on_or_before(index_date)
+    clinical_events.date.is_on_or_between(launch_date, index_date)
 )
 
 # Columns for demographics table
