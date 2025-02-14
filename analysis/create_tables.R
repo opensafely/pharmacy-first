@@ -86,8 +86,8 @@ df_pf_pathways_table_counts <- df_pf_pathways_table_long %>%
   count(value) %>%
   ungroup() %>%
   select(category = sex, subcategory = pf_pathway_count, n) %>%
-  # filter(n > 7) %>%
-  # mutate(n = round(n / 5) * 5) %>%
+  filter(n > 7) %>%
+  mutate(n = round(n / 5) * 5) %>%
   select(category, subcategory, n) %>%
   separate(
     col = subcategory,
