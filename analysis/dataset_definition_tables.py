@@ -7,15 +7,7 @@ from ehrql.tables.tpp import (
     ethnicity_from_sus,
 )
 from config import start_date_tables, index_date
-from pf_variables_library import check_pregnancy_status
 from pf_dataset import (
-    get_uncomplicated_uti_denominator,
-    get_shingles_denominator,
-    get_impetigo_denominator,
-    get_infected_insect_bites_denominator,
-    get_acute_sore_throat_denominator,
-    get_acute_sinusitis_denominator,
-    get_acute_otitis_media_denominator,
     get_numerator,
     get_latest_ethnicity,
     get_age_band,
@@ -49,53 +41,26 @@ dataset.ethnicity = get_latest_ethnicity(
     grouping=16,
 )
 
-
-# Create new columns for each denominator rule for clinical conditions table
-dataset.uti_denominator = get_uncomplicated_uti_denominator(
-    index_date, patients, selected_events, codelists.pregnancy_codelist
-)
-dataset.shingles_denominator = get_shingles_denominator(
-    index_date, patients, selected_events, codelists.pregnancy_codelist
-)
-dataset.impetigo_denominator = get_impetigo_denominator(
-    index_date, patients, selected_events, codelists.pregnancy_codelist
-)
-dataset.insectbite_denominator = get_infected_insect_bites_denominator(
-    index_date, patients, selected_events, codelists.pregnancy_codelist
-)
-dataset.sorethroat_denominator = get_acute_sore_throat_denominator(
-    index_date, patients, selected_events, codelists.pregnancy_codelist
-)
-dataset.sinusitis_denominator = get_acute_sinusitis_denominator(
-    index_date, patients, selected_events, codelists.pregnancy_codelist
-)
-dataset.otitismedia_denominator = get_acute_otitis_media_denominator(
-    index_date, patients, selected_events, codelists.pregnancy_codelist
-)
-dataset.pregnancy_status = check_pregnancy_status(
-    index_date, selected_events, codelists.pregnancy_codelist
-)
-
 dataset.uti_numerator = get_numerator(
-    selected_events, codelists.uti_code, dataset.uti_denominator
-)
+    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.uti_code, "uti")
+
 dataset.sinusitis_numerator = get_numerator(
-    selected_events, codelists.sinusitis_code, dataset.sinusitis_denominator
+    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.sinusitis_code, "sinusitis"
 )
 dataset.insectbite_numerator = get_numerator(
-    selected_events, codelists.insectbite_code, dataset.insectbite_denominator
+    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.insectbite_code, "insect_bites"
 )
 dataset.otitismedia_numerator = get_numerator(
-    selected_events, codelists.otitismedia_code, dataset.otitismedia_denominator
+    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.otitismedia_code, "otitis_media"
 )
 dataset.sorethroat_numerator = get_numerator(
-    selected_events, codelists.sorethroat_code, dataset.sorethroat_denominator
+    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.sorethroat_code, "sore_throat"
 )
 dataset.shingles_numerator = get_numerator(
-    selected_events, codelists.shingles_code, dataset.shingles_denominator
+    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.shingles_code, "shingles"
 )
 dataset.impetigo_numerator = get_numerator(
-    selected_events, codelists.impetigo_code, dataset.impetigo_denominator
+    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.impetigo_code, "impetigo"
 )
 
 pf_consultation_events = select_events(
