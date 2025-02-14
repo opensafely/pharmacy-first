@@ -1,5 +1,5 @@
 from datetime import date
-from analysis.dataset_definition_table1 import dataset
+from analysis.dataset_definition_tables import dataset
 
 # Run the following command in the terminal to test the dataset definition dataset_definition_med_status_data_development
 # opensafely exec ehrql:v1 assure analysis/test_pf_dataset_definition.py
@@ -17,14 +17,13 @@ test_data = {
         "practice_registrations": [{"start_date": date(2024, 3, 1)}],
         "expected_in_population": True,
         "expected_columns": {
-            "uti_denominator": True,
-            "shingles_denominator": False,
-            "impetigo_denominator": True,
-            "insectbite_denominator": True,
-            "sorethroat_denominator": True,
-            "sinusitis_denominator": True,
-            "otitismedia_denominator": True,
-            "pregnancy_status": False,
+            "uti_numerator": True,
+            "shingles_numerator": False,
+            "impetigo_numerator": True,
+            "insectbite_numerator": True,
+            "sorethroat_numerator": True,
+            "sinusitis_numerator": True,
+            "otitismedia_numerator": True,
         },
     },
     # Expected in population (test for pregnancy exclusions)
@@ -43,14 +42,13 @@ test_data = {
         "practice_registrations": [{"start_date": date(2024, 3, 1)}],
         "expected_in_population": True,
         "expected_columns": {
-            "uti_denominator": False,
-            "shingles_denominator": False,
-            "impetigo_denominator": False,
-            "insectbite_denominator": False,
-            "sorethroat_denominator": False,
-            "sinusitis_denominator": False,
-            "otitismedia_denominator": False,
-            "pregnancy_status": True,
+            "uti_numerator": False,
+            "shingles_numerator": False,
+            "impetigo_numerator": False,
+            "insectbite_numerator": False,
+            "sorethroat_numerator": False,
+            "sinusitis_numerator": False,
+            "otitismedia_numerator": False,
         },
     },
     # Expected in population (test for multiple diagnoses exclusions)
@@ -79,14 +77,13 @@ test_data = {
         "practice_registrations": [{"start_date": date(2024, 3, 1)}],
         "expected_in_population": True,
         "expected_columns": {
-            "uti_denominator": False,
-            "shingles_denominator": True,
-            "impetigo_denominator": True,
-            "insectbite_denominator": True,
-            "sorethroat_denominator": True,
-            "sinusitis_denominator": True,
-            "otitismedia_denominator": False,
-            "pregnancy_status": False,
+            "uti_numerator": False,
+            "shingles_numerator": True,
+            "impetigo_numerator": True,
+            "insectbite_numerator": True,
+            "sorethroat_numerator": True,
+            "sinusitis_numerator": True,
+            "otitismedia_numerator": False,
         },
     },
 }

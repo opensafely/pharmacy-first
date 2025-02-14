@@ -4,8 +4,15 @@ library(readr)
 library(gt)
 library(purrr)
 
-df_pf_medications_measures <- read_csv(here("output", "measures", "pf_medications_measures.csv"))
-df_consultation_med_counts_measures <- read_csv(here("output", "measures", "consultation_med_counts_measures.csv"))
+df_pf_medications_measures <- read_csv(
+  here("output", "measures", "pf_medications_measures.csv"),
+  col_types = cols(dmd_code = col_character())
+)
+
+df_consultation_med_counts_measures <- read_csv(
+  here("output", "measures", "consultation_med_counts_measures.csv"),
+  col_types = cols(dmd_code = col_character())
+)
 
 df_medications <- df_pf_medications_measures %>%
     filter(numerator != 0)

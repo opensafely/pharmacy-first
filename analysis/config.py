@@ -1,3 +1,8 @@
+# Dataset definition: dataset_definition_tables.py
+# Timeframe: 31/01/2024 - 31/01/2025
+start_date_dataset_tables = "2024-01-31"
+index_date_dataset_tables = "2025-01-31"
+
 # Measure: measures_definition_pf_breakdown.py
 # Timeframe: 01/11/2023 - 31/01/2025
 start_date_measure_pf_breakdown = "2023-11-01"

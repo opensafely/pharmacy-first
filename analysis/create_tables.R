@@ -6,7 +6,7 @@ library(purrr)
 library(scales)
 
 # Dataset definition file path output/population/pf_population.csv.gz
-df <- read_csv(here("output", "population", "pf_table1.csv.gz"))
+df <- read_csv(here("output", "population", "pf_tables.csv.gz"))
 
 df_demographics_table <- df %>%
   select(
@@ -23,19 +23,12 @@ df_pf_pathways_table <- df %>%
     region,
     imd,
     uti_numerator,
-    uti_denominator,
     shingles_numerator,
-    shingles_denominator,
     impetigo_numerator,
-    impetigo_denominator,
     insectbite_numerator,
-    insectbite_denominator,
     sorethroat_numerator,
-    sorethroat_denominator,
     sinusitis_numerator,
-    sinusitis_denominator,
     otitismedia_numerator,
-    otitismedia_denominator
   )
 
 df_pf_pathways_breakdown_variables <- c(
@@ -45,19 +38,12 @@ df_pf_pathways_breakdown_variables <- c(
 )
 df_pf_pathways_num_den_variables <- c(
   "uti_numerator",
-  "uti_denominator",
   "shingles_numerator",
-  "shingles_denominator",
   "impetigo_numerator",
-  "impetigo_denominator",
   "insectbite_numerator",
-  "insectbite_denominator",
   "sorethroat_numerator",
-  "sorethroat_denominator",
   "sinusitis_numerator",
-  "sinusitis_denominator",
-  "otitismedia_numerator",
-  "otitismedia_denominator"
+  "otitismedia_numerator"
 )
 
 # Table 1: Demographics
@@ -100,8 +86,8 @@ df_pf_pathways_table_counts <- df_pf_pathways_table_long %>%
   count(value) %>%
   ungroup() %>%
   select(category = sex, subcategory = pf_pathway_count, n) %>%
-  filter(n > 7) %>%
-  mutate(n = round(n / 5) * 5) %>%
+  # filter(n > 7) %>%
+  # mutate(n = round(n / 5) * 5) %>%
   select(category, subcategory, n) %>%
   separate(
     col = subcategory,
@@ -114,11 +100,10 @@ df_pf_pathways_table_counts <- df_pf_pathways_table_long %>%
     values_from = n
   ) %>%
   mutate(
-    ratio = round(numerator / denominator, 4),
     table = "tab_pf_pathways"
   ) %>%
   pivot_longer(
-    cols = c(numerator, denominator, ratio),
+    cols = numerator,
     names_to = "metric"
   ) %>%
   relocate(table)

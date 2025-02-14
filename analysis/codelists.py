@@ -29,37 +29,37 @@ pregnancy_codelist = codelist_from_csv(
 )
 
 acute_otitis_media_tx_codelist = codelist_from_csv(
-    "codelists/opensafely-pharmacy-first-acute-otitis-media-treatment-dmd.csv",
+    "codelists/opensafely-pharmacy-first-acute-otitis-media-treatment-full-dmd-codelist.csv",
     column="code",
 )
 
 impetigo_treatment_tx_codelist = codelist_from_csv(
-    "codelists/opensafely-pharmacy-first-impetigo-treatment-dmd.csv",
+    "codelists/opensafely-pharmacy-first-impetigo-treatment-full-dmd-codelist.csv",
     column="code",
 )
 
 infected_insect_bites_tx_codelist = codelist_from_csv(
-    "codelists/opensafely-pharmacy-first-infected-insect-bites-treatment-dmd.csv",
+    "codelists/opensafely-pharmacy-first-infected-insect-bites-treatment-full-dmd-codelist.csv",
     column="code",
 )
 
 shingles_treatment_tx_codelist = codelist_from_csv(
-    "codelists/opensafely-pharmacy-first-shingles-treatment-dmd.csv",
+    "codelists/opensafely-pharmacy-first-shingles-treatment-full-dmd-codelist.csv",
     column="code",
 )
 
 sinusitis_tx_codelist = codelist_from_csv(
-    "codelists/opensafely-pharmacy-first-sinusitis-treatment-dmd.csv",
+    "codelists/opensafely-pharmacy-first-sinusitis-treatment-full-dmd-codelist.csv",
     column="code",
 )
 
 sore_throat_tx_codelist = codelist_from_csv(
-    "codelists/opensafely-pharmacy-first-sore-throat-treatment-dmd.csv",
+    "codelists/opensafely-pharmacy-first-sore-throat-treatment-full-dmd-codelist.csv",
     column="code",
 )
 
 urinary_tract_infection_tx_codelist = codelist_from_csv(
-    "codelists/opensafely-pharmacy-first-urinary-tract-infection-treatment-dmd.csv",
+    "codelists/opensafely-pharmacy-first-urinary-tract-infection-treatment-full-dmd-codelist.csv",
     column="code",
 )
 

@@ -12,125 +12,56 @@ from pf_variables_library import check_pregnancy_status, count_past_events
 # - urinary catheter for URT,
 # - bullous impetigo,
 # - chronic sinusitis and immunosuppressed individuals for acute sinusitis
-def get_uncomplicated_uti_denominator(
-    index_date, patients, selected_events, pregnancy_codelist
-):
-    urt_code = ["1090711000000102"]
-    count_urt_6m = count_past_events(index_date, selected_events, urt_code, 6)
-    count_urt_12m = count_past_events(index_date, selected_events, urt_code, 12)
-
+def get_numerator(index_date, patients, pregnancy_codelist, selected_events, condition_code, clinical_pathway):
     age = patients.age_on(index_date)
     pregnancy_status = check_pregnancy_status(
         index_date, selected_events, pregnancy_codelist
     )
+    
+    inclusion_criteria = False
+    exclusion_criteria = False
 
-    inclusion_criteria = (age >= 16) & (age <= 64) & (patients.sex.is_in(["female"]))
-    exclusion_criteria = pregnancy_status | (count_urt_6m >= 2) | (count_urt_12m >= 3)
+    if clinical_pathway == "UTI":
+        urt_code = ["1090711000000102"]
+        count_urt_6m = count_past_events(index_date, selected_events, urt_code, 6)
+        count_urt_12m = count_past_events(index_date, selected_events, urt_code, 12)
+        inclusion_criteria = (age >= 16) & (age <= 64) & (patients.sex.is_in(["female"]))
+        exclusion_criteria = pregnancy_status | (count_urt_6m >= 2) | (count_urt_12m >= 3)
 
-    return inclusion_criteria & ~exclusion_criteria
+    elif clinical_pathway == "shingles":
+        inclusion_criteria = age >= 18
+        exclusion_criteria = pregnancy_status
 
+    elif clinical_pathway == "impetigo":
+        impetigo_code = ["48277006"]
+        count_impetigo_12m = count_past_events(index_date, selected_events, impetigo_code, 12)
+        inclusion_criteria = age >= 1
+        exclusion_criteria = (count_impetigo_12m >= 2) | (pregnancy_status & (age < 16))
+    
+    elif clinical_pathway == "insect_bites":
+        inclusion_criteria = age >= 1
+        exclusion_criteria = pregnancy_status & (age < 16)
 
-def get_shingles_denominator(index_date, patients, selected_events, pregnancy_codelist):
-    age = patients.age_on(index_date)
-    pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
-    )
+    elif clinical_pathway == "sore_throat":
+        inclusion_criteria = age >= 5
+        exclusion_criteria = pregnancy_status & (age < 16)
 
-    inclusion_criteria = age >= 18
-    exclusion_criteria = pregnancy_status
+    elif clinical_pathway == "sinusitis":
+        inclusion_criteria = age >= 12
+        exclusion_criteria = pregnancy_status & (age < 16)
 
-    return inclusion_criteria & ~exclusion_criteria
+    elif clinical_pathway == "otitis_media":
+        acute_otitis_code = ["3110003"]
+        count_acute_otitis_6m = count_past_events(index_date, selected_events, acute_otitis_code, 6)
+        count_acute_otitis_12m = count_past_events(index_date, selected_events, acute_otitis_code, 12)
+        inclusion_criteria = (age >= 1) & (age <= 17)
+        exclusion_criteria = ((count_acute_otitis_6m >= 3) | (count_acute_otitis_12m >= 4) | (pregnancy_status & (age < 16)))
 
+    eligibility = (inclusion_criteria==True) & (exclusion_criteria==False)  
 
-def get_impetigo_denominator(index_date, patients, selected_events, pregnancy_codelist):
-    impetigo_code = ["48277006"]
-    count_impetigo_12m = count_past_events(
-        index_date, selected_events, impetigo_code, 12
-    )
-
-    age = patients.age_on(index_date)
-    pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
-    )
-
-    inclusion_criteria = age >= 1
-    exclusion_criteria = (count_impetigo_12m >= 2) | (pregnancy_status & (age < 16))
-
-    return inclusion_criteria & ~exclusion_criteria
-
-
-def get_infected_insect_bites_denominator(
-    index_date, patients, selected_events, pregnancy_codelist
-):
-    age = patients.age_on(index_date)
-    pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
-    )
-
-    inclusion_criteria = age >= 1
-    exclusion_criteria = pregnancy_status & (age < 16)
-
-    return inclusion_criteria & ~exclusion_criteria
-
-
-def get_acute_sore_throat_denominator(
-    index_date, patients, selected_events, pregnancy_codelist
-):
-    age = patients.age_on(index_date)
-    pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
-    )
-
-    inclusion_criteria = age >= 5
-    exclusion_criteria = pregnancy_status & (age < 16)
-
-    return inclusion_criteria & ~exclusion_criteria
-
-
-def get_acute_sinusitis_denominator(
-    index_date, patients, selected_events, pregnancy_codelist
-):
-    age = patients.age_on(index_date)
-    pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
-    )
-
-    inclusion_criteria = age >= 12
-    exclusion_criteria = pregnancy_status & (age < 16)
-
-    return inclusion_criteria & ~exclusion_criteria
-
-
-def get_acute_otitis_media_denominator(
-    index_date, patients, selected_events, pregnancy_codelist
-):
-    acute_otitis_code = ["3110003"]
-    count_acute_otitis_6m = count_past_events(
-        index_date, selected_events, acute_otitis_code, 6
-    )
-    count_acute_otitis_12m = count_past_events(
-        index_date, selected_events, acute_otitis_code, 12
-    )
-
-    age = patients.age_on(index_date)
-    pregnancy_status = check_pregnancy_status(
-        index_date, selected_events, pregnancy_codelist
-    )
-
-    inclusion_criteria = (age >= 1) & (age <= 17)
-    exclusion_criteria = (
-        (count_acute_otitis_6m >= 3)
-        | (count_acute_otitis_12m >= 4)
-        | (pregnancy_status & (age < 16))
-    )
-
-    return inclusion_criteria & ~exclusion_criteria
-
-
-def get_numerator(selected_events, condition_code, condition_denominator):
     numerator_counts = (
         selected_events.where(selected_events.snomedct_code.is_in(condition_code))
-        .where(condition_denominator)
+        .where(eligibility)
         .exists_for_patient()
     )
 
