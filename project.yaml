@@ -73,3 +73,14 @@ actions:
       moderately_sensitive:
         measure_pf_meds: output/measures/pf_medications_measures_tidy.csv 
         measure_consult_meds: output/measures/consultation_med_counts_measures_tidy.csv
+  
+  generate_pf_opensafely_report:
+    run: >
+      r:v2 -e 'rmarkdown::render(
+        "reports/pharmacy_first_report.Rmd",
+        knit_root_dir = "/workspace",
+        output_dir = "/workspace/output/report"
+      )'
+    outputs:
+      moderately_sensitive:
+        html: output/report/pharmacy_first_report.html  
