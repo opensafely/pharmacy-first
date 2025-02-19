@@ -1,13 +1,352 @@
 ---
-title: "Pharmacy First Data in OpenSAFELY"
+title: "Pharmacy First Consultations in OpenSAFELY-TPP"
 output:
   html_document:
     toc: true
+toc-title: "Overview"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(here)
+library(readr)
+library(gt)
+library(patchwork)
+library(scales)
+library(ggrepel)
+```
+
+```{r load-data, message=FALSE, warning=FALSE}
+# Load functions
+source(here("lib", "functions", "tidy_measures.R"))
+source(here("lib", "functions", "plot_measures.R"))
+
+# Load validation data:
+# - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
+# - df_bsa_consultation_validation: date, consultation_type, source, count_method, count
+source(here("lib", "functions", "load_validation_data.R"))
+
+# Load opensafely ouputs:
+# - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
+# - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
+# - df_pfmed: measure, interval_start, interval_end, ratio, numerator, denominator, dmd_code
+# - df_condition_provider: measure, interval_start, interval_end, ratio, numerator, denominator, pf_status, imd
+source(here("lib", "functions", "load_opensafely_outputs.R"))
+```
+
 # Background
+
+- TODO
 
 # Methods
 
+- TODO
+
 # Results
+
+## Count of Pharmacy First Consultations
+
+### Total
+
+```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10, fig.cap="Figure 1. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP"}
+# Create figure for total count of Pharmacy First consultations for each code (3 codes)
+df_pf_consultations <- df_measures |>
+  filter(measure_desc == "clinical_service") |>
+  filter(is.na(group_by)) |>
+  select(measure, interval_start, numerator) |>
+  mutate(measure = factor(measure,
+    levels = c(
+      "Consultation Service",
+      "Pharmacy First Consultation",
+      "Community Pharmacy First Service"
+    ),
+    labels = c(
+      "CP Consultation Service for minor illness (1577041000000109)",
+      "Pharmacy First service (983341000000102)",
+      "CP Pharmacy First Service (2129921000000100)"
+    )
+  )) |>
+  group_by(interval_start) |>
+  mutate(
+    pf_consultation_total = sum(numerator, na.rm = TRUE),
+    data_desc = "Pharmacy First Consultation"
+  ) |>
+  rename(pf_code = measure) |>
+  filter(interval_start >= "2024-02-01") |>
+  ungroup() |>
+  pivot_longer(
+    cols = c(numerator, pf_consultation_total),
+    names_to = "measure"
+  ) |>
+  mutate(
+    measure = case_when(
+      measure == "pf_consultation_total" ~ "Pharmacy First Service Total",
+      measure == "numerator" ~ pf_code
+    ),
+    data_desc = case_when(
+      measure == "Pharmacy First Service Total" ~ "total",
+      measure %in% c(
+        "CP Consultation Service for minor illness (1577041000000109)",
+        "Pharmacy First service (983341000000102)",
+        "CP Pharmacy First Service (2129921000000100)"
+      ) ~ "breakdown"
+    ),
+    measure = factor(measure,
+      levels = c(
+        "Pharmacy First Service Total",
+        "CP Consultation Service for minor illness (1577041000000109)",
+        "Pharmacy First service (983341000000102)",
+        "CP Pharmacy First Service (2129921000000100)"
+      )
+    ),
+    data_desc = factor(data_desc,
+      levels = c("total", "breakdown"),
+      labels = c("Total", "Breakdown")
+    )
+  ) |>
+  select(measure, interval_start, data_desc, value)
+
+plot_pf_consultations <- df_pf_consultations |>
+  ggplot(
+    aes(
+      x = interval_start,
+      y = value,
+      colour = measure,
+      shape = measure,
+      fill = measure
+    )
+  ) +
+  geom_point(size = 2.5) +
+  geom_line(alpha = .2) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  guides(
+    color = guide_legend(nrow = 2),
+    shape = guide_legend(nrow = 2)
+  ) +
+  labs(
+    title = NULL,
+    x = NULL,
+    y = NULL,
+    colour = NULL,
+    shape = NULL,
+    fill = NULL
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  ) +
+  facet_wrap(
+    ~data_desc,
+    ncol = 1
+  ) +
+  scale_colour_viridis_d(option = "plasma", end = .75) +
+  scale_y_continuous(
+    labels = scales::number,
+    breaks = c(seq(0, 50000, by = 10000)))
+
+plot_pf_consultations
+```
+
+### Demographic breakdowns
+
+- TODO
+
+## Linkage of Pharmacy First Consultations
+
+```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 2. Monthly breakdown of Pharmacy First consultation codes linked to a Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP."}
+df_pf_descriptive_stats <- df_descriptive_stats %>%
+  filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
+  mutate(
+    measure = factor(measure,
+      levels = c(
+        "pfmed_with_pfid",
+        "pfcondition_with_pfid",
+        "pfmed_and_pfcondition_with_pfid"
+      ),
+      labels = c(
+        "Medication",
+        "Clinical condition",
+        "Both"
+      )
+    )
+  )
+
+df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  group_by(interval_start) %>%
+  arrange(desc(measure), .by_group = TRUE) %>%
+  mutate(
+    cumulative_ratio = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio), TRUE ~ NA),
+    ratio = as.numeric(ratio)
+  )
+
+
+
+plot_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
+  x = interval_start,
+  y = ratio,
+  fill = measure
+)) +
+  geom_area(
+    alpha = 0.85,
+    size = .5,
+    colour = "white"
+  ) +
+  geom_label(
+    aes(
+      y = cumulative_ratio,
+      label = ifelse(is.na(ratio), "", scales::percent(ratio, accuracy = .1)),
+    ),
+    vjust = -0.05,
+    size = 3.5,
+    show.legend = FALSE,
+    color = "black",
+    fill = "white"
+
+  ) +
+  scale_fill_viridis_d() +
+  scale_y_continuous(
+    limits = c(0, 1),
+    labels = scales::percent) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Pharmacy First consultations linked to: "
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  )
+
+plot_pf_med_condition_linkage
+```
+
+### Pharmacy First Clinical Pathways
+
+- TODO
+
+### Pharmacy First Medications
+
+- TODO
+
+## Comparison with NHS BSA data
+
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 3. Monthly counts and ratio of patients with a Pharmacy First consultation code in OpenSAFELY-TPP and the NHS BSA 40% comparison dataset."}
+# Ideally I would like to load this at the top of this script
+# But this file uses datasets created further down so it easiest to load it here
+df_pf_consultations_total <- df_pf_consultations |>
+  filter(data_desc == "Total") |>
+  mutate(
+    data_desc = "Pharmacy First Consultation"
+  ) |>
+  select(interval_start, pf_consultation_total = value, data_desc) |>
+  unique()
+
+source(here("lib", "functions", "combine_os_nhsbsa_validation_data.R"))
+
+# Pharmacy First Consultations
+# Instead of only using the count of PF consultations in OS with a clinical
+# condition we are using all PF consultations with a consultation id
+df_pf_consultation_validatio_plot <- pf_validation |>
+  filter(
+    (data_source == "opensafely" &
+      data_desc == "pf_consultation" &
+      count_desc == "consultation_id") |
+      (data_source == "nhs_bsa" &
+        data_desc == "pf_consultation" &
+        count_desc == "consultation_type")
+  )
+
+# Pivot wider to calculate ratio
+df_pf_consultation_validatio_plot <- df_pf_consultation_validatio_plot |>
+  select(date, data_source, count_method, count_total) |>
+  pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
+  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_40pct)
+
+# Select colours for groups
+# Group 1: paletteer_c("viridis::inferno", n = 10)[6]
+colour_group_1 <- "#CF4446FF"
+# Group 1: #1B0C42FFpaletteer_c("viridis::inferno", n = 10)[2]
+colour_group_2 <- "#1B0C42FF"
+
+# Create consultation validation plot
+pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
+  ggplot(aes(x = date)) +
+  geom_point(
+    aes(
+      y = nhs_bsa_count_40pct,
+      colour = "NHS BSA (40%)",
+      shape = "NHS BSA (40%)"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(y = nhs_bsa_count_40pct, colour = "NHS BSA (40%)"),
+    alpha = .3,
+    linewidth = .5
+  ) +
+  geom_point(
+    aes(
+      y = opensafely_opensafely_tpp,
+      colour = "OpenSAFELY-TPP",
+      shape = "OpenSAFELY-TPP"
+    ),
+    size = 2.6
+  ) +
+  geom_line(
+    aes(
+      y = opensafely_opensafely_tpp,
+      colour = "OpenSAFELY-TPP"
+    ),
+    alpha = .3,
+    size = .5
+  ) +
+  geom_label(
+    aes(
+      y = opensafely_opensafely_tpp,
+      label = scales::percent(ratio, accuracy = .1),
+    ),
+    colour = colour_group_2,
+    vjust = -.5,
+    size = 3.5
+  ) +
+  scale_y_continuous(labels = scales::number) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  scale_colour_manual(
+    values = c(
+      "NHS BSA (40%)" = colour_group_1,
+      "OpenSAFELY-TPP" = colour_group_2
+    ),
+    name = NULL
+  ) +
+  scale_shape_manual(
+    values = c(
+      "NHS BSA (40%)" = 15,
+      "OpenSAFELY-TPP" = 16
+    ),
+    name = NULL
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    colour = NULL,
+    shape = NULL
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  )
+
+pf_validatio_consultation_plot
+```

@@ -81,6 +81,12 @@ actions:
         knit_root_dir = "/workspace",
         output_dir = "/workspace/output/report"
       )'
+    needs:
+      - generate_pf_breakdown_measures
+      - generate_pf_medications_measures
+      - generate_pf_statistics_measures
+      - generate_pf_med_counts_measures
+      - tidy_med_measures
     outputs:
       moderately_sensitive:
         html: output/report/pharmacy_first_report.html  
