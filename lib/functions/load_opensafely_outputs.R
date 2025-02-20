@@ -1,6 +1,6 @@
 # Load data based on execution environment
 if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
-  # Load data from generate_pf_measures action
+  # Load data from output directory
   df_measures <- readr::read_csv(
     here("output", "measures", "pf_breakdown_measures.csv")
   )
@@ -11,9 +11,9 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
     here("output", "measures", "pf_medications_measures_tidy.csv"),
     col_types = list(dmd_code = col_character())
   )
-  df_condition_provider <- read_csv(
-    here("output", "measures", "pf_condition_provider_measures.csv")
-  )
+  # df_condition_provider <- read_csv(
+  #   here("output", "measures", "pf_condition_provider_measures.csv")
+  # )
 } else {
   # Load data from released_output directory
   df_measures <- readr::read_csv(
@@ -26,9 +26,9 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
     here("released_output", "measures", "pf_medications_measures_tidy.csv"),
     col_types = list(dmd_code = col_character())
   )
-  df_condition_provider <- read_csv(
-    here("released_output", "measures", "pf_condition_provider_measures.csv")
-  )
+  # df_condition_provider <- read_csv(
+  #   here("released_output", "measures", "pf_condition_provider_measures.csv")
+  # )
 }
 
 df_measures <- tidy_measures(

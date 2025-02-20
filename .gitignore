@@ -12,3 +12,4 @@ venv/
 reports/pharmacy_first_report.html
 /released_output/*
 reports/pharmacy_first_report.pdf
+reports/pharmacy_first_report_files/*
