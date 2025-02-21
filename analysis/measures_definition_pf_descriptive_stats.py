@@ -106,26 +106,26 @@ measures.define_measure(
 )
 
 measures.define_measure(
-    name="pfconsultations_month_count",
+    name="pfconsultations_count",
     numerator=pf_consultation_count,
 )
 
 measures.define_measure(
-    name="pfconditions_month_count",
+    name="pfconditions_count",
     numerator=pf_condition_count,
 )
 
 measures.define_measure(
-    name="non_pfconditions_month_count",
+    name="non_pfconditions_count",
     numerator=nonpf_condition_count,
 )
 
 measures.define_measure(
-    name="pfmed_month_count",
+    name="pfmed_count",
     numerator=pf_med_count,
 )
 
 measures.define_measure(
-    name="non_pfmed_month_count",
+    name="non_pfmed_count",
     numerator = nonpf_med_count,
 )
