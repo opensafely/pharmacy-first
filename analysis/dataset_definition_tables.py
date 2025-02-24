@@ -8,7 +8,7 @@ from ehrql.tables.tpp import (
 )
 from config import start_date_dataset_tables, index_date_dataset_tables
 from pf_dataset import (
-    get_numerator,
+    has_event,
     get_latest_ethnicity,
     get_age_band,
     get_imd,
@@ -28,8 +28,20 @@ selected_events = clinical_events.where(
     clinical_events.date.is_on_or_between(launch_date, index_date)
 )
 
+pf_consultation_events = select_events(
+    selected_events,
+    codelist=codelists.pf_consultation_events_dict["pf_consultation_services_combined"],
+)
+has_pf_consultation = pf_consultation_events.exists_for_patient()
+
+pf_ids = pf_consultation_events.consultation_id
+selected_pf_id_events = selected_events.where(
+    selected_events.consultation_id.is_in(pf_ids)
+)
+
 # Columns for demographics table
 dataset.sex = patients.sex
+dataset.age = patients.age_on(index_date)
 dataset.age_band = get_age_band(patients, index_date)
 dataset.region = registration.practice_nuts1_region_name
 dataset.imd = get_imd(addresses, index_date)
@@ -41,33 +53,34 @@ dataset.ethnicity = get_latest_ethnicity(
     grouping=16,
 )
 
-dataset.uti_numerator = get_numerator(
-    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.uti_code, "uti")
-
-dataset.sinusitis_numerator = get_numerator(
-    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.sinusitis_code, "sinusitis"
+dataset.uti_numerator = has_event(
+    selected_pf_id_events,
+    codelists.uti_code,
 )
-dataset.insectbite_numerator = get_numerator(
-    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.insectbite_code, "insect_bites"
+dataset.sinusitis_numerator = has_event(
+    selected_pf_id_events,
+    codelists.sinusitis_code,
 )
-dataset.otitismedia_numerator = get_numerator(
-    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.otitismedia_code, "otitis_media"
+dataset.insectbite_numerator = has_event(
+    selected_pf_id_events,
+    codelists.insectbite_code,
 )
-dataset.sorethroat_numerator = get_numerator(
-    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.sorethroat_code, "sore_throat"
+dataset.otitismedia_numerator = has_event(
+    selected_pf_id_events,
+    codelists.otitismedia_code,
 )
-dataset.shingles_numerator = get_numerator(
-    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.shingles_code, "shingles"
+dataset.sorethroat_numerator = has_event(
+    selected_pf_id_events,
+    codelists.sorethroat_code,
 )
-dataset.impetigo_numerator = get_numerator(
-    index_date, patients, codelists.pregnancy_codelist, selected_events, codelists.impetigo_code, "impetigo"
+dataset.shingles_numerator = has_event(
+    selected_pf_id_events,
+    codelists.shingles_code,
 )
-
-pf_consultation_events = select_events(
-    selected_events,
-    codelist=codelists.pf_consultation_events_dict["pf_consultation_services_combined"],
+dataset.impetigo_numerator = has_event(
+    selected_pf_id_events,
+    codelists.impetigo_code,
 )
-has_pf_consultation = pf_consultation_events.exists_for_patient()
 
 dataset.define_population(
     registration.exists_for_patient()
