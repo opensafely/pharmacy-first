@@ -21,7 +21,7 @@ def get_numerator(index_date, patients, pregnancy_codelist, selected_events, con
     inclusion_criteria = False
     exclusion_criteria = False
 
-    if clinical_pathway == "UTI":
+    if clinical_pathway == "uti":
         urt_code = ["1090711000000102"]
         count_urt_6m = count_past_events(index_date, selected_events, urt_code, 6)
         count_urt_12m = count_past_events(index_date, selected_events, urt_code, 12)
