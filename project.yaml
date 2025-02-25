@@ -12,10 +12,10 @@ actions:
        generate-dataset analysis/dataset_definition_tables.py
        --test-data-file analysis/test_dataset_definition_tables.py
        --dummy-data-file dummy_data/pf_tables_dataset.csv
-       --output output/population/pf_tables_dataset.csv.gz
+       --output output/population/pf_tables.csv.gz
     outputs:
       highly_sensitive:
-        cohort: output/population/pf_tables_dataset.csv.gz
+        cohort: output/population/pf_tables.csv.gz
 
   create_tables:
     run: r:v2 analysis/create_tables.R
