@@ -75,19 +75,19 @@ actions:
         measure_pf_meds: output/measures/pf_medications_measures_tidy.csv 
         measure_consult_meds: output/measures/consultation_med_counts_measures_tidy.csv
   
-  generate_pf_opensafely_report:
-    run: >
-      r:v2 -e 'rmarkdown::render(
-        "reports/pharmacy_first_report.Rmd",
-        knit_root_dir = "/workspace",
-        output_dir = "/workspace/output/report"
-      )'
-    needs:
-      - generate_pf_breakdown_measures
-      - generate_pf_medications_measures
-      - generate_pf_statistics_measures
-      - generate_pf_med_counts_measures
-      - tidy_med_measures
-    outputs:
-      moderately_sensitive:
-        html: output/report/pharmacy_first_report.html  
+  # generate_pf_opensafely_report:
+  #   run: >
+  #     r:v2 -e 'rmarkdown::render(
+  #       "reports/pharmacy_first_report.Rmd",
+  #       knit_root_dir = "/workspace",
+  #       output_dir = "/workspace/output/report"
+  #     )'
+  #   needs:
+  #     - generate_pf_breakdown_measures
+  #     - generate_pf_medications_measures
+  #     - generate_pf_statistics_measures
+  #     - generate_pf_med_counts_measures
+  #     - tidy_med_measures
+  #   outputs:
+  #     moderately_sensitive:
+  #       html: output/report/pharmacy_first_report.html  
