@@ -1,0 +1,15 @@
+patient_id,sex,age,age_band,region,imd,ethnicity,uti_numerator,sinusitis_numerator,insectbite_numerator,otitismedia_numerator,sorethroat_numerator,shingles_numerator,impetigo_numerator
+1640,female,5,0-19,East,Missing,Other White,T,T,T,T,T,T,T
+3104,female,19,0-19,East Midlands,Missing,White Irish,T,T,T,T,T,T,T
+3599,male,7,0-19,North East,Missing,Other White,T,T,T,T,T,T,T
+6979,female,1,0-19,,2,White British,T,T,T,T,T,T,T
+7344,female,50,40-59,London,Missing,Other Mixed,T,T,T,T,T,T,T
+8443,male,2,0-19,South West,Missing,Chinese,T,T,T,T,T,T,T
+8510,female,40,40-59,,Missing,Pakistani,T,T,T,T,T,T,T
+9854,female,15,0-19,East,Missing,White and Caribbean,T,T,T,T,T,T,T
+10276,male,0,0-19,Yorkshire and The Humber,Missing,Other White,T,T,T,T,T,T,T
+11568,female,0,0-19,South West,Missing,White and African,T,T,T,T,T,T,T
+13091,male,28,20-39,West Midlands,Missing,Indian,T,T,T,T,T,T,T
+13632,male,33,20-39,,Missing,Missing,T,T,T,T,T,T,T
+17010,female,0,0-19,Yorkshire and The Humber,3,Other White,T,T,T,T,T,T,T
+17858,male,4,0-19,North East,Missing,White and African,T,T,T,T,T,T,T
