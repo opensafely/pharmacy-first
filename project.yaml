@@ -32,13 +32,14 @@ actions:
       moderately_sensitive:
         measure: output/measures/pf_breakdown_measures.csv
 
-  generate_pf_condition_provider_measures:
-    run: >
-      ehrql:v1 generate-measures analysis/measures_definition_pf_condition_provider.py
-      --output output/measures/pf_condition_provider_measures.csv
-    outputs:
-      moderately_sensitive:
-        measure: output/measures/pf_condition_provider_measures.csv
+  # We dont need this one at the moment so commenting out 
+  # generate_pf_condition_provider_measures:
+  #   run: >
+  #     ehrql:v1 generate-measures analysis/measures_definition_pf_condition_provider.py
+  #     --output output/measures/pf_condition_provider_measures.csv
+  #   outputs:
+  #     moderately_sensitive:
+  #       measure: output/measures/pf_condition_provider_measures.csv
 
   generate_pf_medications_measures:
     run: >
@@ -75,6 +76,7 @@ actions:
         measure_pf_meds: output/measures/pf_medications_measures_tidy.csv 
         measure_consult_meds: output/measures/consultation_med_counts_measures_tidy.csv
   
+  # We need to fix the dummy data for the tests to complete for this action 
   # generate_pf_opensafely_report:
   #   run: >
   #     r:v2 -e 'rmarkdown::render(
