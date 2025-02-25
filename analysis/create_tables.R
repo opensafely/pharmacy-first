@@ -1,14 +1,13 @@
 library(here)
 library(tidyverse)
 library(readr)
-library(gt)
 library(purrr)
 library(scales)
 
 # Dataset definition file path output/population/pf_population.csv.gz
-df <- read_csv(here("output", "population", "pf_tables.csv.gz"))
+df_pf_tables <- read_csv(here("output", "population", "pf_tables_dataset.csv.gz"))
 
-df_demographics_table <- df %>%
+df_demographics_table <- df_pf_tables %>%
   select(
     sex,
     age_band,
@@ -17,7 +16,7 @@ df_demographics_table <- df %>%
     ethnicity
   )
 
-df_pf_pathways_table <- df %>%
+df_pf_pathways_table <- df_pf_tables %>%
   select(
     sex,
     region,
@@ -81,7 +80,7 @@ df_pf_pathways_table_long <- df_pf_pathways_table %>%
   ) %>%
   filter(value == TRUE)
 
-df_pf_pathways_table_counts <- df_pf_pathways_table_long %>%
+df_pf_pathways_table_counts_by_sex <- df_pf_pathways_table_long %>%
   group_by(sex, pf_pathway_count) %>%
   count(value) %>%
   ungroup() %>%
@@ -100,7 +99,34 @@ df_pf_pathways_table_counts <- df_pf_pathways_table_long %>%
     values_from = n
   ) %>%
   mutate(
-    table = "tab_pf_pathways"
+    table = "tab_pf_pathways_by_sex"
+  ) %>%
+  pivot_longer(
+    cols = numerator,
+    names_to = "metric"
+  ) %>%
+  relocate(table)
+
+df_pf_pathways_table_counts_by_imd <- df_pf_pathways_table_long %>%
+  group_by(imd, pf_pathway_count) %>%
+  count(value) %>%
+  ungroup() %>%
+  select(category = imd, subcategory = pf_pathway_count, n) %>%
+  filter(n > 7) %>%
+  mutate(n = round(n / 5) * 5) %>%
+  select(category, subcategory, n) %>%
+  separate(
+    col = subcategory,
+    into = c("subcategory", "metric"),
+    sep = "_"
+  ) %>%
+  pivot_wider(
+    id_cols = c("category", "subcategory"),
+    names_from = metric,
+    values_from = n
+  ) %>%
+  mutate(
+    table = "tab_pf_pathways_by_imd"
   ) %>%
   pivot_longer(
     cols = numerator,
@@ -111,7 +137,8 @@ df_pf_pathways_table_counts <- df_pf_pathways_table_long %>%
 # Combine tables
 df_tables_combined <- bind_rows(
   df_demographics_table_counts,
-  df_pf_pathways_table_counts
+  df_pf_pathways_table_counts_by_sex,
+  df_pf_pathways_table_counts_by_imd
 )
 
 readr::write_csv(

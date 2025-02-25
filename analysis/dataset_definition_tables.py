@@ -20,7 +20,7 @@ launch_date = start_date_dataset_tables
 index_date = index_date_dataset_tables
 
 dataset = create_dataset()
-dataset.configure_dummy_data(population_size=10000)
+dataset.configure_dummy_data(population_size=1000)
 
 
 registration = practice_registrations.for_patient_on(index_date)

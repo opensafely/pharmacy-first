@@ -147,7 +147,8 @@ plot_pf_consultations <- df_pf_consultations |>
   scale_colour_viridis_d(option = "plasma", end = .75) +
   scale_y_continuous(
     labels = scales::number,
-    breaks = c(seq(0, 50000, by = 10000)))
+    breaks = c(seq(0, 50000, by = 10000))
+  )
 
 plot_pf_consultations
 ```
@@ -184,16 +185,17 @@ df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
     ratio = as.numeric(ratio)
   )
 
-
-
-plot_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
-  x = interval_start,
-  y = ratio,
-  fill = measure
-)) +
+plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
+  ggplot(
+    aes(
+      x = interval_start,
+      y = ratio,
+      fill = measure
+    )
+  ) +
   geom_area(
     alpha = 0.85,
-    size = .5,
+    linewidth = .5,
     colour = "white"
   ) +
   geom_label(
@@ -206,12 +208,12 @@ plot_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
     show.legend = FALSE,
     color = "black",
     fill = "white"
-
   ) +
   scale_fill_viridis_d() +
   scale_y_continuous(
     limits = c(0, 1),
-    labels = scales::percent) +
+    labels = scales::percent
+  ) +
   labs(
     x = NULL,
     y = NULL,
@@ -307,7 +309,7 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
       colour = "OpenSAFELY-TPP"
     ),
     alpha = .3,
-    size = .5
+    linewidth = .5
   ) +
   geom_label(
     aes(
