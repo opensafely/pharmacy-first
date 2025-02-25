@@ -24,6 +24,15 @@ actions:
       moderately_sensitive:
         dataset: output/population/pf_tables.csv
 
+  generate_pf_statistics_measures:
+    run: >
+      ehrql:v1 generate-measures analysis/measures_definition_pf_descriptive_stats.py
+      --dummy-tables dummy_tables
+      --output output/measures/pf_descriptive_stats_measures.csv
+    outputs:
+      moderately_sensitive:
+        measure: output/measures/pf_descriptive_stats_measures.csv
+
   generate_pf_breakdown_measures:
     run: >
       ehrql:v1 generate-measures analysis/measures_definition_pf_breakdown.py
@@ -31,6 +40,22 @@ actions:
     outputs:
       moderately_sensitive:
         measure: output/measures/pf_breakdown_measures.csv
+
+  generate_pf_med_counts_measures:
+    run: >
+      ehrql:v1 generate-measures analysis/measures_definition_pf_med_counts.py
+      --dummy-tables dummy_tables
+      --output output/measures/pf_medications_measures.csv
+    outputs:
+      moderately_sensitive:
+        measure: output/measures/pf_medications_measures.csv
+
+  tidy_med_measures:
+    run: r:latest analysis/tidy_measures_med_counts.R
+    needs: [generate_pf_med_counts_measures]
+    outputs:
+      moderately_sensitive:
+        measure_pf_meds: output/measures/pf_medications_measures_tidy.csv 
 
   # We dont need this one at the moment so commenting out 
   # generate_pf_condition_provider_measures:
@@ -41,41 +66,6 @@ actions:
   #     moderately_sensitive:
   #       measure: output/measures/pf_condition_provider_measures.csv
 
-  generate_pf_medications_measures:
-    run: >
-      ehrql:v1 generate-measures analysis/measures_definition_pf_medications.py
-      --dummy-tables dummy_tables
-      --output output/measures/pf_medications_measures.csv
-    outputs:
-      moderately_sensitive:
-        measure: output/measures/pf_medications_measures.csv
-
-  generate_pf_statistics_measures:
-    run: >
-      ehrql:v1 generate-measures analysis/measures_definition_pf_descriptive_stats.py
-      --dummy-tables dummy_tables
-      --output output/measures/pf_descriptive_stats_measures.csv
-    outputs:
-      moderately_sensitive:
-        measure: output/measures/pf_descriptive_stats_measures.csv
-
-  generate_pf_med_counts_measures:
-    run: >
-      ehrql:v1 generate-measures analysis/measures_definition_pf_consultation_med_counts.py
-      --dummy-tables dummy_tables
-      --output output/measures/consultation_med_counts_measures.csv
-    outputs:
-      moderately_sensitive:
-        measure: output/measures/consultation_med_counts_measures.csv
-
-  tidy_med_measures:
-    run: r:latest analysis/tidy_measures_med_counts.R
-    needs: [generate_pf_medications_measures, generate_pf_med_counts_measures]
-    outputs:
-      moderately_sensitive:
-        measure_pf_meds: output/measures/pf_medications_measures_tidy.csv 
-        measure_consult_meds: output/measures/consultation_med_counts_measures_tidy.csv
-  
   # We need to fix the dummy data for the tests to complete for this action 
   # generate_pf_opensafely_report:
   #   run: >
