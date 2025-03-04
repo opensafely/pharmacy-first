@@ -177,6 +177,10 @@ df_measures %>%
 #### Age band
 
 ```{r plot-pf-consultations-by-age-band, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 3. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by age bands."}
+unique_categories <- sort(unique(df_measures$age_band))
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
+shape_mapping <- setNames(manual_ggplot2_shapes[1:length(unique_categories)], unique_categories)
+
 df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
@@ -190,12 +194,37 @@ df_measures %>%
     add_vline = FALSE,
     title = NULL,
     y_label = NULL
-  )
+  ) +
+  scale_shape_manual(values = shape_mapping)
 ```
 
 #### Index of Multiple Deprivation (IMD)
 
 ```{r plot-pf-consultations-by-imd, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 4. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by IMD."}
+unique_categories <- sort(unique(df_measures$imd))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer_c("viridis::viridis", n = 7)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#443A83FF",
+  "#31688EFF",
+  "#21908CFF",
+  "#35B779FF",
+  "#8FD744FF",
+  "#FDE725FF"
+)
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
 df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
@@ -209,12 +238,44 @@ df_measures %>%
     add_vline = FALSE,
     title = NULL,
     y_label = NULL
-  )
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping)
 ```
 
 #### Region
 
-```{r plot-pf-consultations-by-region, message=FALSE, warning=FALSE, fig.height=4.25, fig.width=10, fig.cap="Figure 5. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
+```{r plot-pf-consultations-by-region, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 5. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
+unique_categories <- sort(unique(df_measures$region))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 8, 4, 10, 7, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer::paletteer_c("viridis::viridis", n = 11)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#482576FF",
+  "#414487FF",
+  "#35608DFF",
+  "#2A788EFF",
+  "#21908CFF",
+  "#22A884FF",
+  "#43BF71FF",
+  "#7AD151FF",
+  "#BBDF27FF",
+  "#FDE725FF"
+)
+
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
 df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
@@ -228,7 +289,57 @@ df_measures %>%
     add_vline = FALSE,
     title = NULL,
     y_label = NULL
-  )
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping)
+```
+
+#### Ethnicity
+
+```{r plot-pf-consultations-by-ethnicity, message=FALSE, warning=FALSE, fig.height=15, fig.width=10, fig.cap="Figure 5. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
+unique_categories <- sort(unique(df_measures$ethnicity))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 8, 4, 10, 7, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer::paletteer_c("viridis::viridis", n = 6)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#414487FF",
+  "#2A788EFF",
+  "#22A884FF",
+  "#7AD151FF",
+  "#FDE725FF"
+)
+
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Ethnicity") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = ethnicity,
+    guide_nrow = 2,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping) +
+  facet_wrap(~ethnicity, ncol = 1, scales = "free_y")
 ```
 
 ## Linkage of Pharmacy First Consultations
