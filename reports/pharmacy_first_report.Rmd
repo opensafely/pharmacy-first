@@ -38,11 +38,11 @@ source(here("lib", "functions", "load_opensafely_outputs.R"))
 
 # Background
 
-- TODO
+- COPY FROM PAPER (SHORT VERSION)
 
 # Methods
 
-- TODO
+- COPY FROM PAPER (SHORT VERSION)
 
 # Results
 
@@ -50,7 +50,7 @@ source(here("lib", "functions", "load_opensafely_outputs.R"))
 
 ### Total
 
-```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10, fig.cap="Figure 1. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP"}
+```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10, fig.cap="Figure 1. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP."}
 # Create figure for total count of Pharmacy First consultations for each code (3 codes)
 df_pf_consultations <- df_measures |>
   filter(measure_desc == "clinical_service") |>
@@ -147,7 +147,7 @@ plot_pf_consultations <- df_pf_consultations |>
   scale_colour_viridis_d(option = "plasma", end = .75) +
   scale_y_continuous(
     labels = scales::number,
-    breaks = c(seq(0, 50000, by = 10000))
+    breaks = c(seq(0, 60000, by = 10000))
   )
 
 plot_pf_consultations
@@ -155,11 +155,85 @@ plot_pf_consultations
 
 ### Demographic breakdowns
 
-- TODO
+#### Sex
+
+```{r plot-pf-consultations-by-sex, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 2. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by sex."}
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Sex") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = sex,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  )
+```
+
+#### Age band
+
+```{r plot-pf-consultations-by-age-band, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 3. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by age bands."}
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Age band") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = age_band,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  )
+```
+
+#### Index of Multiple Deprivation (IMD)
+
+```{r plot-pf-consultations-by-imd, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 4. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by IMD."}
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "IMD") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = imd,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  )
+```
+
+#### Region
+
+```{r plot-pf-consultations-by-region, message=FALSE, warning=FALSE, fig.height=4.25, fig.width=10, fig.cap="Figure 5. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Region") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = region,
+    guide_nrow = 2,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  )
+```
 
 ## Linkage of Pharmacy First Consultations
 
-```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 2. Monthly breakdown of Pharmacy First consultation codes linked to a Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP."}
+```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 6. Monthly breakdown of Pharmacy First consultation codes linked to a Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP."}
 df_pf_descriptive_stats <- df_descriptive_stats %>%
   filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
   mutate(
@@ -183,7 +257,9 @@ df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
   mutate(
     cumulative_ratio = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio), TRUE ~ NA),
     ratio = as.numeric(ratio)
-  )
+  ) |>
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01")))
+
 
 plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   ggplot(
@@ -233,15 +309,17 @@ plot_pf_med_condition_linkage
 
 ### Pharmacy First Clinical Pathways
 
-- TODO
+- Add existing breakdown figures for: Age band, Ethnicity, IMD
 
 ### Pharmacy First Medications
 
-- TODO
+- Add existing table from paper once updated with released outputs
 
 ## Comparison with NHS BSA data
 
-```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 3. Monthly counts and ratio of patients with a Pharmacy First consultation code in OpenSAFELY-TPP and the NHS BSA 40% comparison dataset."}
+### Pharmacy First Consultations
+
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 7. Monthly counts and ratio of patients with a Pharmacy First consultation code in OpenSAFELY-TPP and the NHS BSA comparison dataset."}
 # Ideally I would like to load this at the top of this script
 # But this file uses datasets created further down so it easiest to load it here
 df_pf_consultations_total <- df_pf_consultations |>
@@ -271,10 +349,10 @@ df_pf_consultation_validatio_plot <- pf_validation |>
 df_pf_consultation_validatio_plot <- df_pf_consultation_validatio_plot |>
   select(date, data_source, count_method, count_total) |>
   pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
-  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_40pct)
+  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
 
 # Select colours for groups
-# Group 1: paletteer_c("viridis::inferno", n = 10)[6]
+# Group 1:
 colour_group_1 <- "#CF4446FF"
 # Group 1: #1B0C42FFpaletteer_c("viridis::inferno", n = 10)[2]
 colour_group_2 <- "#1B0C42FF"
@@ -284,14 +362,14 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
   ggplot(aes(x = date)) +
   geom_point(
     aes(
-      y = nhs_bsa_count_40pct,
-      colour = "NHS BSA (40%)",
-      shape = "NHS BSA (40%)"
+      y = nhs_bsa_count_100pct,
+      colour = "NHS BSA",
+      shape = "NHS BSA"
     ),
     size = 2.6
   ) +
   geom_line(
-    aes(y = nhs_bsa_count_40pct, colour = "NHS BSA (40%)"),
+    aes(y = nhs_bsa_count_100pct, colour = "NHS BSA"),
     alpha = .3,
     linewidth = .5
   ) +
@@ -327,14 +405,14 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
   ) +
   scale_colour_manual(
     values = c(
-      "NHS BSA (40%)" = colour_group_1,
+      "NHS BSA" = colour_group_1,
       "OpenSAFELY-TPP" = colour_group_2
     ),
     name = NULL
   ) +
   scale_shape_manual(
     values = c(
-      "NHS BSA (40%)" = 15,
+      "NHS BSA" = 15,
       "OpenSAFELY-TPP" = 16
     ),
     name = NULL
@@ -352,3 +430,6 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
 
 pf_validatio_consultation_plot
 ```
+
+
+### Pharmacy First Medications
