@@ -7,7 +7,7 @@ df_bsa_validation_total <- df_bsa_validation |>
   select(-count_group, -count) |>
   distinct() %>%
   ungroup() %>%
-  filter(count_method == "count_40pct")
+  filter(count_method == "count_100pct")
 
 # Transform OpenSAFLEY data into same format as NHS BSA validation data
 # 1. pf_consultation from:

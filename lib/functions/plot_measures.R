@@ -29,24 +29,13 @@ plot_measures <- function(
     facet_wrap = FALSE,
     facet_var = NULL,
     colour_var = NULL,
-    shape_var = NULL,
-    colour_palette = NULL,
     y_scale = NULL,
     scale_measure = NULL,
-    shapes = NULL,
     add_vline = TRUE,
     date_breaks = "1 month",
     legend_position = "bottom",
     text_size = 14,
     point_size = 2.5) {
-  # Test if all columns expected in output from generate measures exist
-  # expected_names <- c("measure", "interval_start", "interval_end", "ratio", "numerator", "denominator")
-  # missing_columns <- setdiff(expected_names, colnames(data))
-
-  # if (length(missing_columns) > 0) {
-  #   stop("Data does not have expected column(s): ", paste(missing_columns, collapse = ", "), call. = FALSE)
-  # }
-
   plot_tmp <- ggplot(
     data,
     aes(
@@ -91,22 +80,9 @@ plot_measures <- function(
     )
   }
 
-  # Change colour based on specified colour palette
-  if (!is.null(colour_palette)) {
-    if (length(colour_palette) == 1 && colour_palette == "plasma") {
-      plot_tmp <- plot_tmp + scale_colour_viridis_d(option = "plasma", end = .75) +
-        geom_line(size = 0.5) +
-        geom_point(size = point_size)
-    } else {
-      plot_tmp <- plot_tmp + scale_colour_manual(values = colour_palette)
-    }
-  } else {
-    plot_tmp <- plot_tmp + scale_colour_viridis_d(end = .75)
-  }
-
-  if (!is.null(shapes) && shapes == "condition_shapes") {
-    plot_tmp <- plot_tmp + scale_shape_manual(values = condition_shapes)
-  }
+  plot_tmp <- plot_tmp +
+    scale_colour_viridis_d(end = .75, na.value = "gray40") +
+    scale_fill_viridis_d(end = .75)
 
   # Automatically change y scale depending selected value
   scale_label <- rlang::as_label(enquo(scale_measure))
@@ -166,21 +142,3 @@ save_figure <- function(figure, width = 10, height = 6) {
     width = width, height = height
   )
 }
-
-# Colour palettes
-gradient_palette <- c("#001F4D", "#0056B3", "#007BFF", "#66B3E2", "#A4D8E1", "grey")
-region_palette <- c("red", "navy", "#018701", "#ffa600ca", "purple", "brown", "#f4a5b2", "cyan", "green", "grey")
-ethnicity_palette <- c("#42db0188", "#0056B3", "#ff0000c2", "#a52a2a5a", "purple", "grey")
-sex_palette <- c("red", "blue")
-dark2_palette <- RColorBrewer::brewer.pal(n = 8, name = "Dark2")
-
-# Custom shapes
-condition_shapes <- c(
-  "Acute Sinusitis" = 15,
-  "Infected Insect Bite" = 19,
-  "UTI" = 4,
-  "Acute Otitis Media" = 23,
-  "Acute Pharyngitis" = 3,
-  "Herpes Zoster" = 17,
-  "Impetigo" = 8
-)
