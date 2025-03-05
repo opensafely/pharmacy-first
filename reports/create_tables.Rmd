@@ -31,9 +31,13 @@ gtsave(tab_pf_condition_codes, filename = here("released_output", "results", "ta
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
 
 df_consultation_med_counts <- read_csv(
-  here("released_output", "measures", "consultation_med_counts_measures_tidy.csv"),
+  here("released_output", "measures", "pf_medications_measures_tidy.csv"),
   col_types = cols(dmd_code = col_character())
 )
+
+# Total number of medication linked to a PF consultation
+med_counts <- df_consultation_med_counts %>% 
+  summarise(total = sum(numerator))
 
 codelist_file_names <- list.files(
   here("codelists"),
@@ -41,12 +45,21 @@ codelist_file_names <- list.files(
   full.names = FALSE
 )
 
+# Using the 'term' from the first instance of bnf_code where dmd_type is VMP
 pf_med_code_desc <- here("codelists", codelist_file_names) |>
   map(~ read_csv(.x, col_types = cols(
-    code = col_character()
+    code = col_character(),
+    bnf_code = col_character()
   ))) |>
   bind_rows() |>
-  select(code, term) |>
+  select(code, bnf_code, dmd_type, term) |>
+  filter(!is.na(bnf_code)) %>% 
+  group_by(bnf_code) %>%
+  summarise(
+    code = code,
+    term = first(term[dmd_type == "VMP"]),
+    dmd_type,
+  ) %>%
   distinct()
 
 top10_nonpf_med_code_desc  <- tribble(
@@ -77,8 +90,12 @@ df_pf_med_counts <- df_consultation_med_counts |>
   ungroup() |>
   group_by(pharmacy_first_med) |>
   mutate(ratio_by_group = count / sum(count, na.na.rm = TRUE)) |>
-  slice_max(order_by = ratio_by_group, n = 5) |>
-  ungroup()
+  slice_max(order_by = ratio_by_group, n = 10) |>
+  ungroup() 
+  
+  # %>% 
+  # filter(pharmacy_first_med == TRUE) %>%
+  # summarise(total = sum(count))
 
 df_pf_and_non_pf_med_counts <- df_pf_med_counts %>%
   arrange(!pharmacy_first_med) %>%
@@ -93,4 +110,14 @@ gtsave(
   tab_pf_med_counts,
   here("released_output", "results", "tables", "tab_pf_med_counts.png"),
 )
+```
+```{r echo=FALSE}
+# Used this code to calculate table 2 total counts and percentages
+population_csv <- read_csv(here("released_output", "population", "pf_tables.csv"))
+clinical_pathways_table_by_sex <- population_csv %>%
+  filter(table == "tab_pf_pathways_by_sex") %>%
+  group_by(subcategory) %>% 
+  reframe(total = sum(value)) %>% 
+  ungroup() %>% 
+  mutate(pct = total/sum(total)*100)
 ```
