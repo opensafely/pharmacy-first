@@ -127,7 +127,7 @@ Code for data management and analysis, as well as codelists, are available for r
 
 ### Total
 
-```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10, fig.cap="Figure 1. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP."}
+```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10, fig.cap="**Figure 1**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP."}
 # Create figure for total count of Pharmacy First consultations for each code (3 codes)
 df_pf_consultations <- df_measures |>
   filter(measure_desc == "clinical_service") |>
@@ -234,7 +234,7 @@ plot_pf_consultations
 
 #### Sex
 
-```{r plot-pf-consultations-by-sex, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 2. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by sex."}
+```{r plot-pf-consultations-by-sex, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 2**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by sex."}
 df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
@@ -253,7 +253,7 @@ df_measures %>%
 
 #### Age band
 
-```{r plot-pf-consultations-by-age-band, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 3. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by age bands."}
+```{r plot-pf-consultations-by-age-band, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 3**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by age bands."}
 unique_categories <- sort(unique(df_measures$age_band))
 manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
 shape_mapping <- setNames(manual_ggplot2_shapes[1:length(unique_categories)], unique_categories)
@@ -277,7 +277,7 @@ df_measures %>%
 
 #### Index of Multiple Deprivation (IMD)
 
-```{r plot-pf-consultations-by-imd, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 4. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by IMD."}
+```{r plot-pf-consultations-by-imd, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 4**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by IMD."}
 unique_categories <- sort(unique(df_measures$imd))
 
 manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
@@ -323,7 +323,7 @@ df_measures %>%
 
 #### Region
 
-```{r plot-pf-consultations-by-region, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 5. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
+```{r plot-pf-consultations-by-region, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 5**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
 unique_categories <- sort(unique(df_measures$region))
 
 manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 8, 4, 10, 7, 1)
@@ -374,10 +374,10 @@ df_measures %>%
 
 #### Ethnicity
 
-```{r plot-pf-consultations-by-ethnicity, message=FALSE, warning=FALSE, fig.height=15, fig.width=10, fig.cap="Figure 5. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
+```{r plot-pf-consultations-by-ethnicity, message=FALSE, warning=FALSE, fig.height=15, fig.width=10, fig.cap="**Figure 5**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
 unique_categories <- sort(unique(df_measures$ethnicity))
 
-manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 8, 4, 10, 7, 1)
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
 shape_mapping <- setNames(
   manual_ggplot2_shapes[1:length(unique_categories)],
   unique_categories
@@ -421,7 +421,7 @@ df_measures %>%
 
 ## Linkage of Pharmacy First Consultations
 
-```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 6. Monthly breakdown of Pharmacy First consultation codes linked to a Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP."}
+```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 6**. Monthly breakdown of Pharmacy First consultation codes linked to a Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP."}
 df_pf_descriptive_stats <- df_descriptive_stats %>%
   filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
   mutate(
@@ -437,25 +437,30 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
         "Both"
       )
     )
+  ) %>%
+  left_join(df_pf_consultations_total,
+    by = c("interval_start")
   )
 
 df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
   group_by(interval_start) %>%
-  left_join(df_pf_consultations_total,
-    by = c("interval_start")
-  ) %>%
-  arrange(desc(measure), .by_group = TRUE) %>%
+  mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
+  arrange(desc(measure), .by_group = TRUE) |>
   mutate(
-    ratio = numerator / pf_consultation_total,
-    cumulative_ratio = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio), TRUE ~ NA)
+    numerator_exclusive = case_when(
+      measure == "Both" ~ numerator,
+      measure %in% c("Clinical condition", "Medication") ~ numerator - numerator[measure == "Both"]
+    ),
+    ratio_exclusive = numerator_exclusive / pf_consultation_total,
+    cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
   )
 
 plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   ggplot(
     aes(
       x = interval_start,
-      y = ratio,
+      y = ratio_exclusive,
       fill = measure
     )
   ) +
@@ -466,8 +471,8 @@ plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   ) +
   geom_label(
     aes(
-      y = cumulative_ratio,
-      label = ifelse(is.na(ratio), "", scales::percent(ratio, accuracy = .1)),
+      y = cumulative_ratio_exclusive,
+      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
     ),
     vjust = -0.05,
     size = 3.5,
@@ -509,7 +514,7 @@ plot_pf_med_condition_linkage
 
 ### Pharmacy First Consultations
 
-```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="Figure 7. Monthly counts and ratio of patients with a Pharmacy First consultation code in OpenSAFELY-TPP and the NHS BSA comparison dataset."}
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 7**. Monthly counts and ratio of patients with a Pharmacy First consultation code in OpenSAFELY-TPP and the NHS BSA comparison dataset."}
 # Ideally I would like to load this at the top of this script
 # But this file uses datasets created further down so it easiest to load it here
 df_pf_consultations_total <- df_pf_consultations |>
