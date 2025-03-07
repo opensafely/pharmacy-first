@@ -17,7 +17,6 @@ library(gt)
 library(patchwork)
 library(scales)
 library(paletteer)
-library(ggrepel)
 ```
 
 ```{r load-data, message=FALSE, warning=FALSE}
@@ -153,9 +152,16 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
   )
 
 df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  filter(interval_start > "2024-01-01") %>%
   group_by(interval_start) %>%
+  left_join(df_pf_consultations_total,
+    by = c("interval_start")
+  ) %>%
   arrange(desc(measure), .by_group = TRUE) %>%
-  mutate(cumulative_ratio = case_when(interval_start == "2024-12-01" ~ cumsum(ratio), TRUE ~ NA))
+  mutate(
+    ratio = numerator / pf_consultation_total,
+    cumulative_ratio = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio), TRUE ~ NA)
+  )
 
 fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
   x = interval_start,
@@ -177,7 +183,6 @@ fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
     show.legend = FALSE,
     color = "black",
     fill = "white"
-
   ) +
   scale_fill_viridis_d() +
   scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
@@ -227,13 +232,12 @@ df_results_pf_linkage %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
 
 linkage_feb_to_dec <- df_results_pf_linkage %>%
-    group_by(interval_start) %>% 
-    summarise(sum_ratio = sum(ratio)) %>% 
-    mutate(linkage_diff = sum_ratio - lag(sum_ratio),
-    pct_diff = percent(linkage_diff, accuracy = 0.1))
-
-
-
+  group_by(interval_start) %>%
+  summarise(sum_ratio = sum(ratio)) %>%
+  mutate(
+    linkage_diff = sum_ratio - lag(sum_ratio),
+    pct_diff = percent(linkage_diff, accuracy = 0.1)
+  )
 ```
 
 ## Data comparison
