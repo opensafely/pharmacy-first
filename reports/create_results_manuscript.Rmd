@@ -17,7 +17,6 @@ library(gt)
 library(patchwork)
 library(scales)
 library(paletteer)
-library(ggrepel)
 ```
 
 ```{r load-data, message=FALSE, warning=FALSE}
@@ -153,9 +152,13 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
   )
 
 df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  filter(interval_start > "2024-01-01") %>%
   group_by(interval_start) %>%
+  left_join( df_pf_consultations_total,
+  by=c('interval_start')) %>%
   arrange(desc(measure), .by_group = TRUE) %>%
-  mutate(cumulative_ratio = case_when(interval_start == "2024-12-01" ~ cumsum(ratio), TRUE ~ NA))
+  mutate(ratio = numerator/pf_consultation_total,
+  cumulative_ratio = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio), TRUE ~ NA))
 
 fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
   x = interval_start,
