@@ -365,11 +365,12 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
 df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
   group_by(interval_start) %>%
-  left_join( df_pf_consultations_total,
-  by=c('interval_start')) %>%
+  left_join(df_pf_consultations_total,
+    by = c("interval_start")
+  ) %>%
   arrange(desc(measure), .by_group = TRUE) %>%
   mutate(
-    ratio = numerator/pf_consultation_total,
+    ratio = numerator / pf_consultation_total,
     cumulative_ratio = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio), TRUE ~ NA)
   )
 
