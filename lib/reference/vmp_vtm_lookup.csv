@@ -1,0 +1,161 @@
+type,id,amp_nm,vmp_nm,vtm_nm
+VMP,16132411000001105,,Olive oil ear drops,Olive oil
+VMP,42186611000001102,,Chloramphenicol 0.5% eye drops,Chloramphenicol
+VMP,42186711000001106,,Chloramphenicol 1% eye ointment,Chloramphenicol
+VMP,42109611000001109,,Paracetamol 500mg tablets,Paracetamol
+VMP,42104811000001109,,Ibuprofen 200mg tablets,Ibuprofen
+VMP,42104911000001104,,Ibuprofen 400mg tablets,Ibuprofen
+VMP,41953811000001101,,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+VMP,42010211000001106,,Co-codamol 8mg/500mg tablets,Co-codamol
+VMP,39732411000001106,,Amoxicillin 500mg capsules,Amoxicillin
+VMP,41953911000001106,,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin
+VMP,42354411000001105,,Lactulose 3.1-3.7g/5ml oral solution,Lactulose
+VMP,41941111000001109,,Amoxicillin 250mg/5ml oral suspension,Amoxicillin
+VMP,39021911000001105,,Amoxicillin 250mg/5ml oral suspension sugar free,Amoxicillin
+VMP,39692211000001107,,Flucloxacillin 500mg capsules,Flucloxacillin
+VMP,41900511000001104,,Hydrocortisone 1% cream,Hydrocortisone
+VMP,39708211000001102,,Chlorphenamine 4mg tablets,Chlorphenamine
+VMP,41946511000001109,,Clarithromycin 500mg tablets,Clarithromycin
+VMP,42354711000001104,,Loperamide 2mg capsules,Loperamide
+VMP,42186511000001101,,Cetirizine 10mg tablets,Cetirizine
+VMP,41894811000001103,,Clotrimazole 1% cream,Clotrimazole
+VMP,42108911000001106,,Paracetamol 250mg/5ml oral suspension,Paracetamol
+VMP,35924011000001108,,Simple linctus paediatric,Citric acid
+VMP,35923911000001105,,Simple linctus,Citric acid
+VMP,42100111000001106,,Benzydamine 0.15% oromucosal spray sugar free,Benzydamine
+VMP,41787011000001104,,Fluconazole 150mg capsules,Fluconazole
+VMP,39108111000001104,,Ibuprofen 100mg/5ml oral suspension sugar free,Ibuprofen
+VMP,39108511000001108,,Nitrofurantoin 100mg modified-release capsules,Nitrofurantoin
+VMP,37083111000001107,,Chlorphenamine 2mg/5ml oral solution sugar free,Chlorphenamine
+VMP,41485911000001101,,Aciclovir 800mg tablets,Aciclovir
+VMP,39109911000001109,,Mometasone 50micrograms/dose nasal spray,Mometasone
+VMP,42192711000001108,,Loratadine 10mg tablets,Loratadine
+VMP,38083011000001101,,Permethrin 5% cream,Permethrin
+VMP,35924211000001103,,Simple linctus sugar free,Citric acid
+VMP,9215211000001101,,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,21158011000001104,Fusidic acid 2% cream,Fusidic acid 2% cream,Fusidic acid
+AMP,23726411000001109,Mometasone 50micrograms/dose nasal spray,Mometasone 50micrograms/dose nasal spray,Mometasone
+AMP,37388111000001102,Macrobid 100mg modified-release capsules,Nitrofurantoin 100mg modified-release capsules,Nitrofurantoin
+AMP,9361811000001108,Optrex Infected Eyes 0.5% eye drops,Chloramphenicol 0.5% eye drops,Chloramphenicol
+AMP,171811000001104,Paracetamol 500mg caplets,Paracetamol 500mg tablets,Paracetamol
+AMP,24585211000001108,Paracetamol 500mg caplets,Paracetamol 500mg tablets,Paracetamol
+AMP,765311000001105,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,35211000001107,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,78111000001109,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,821311000001102,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,9803511000001108,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,16063111000001105,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,19730711000001101,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,28985911000001106,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,32489211000001105,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,39176911000001106,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,41341211000001106,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,42591311000001106,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin 250mg tablets,Phenoxymethylpenicillin
+AMP,930411000001106,Amoxicillin 500mg capsules,Amoxicillin 500mg capsules,Amoxicillin
+AMP,9785911000001104,Amoxicillin 500mg capsules,Amoxicillin 500mg capsules,Amoxicillin
+AMP,18458211000001102,Amoxicillin 500mg capsules,Amoxicillin 500mg capsules,Amoxicillin
+AMP,36933111000001107,Amoxicillin 500mg capsules,Amoxicillin 500mg capsules,Amoxicillin
+AMP,94811000001103,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin
+AMP,887811000001107,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin
+AMP,322611000001104,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin
+AMP,9805411000001108,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin
+AMP,20129711000001103,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin
+AMP,21038511000001103,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin
+AMP,38081911000001103,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin 250mg/5ml oral solution,Phenoxymethylpenicillin
+AMP,392411000001109,Phenoxymethylpenicillin 125mg/5ml oral solution,Phenoxymethylpenicillin 125mg/5ml oral solution,Phenoxymethylpenicillin
+AMP,513711000001108,Flucloxacillin 125mg/5ml oral solution,Flucloxacillin 125mg/5ml oral solution,Flucloxacillin
+AMP,766711000001101,Erythromycin 250mg gastro-resistant tablets,Erythromycin 250mg gastro-resistant tablets,Erythromycin
+AMP,819911000001107,Amoxicillin 250mg/5ml oral suspension,Amoxicillin 250mg/5ml oral suspension,Amoxicillin
+AMP,213311000001100,Amoxicillin 250mg/5ml oral suspension,Amoxicillin 250mg/5ml oral suspension,Amoxicillin
+AMP,767611000001107,Amoxicillin 250mg/5ml oral suspension,Amoxicillin 250mg/5ml oral suspension,Amoxicillin
+AMP,15984511000001106,Amoxicillin 250mg/5ml oral suspension,Amoxicillin 250mg/5ml oral suspension,Amoxicillin
+AMP,548011000001109,Amoxicillin 250mg/5ml oral suspension sugar free,Amoxicillin 250mg/5ml oral suspension sugar free,Amoxicillin
+AMP,328211000001104,Amoxicillin 250mg/5ml oral suspension sugar free,Amoxicillin 250mg/5ml oral suspension sugar free,Amoxicillin
+AMP,9787311000001108,Amoxicillin 250mg/5ml oral suspension sugar free,Amoxicillin 250mg/5ml oral suspension sugar free,Amoxicillin
+AMP,634511000001102,Amoxicillin 125mg/5ml oral suspension,Amoxicillin 125mg/5ml oral suspension,Amoxicillin
+AMP,120711000001100,Flucloxacillin 250mg capsules,Flucloxacillin 250mg capsules,Flucloxacillin
+AMP,289411000001107,Flucloxacillin 500mg capsules,Flucloxacillin 500mg capsules,Flucloxacillin
+AMP,3111000001109,Flucloxacillin 500mg capsules,Flucloxacillin 500mg capsules,Flucloxacillin
+AMP,590311000001104,Flucloxacillin 500mg capsules,Flucloxacillin 500mg capsules,Flucloxacillin
+AMP,19729111000001105,Flucloxacillin 500mg capsules,Flucloxacillin 500mg capsules,Flucloxacillin
+AMP,42544011000001102,Flucloxacillin 500mg capsules,Flucloxacillin 500mg capsules,Flucloxacillin
+AMP,623911000001105,Hydrocortisone 1% cream,Hydrocortisone 1% cream,Hydrocortisone
+AMP,818211000001108,Fucidin 20mg/g cream,Fusidic acid 2% cream,Fusidic acid
+AMP,746811000001100,Piriton Allergy 4mg tablets,Chlorphenamine 4mg tablets,Chlorphenamine
+AMP,307511000001108,Aciclovir 800mg dispersible tablets,Aciclovir 800mg dispersible tablets,Aciclovir
+AMP,8928611000001100,Clarithromycin 500mg tablets,Clarithromycin 500mg tablets,Clarithromycin
+AMP,8993811000001101,Clarithromycin 500mg tablets,Clarithromycin 500mg tablets,Clarithromycin
+AMP,9033811000001101,Clarithromycin 500mg tablets,Clarithromycin 500mg tablets,Clarithromycin
+AMP,17965511000001109,Clarithromycin 500mg tablets,Clarithromycin 500mg tablets,Clarithromycin
+AMP,20165811000001103,Clarithromycin 500mg tablets,Clarithromycin 500mg tablets,Clarithromycin
+AMP,36847211000001101,Clarithromycin 500mg tablets,Clarithromycin 500mg tablets,Clarithromycin
+AMP,42205211000001106,Clarithromycin 500mg tablets,Clarithromycin 500mg tablets,Clarithromycin
+AMP,19575511000001104,Paracetamol 120mg/5ml oral suspension paediatric,Paracetamol 120mg/5ml oral suspension paediatric,Paracetamol
+AMP,8927511000001103,Clarithromycin 250mg tablets,Clarithromycin 250mg tablets,Clarithromycin
+AMP,20165611000001102,Clarithromycin 250mg tablets,Clarithromycin 250mg tablets,Clarithromycin
+AMP,24586311000001105,Numark Simple linctus,Simple linctus,Citric acid
+AMP,41086011000001104,Allevia 120mg tablets,Fexofenadine 120mg tablets,Fexofenadine
+AMP,737011000001105,Difflam 0.15% Sore Throat Rinse,Benzydamine 0.15% mouthwash sugar free,Benzydamine
+AMP,531611000001106,Difflam 0.15% spray,Benzydamine 0.15% oromucosal spray sugar free,Benzydamine
+AMP,17290311000001107,Benzydamine 0.15% oromucosal spray sugar free,Benzydamine 0.15% oromucosal spray sugar free,Benzydamine
+AMP,301011000001105,Daktacort Hydrocortisone cream,Hydrocortisone 1% / Miconazole 2% cream,Hydrocortisone + Miconazole
+AMP,24549911000001107,Nitrofurantoin 50mg capsules,Nitrofurantoin 50mg capsules,Nitrofurantoin
+AMP,180911000001108,Nitrofurantoin 50mg tablets,Nitrofurantoin 50mg tablets,Nitrofurantoin
+AMP,517311000001102,Macrobid 100mg modified-release capsules,Nitrofurantoin 100mg modified-release capsules,Nitrofurantoin
+AMP,41334211000001109,Nitrofurantoin 100mg modified-release capsules,Nitrofurantoin 100mg modified-release capsules,Nitrofurantoin
+AMP,29311000001104,Piriton 2mg/5ml syrup,Chlorphenamine 2mg/5ml oral solution,Chlorphenamine
+AMP,727911000001106,Ovex 100mg chewable tablets,Mebendazole 100mg chewable tablets sugar free,Mebendazole
+AMP,381511000001101,Sudafed Decongestant 60mg tablets,Pseudoephedrine hydrochloride 60mg tablets,Pseudoephedrine
+AMP,4919311000001106,Aciclovir 800mg tablets,Aciclovir 800mg tablets,Aciclovir
+AMP,17961711000001101,Aciclovir 800mg tablets,Aciclovir 800mg tablets,Aciclovir
+AMP,24199911000001109,Aciclovir 800mg tablets,Aciclovir 800mg tablets,Aciclovir
+AMP,38178811000001102,Aciclovir 800mg tablets,Aciclovir 800mg tablets,Aciclovir
+AMP,9252611000001100,Clarithromycin 125mg/5ml oral suspension,Clarithromycin 125mg/5ml oral suspension,Clarithromycin
+AMP,9253011000001103,Clarithromycin 250mg/5ml oral suspension,Clarithromycin 250mg/5ml oral suspension,Clarithromycin
+AMP,123711000001109,Nasonex 50micrograms/dose nasal spray,Mometasone 50micrograms/dose nasal spray,Mometasone
+AMP,23655711000001104,Mometasone 50micrograms/dose nasal spray,Mometasone 50micrograms/dose nasal spray,Mometasone
+AMP,23679811000001107,Mometasone 50micrograms/dose nasal spray,Mometasone 50micrograms/dose nasal spray,Mometasone
+AMP,34957111000001107,Mometasone 50micrograms/dose nasal spray,Mometasone 50micrograms/dose nasal spray,Mometasone
+AMP,41153411000001100,Mometasone 50micrograms/dose nasal spray,Mometasone 50micrograms/dose nasal spray,Mometasone
+AMP,41501711000001106,Mometasone 50micrograms/dose nasal spray,Mometasone 50micrograms/dose nasal spray,Mometasone
+AMP,360111000001101,Canesten Thrush External 2% cream,Clotrimazole 2% cream,Clotrimazole
+AMP,239911000001108,Eurax 10% cream,Crotamiton 10% cream,Crotamiton
+AMP,2850911000001108,Doxycycline 100mg capsules,Doxycycline 100mg capsules,Doxycycline
+AMP,2900411000001103,Otex 5% ear drops,Urea hydrogen peroxide 5% ear drops,Urea hydrogen peroxide
+AMP,2942511000001108,Beconase Hayfever 50micrograms/dose nasal spray,Beclometasone 50micrograms/dose nasal spray,Beclometasone
+AMP,3269111000001106,Dioralyte oral powder sachets blackcurrant,Generic Dioralyte oral powder sachets,
+AMP,3387811000001101,Lyclear 5% dermal cream,Permethrin 5% cream,Permethrin
+AMP,3458311000001107,Daktarin 2% cream,Miconazole 2% cream,Miconazole
+AMP,20352511000001108,Care Simple linctus paediatric sugar free,Simple linctus paediatric sugar free,Citric acid
+AMP,3697711000001104,EarCalm 2% spray,Acetic acid (glacial) 2% ear spray,Acetic acid
+AMP,3756011000001103,Strefen Honey and Lemon 8.75mg lozenges,Flurbiprofen 8.75mg lozenges,Flurbiprofen
+AMP,4085011000001102,Cystopurin 3g granules for oral solution sachets,Potassium citrate 3g granules for oral solution sachets sugar free,Potassium citrate
+AMP,4386711000001109,Multi-Action Actifed Dry Coughs liquid,Generic Multi-Action Actifed Dry Coughs liquid,
+AMP,4472411000001102,Beechams All-In-One oral solution,Generic Beechams All-In-One oral solution sugar free,
+AMP,4473411000001106,Beechams Flu-Plus caplets,Generic Beechams Flu-Plus caplets,
+AMP,4530711000001104,Covonia Sore Throat 0.2%/0.05% oromucosal spray menthol,Lidocaine 0.05% / Chlorhexidine 0.2% oromucosal spray sugar free,Lidocaine + Chlorhexidine
+AMP,4647511000001103,Robitussin Dry Cough 7.5mg/5ml oral solution sugar free,Dextromethorphan 7.5mg/5ml oral solution sugar free,Dextromethorphan
+AMP,4648111000001108,Robitussin Chesty Cough 100mg/5ml oral solution,Guaifenesin 100mg/5ml oral solution sugar free,Guaifenesin
+AMP,11268511000001102,Flucloxacillin 250mg/5ml oral solution,Flucloxacillin 250mg/5ml oral solution,Flucloxacillin
+AMP,16086311000001101,Flucloxacillin 250mg/5ml oral solution,Flucloxacillin 250mg/5ml oral solution,Flucloxacillin
+AMP,20137211000001102,Flucloxacillin 250mg/5ml oral solution,Flucloxacillin 250mg/5ml oral solution,Flucloxacillin
+AMP,4876911000001102,Crystacide 1% cream,Hydrogen peroxide 1% cream,Hydrogen peroxide
+AMP,4906211000001105,Benylin Day & Night tablets,Generic Benylin Day & Night tablets,
+AMP,4928211000001101,Hc45 Hydrocortisone 1% cream,Hydrocortisone acetate 1% cream,Hydrocortisone
+AMP,4946111000001105,Benylin Chesty Coughs Non-Drowsy oral solution,Guaifenesin 100mg/5ml / Levomenthol 1.1mg/5ml oral solution,Guaifenesin + Menthol
+AMP,8004411000001105,Beechams All-In-One tablets,Generic Beechams All-In-One tablets,
+AMP,9253911000001104,Phenoxymethylpenicillin 125mg/5ml oral solution sugar free,Phenoxymethylpenicillin 125mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,28097111000001105,Phenoxymethylpenicillin 125mg/5ml oral solution sugar free,Phenoxymethylpenicillin 125mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,9209511000001103,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,9254111000001100,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,21038911000001105,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,28097311000001107,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,31058811000001100,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,32492211000001103,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,Phenoxymethylpenicillin
+AMP,15046311000001109,Avamys 27.5micrograms/dose nasal spray,Fluticasone furoate 27.5micrograms/dose nasal spray,Fluticasone
+AMP,42533911000001101,Coryen 27.5micrograms/dose nasal spray,Fluticasone furoate 27.5micrograms/dose nasal spray,Fluticasone
+AMP,16443611000001100,Flucloxacillin 250mg/5ml oral solution sugar free,Flucloxacillin 250mg/5ml oral solution sugar free,Flucloxacillin
+AMP,16132011000001101,Care olive oil ear drops,Olive oil ear drops,Olive oil
+AMP,22479611000001102,Voltarol 12 Hour Emulgel P 2.32% gel,Diclofenac diethylammonium 2.32% gel,Diclofenac diethylammonium
+AMP,28999011000001108,Buttercup Bronchostop Cough syrup,Marshmallow root 830mg/15ml / Thyme 120mg/15ml oral suspension sugar free,Marshmallow root + Thyme
+AMP,39150411000001103,Otigo 40mg/g / 10mg/g ear drops,Phenazone 40mg/g / Lidocaine 10mg/g ear drops,Phenazone + Lidocaine
