@@ -90,7 +90,7 @@ fig_pf_grouped_consultations_count <- plot_measures(
   scale_y_continuous(
     limits = c(0, NA),
     labels = scales::label_number(),
-    breaks = c(0, 10000, 20000, 30000, 40000, 50000)
+    breaks = c(0, 10000, 20000, 30000, 40000, 50000, 60000)
   )
 
 fig_pf_grouped_consultations_count
@@ -131,7 +131,7 @@ df_results_pf_total_counts %>%
 
 ### Figure 2
 
-```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.width=8}
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.height = 4, fig.width = 8}
 # Create figure to show & of PF Med, Condition and both with linked PF consultations
 
 df_pf_descriptive_stats <- df_descriptive_stats %>%
@@ -149,34 +149,42 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
         "Both"
       )
     )
+  ) %>%
+  left_join(df_pf_consultations_total,
+    by = c("interval_start")
   )
 
 df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
-  filter(interval_start > "2024-01-01") %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
   group_by(interval_start) %>%
-  left_join(df_pf_consultations_total,
-    by = c("interval_start")
-  ) %>%
-  arrange(desc(measure), .by_group = TRUE) %>%
+  mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
+  arrange(desc(measure), .by_group = TRUE) |>
   mutate(
-    ratio = numerator / pf_consultation_total,
-    cumulative_ratio = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio), TRUE ~ NA)
+    numerator_exclusive = case_when(
+      measure == "Both" ~ numerator,
+      measure %in% c("Clinical condition", "Medication") ~ numerator - numerator[measure == "Both"]
+    ),
+    ratio_exclusive = numerator_exclusive / pf_consultation_total,
+    cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
   )
 
-fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
-  x = interval_start,
-  y = ratio,
-  fill = measure
-)) +
+fig_pf_med_condition_linkage <- df_pf_descriptive_stats |>
+  ggplot(
+    aes(
+      x = interval_start,
+      y = ratio_exclusive,
+      fill = measure
+    )
+  ) +
   geom_area(
-    alpha = 0.7,
-    size = .5,
+    alpha = 0.85,
+    linewidth = .5,
     colour = "white"
   ) +
   geom_label(
     aes(
-      y = cumulative_ratio,
-      label = scales::percent(ratio, accuracy = .1),
+      y = cumulative_ratio_exclusive,
+      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
     ),
     vjust = -0.05,
     size = 3.5,
@@ -185,7 +193,10 @@ fig_pf_med_condition_linkage <- ggplot(df_pf_descriptive_stats, aes(
     fill = "white"
   ) +
   scale_fill_viridis_d() +
-  scale_y_continuous(limits = c(0, 1), labels = scales::percent) +
+  scale_y_continuous(
+    limits = c(0, .5),
+    labels = scales::percent
+  ) +
   labs(
     x = NULL,
     y = NULL,
@@ -266,7 +277,7 @@ df_pf_consultation_validatio_plot <- pf_validation |>
 df_pf_consultation_validatio_plot <- df_pf_consultation_validatio_plot |>
   select(date, data_source, count_method, count_total) |>
   pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
-  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_40pct)
+  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
 
 # Select colours for groups
 # Group 1: #CF4446FF
@@ -279,14 +290,14 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
   ggplot(aes(x = date)) +
   geom_point(
     aes(
-      y = nhs_bsa_count_40pct,
-      colour = "NHS BSA (40%)",
-      shape = "NHS BSA (40%)"
+      y = nhs_bsa_count_100pct,
+      colour = "NHS BSA",
+      shape = "NHS BSA"
     ),
     size = 2.6
   ) +
   geom_line(
-    aes(y = nhs_bsa_count_40pct, colour = "NHS BSA (40%)"),
+    aes(y = nhs_bsa_count_100pct, colour = "NHS BSA"),
     alpha = .3,
     size = .5
   ) +
@@ -322,14 +333,14 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
   ) +
   scale_colour_manual(
     values = c(
-      "NHS BSA (40%)" = colour_group_1,
+      "NHS BSA" = colour_group_1,
       "OpenSAFELY-TPP" = colour_group_2
     ),
     name = NULL
   ) +
   scale_shape_manual(
     values = c(
-      "NHS BSA (40%)" = 15,
+      "NHS BSA" = 15,
       "OpenSAFELY-TPP" = 16
     ),
     name = NULL
@@ -378,7 +389,7 @@ df_pf_consultation_validation_plot <- pf_validation |>
 df_pf_consultation_validation_plot <- df_pf_consultation_validation_plot |>
   select(date, data_source, count_method, count_total) |>
   pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
-  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_40pct)
+  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
 
 join_ratio <- df_pf_descriptive_stats |>
   select(date = interval_start, measure, ratio) |>
@@ -392,7 +403,7 @@ df_pf_consultation_validation_adjusted_plot <- df_pf_consultation_validation_plo
   left_join(join_ratio) |>
   mutate(
     os_tpp_adjusted = round((opensafely_opensafely_tpp / (ratio_consultation_type_in_os * 100)) * 100, 0),
-    ratio_adjusted = os_tpp_adjusted / nhs_bsa_count_40pct
+    ratio_adjusted = os_tpp_adjusted / nhs_bsa_count_100pct
   )
 
 # Select colours for groups
@@ -408,14 +419,14 @@ pf_validation_consultation_adjusted_plot <- df_pf_consultation_validation_adjust
   ggplot(aes(x = date)) +
   geom_point(
     aes(
-      y = nhs_bsa_count_40pct,
-      colour = "NHS BSA (40%)",
-      shape = "NHS BSA (40%)"
+      y = nhs_bsa_count_100pct,
+      colour = "NHS BSA",
+      shape = "NHS BSA"
     ),
     size = 2.6
   ) +
   geom_line(
-    aes(y = nhs_bsa_count_40pct, colour = "NHS BSA (40%)"),
+    aes(y = nhs_bsa_count_100pct, colour = "NHS BSA"),
     alpha = .3,
     size = .5
   ) +
@@ -476,7 +487,7 @@ pf_validation_consultation_adjusted_plot <- df_pf_consultation_validation_adjust
   ) +
   scale_colour_manual(
     values = c(
-      "NHS BSA (40%)" = colour_group_1,
+      "NHS BSA" = colour_group_1,
       "OpenSAFELY-TPP" = colour_group_2,
       "OpenSAFELY-TPP (Adjusted)" = colour_group_3
     ),
@@ -484,7 +495,7 @@ pf_validation_consultation_adjusted_plot <- df_pf_consultation_validation_adjust
   ) +
   scale_shape_manual(
     values = c(
-      "NHS BSA (40%)" = 15,
+      "NHS BSA" = 15,
       "OpenSAFELY-TPP" = 16,
       "OpenSAFELY-TPP (Adjusted)" = 17
     ),
@@ -521,7 +532,7 @@ df_pf_medication_validation <- pf_validation |>
 df_pf_medication_validation_plot <- df_pf_medication_validation |>
   select(date, data_source, count_method, count_total) |>
   pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
-  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_40pct)
+  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
 
 linked_ratio <- df_pf_descriptive_stats |>
   select(date = interval_start, measure, ratio) |>
@@ -536,7 +547,7 @@ df_pf_medication_validation_adjusted_plot <- df_pf_medication_validation_plot |>
   left_join(linked_ratio) |>
   mutate(
     os_tpp_adjusted = round((opensafely_opensafely_tpp / (ratio_medication_in_os * 100)) * 100, 0),
-    ratio_adjusted = os_tpp_adjusted / nhs_bsa_count_40pct
+    ratio_adjusted = os_tpp_adjusted / nhs_bsa_count_100pct
   )
 
 # Create consultation validation plot
@@ -544,14 +555,14 @@ pf_medication_validation_adjusted_plot <- df_pf_medication_validation_adjusted_p
   ggplot(aes(x = date)) +
   geom_point(
     aes(
-      y = nhs_bsa_count_40pct,
-      colour = "NHS BSA (40%)",
-      shape = "NHS BSA (40%)"
+      y = nhs_bsa_count_100pct,
+      colour = "NHS BSA",
+      shape = "NHS BSA"
     ),
     size = 2.6
   ) +
   geom_line(
-    aes(y = nhs_bsa_count_40pct, colour = "NHS BSA (40%)"),
+    aes(y = nhs_bsa_count_100pct, colour = "NHS BSA"),
     alpha = .3,
     size = .5
   ) +
@@ -612,7 +623,7 @@ pf_medication_validation_adjusted_plot <- df_pf_medication_validation_adjusted_p
   ) +
   scale_colour_manual(
     values = c(
-      "NHS BSA (40%)" = colour_group_1,
+      "NHS BSA" = colour_group_1,
       "OpenSAFELY-TPP" = colour_group_2,
       "OpenSAFELY-TPP (Adjusted)" = colour_group_3
     ),
@@ -620,7 +631,7 @@ pf_medication_validation_adjusted_plot <- df_pf_medication_validation_adjusted_p
   ) +
   scale_shape_manual(
     values = c(
-      "NHS BSA (40%)" = 15,
+      "NHS BSA" = 15,
       "OpenSAFELY-TPP" = 16,
       "OpenSAFELY-TPP (Adjusted)" = 17
     ),
@@ -641,7 +652,7 @@ pf_medication_validation_adjusted_plot <- df_pf_medication_validation_adjusted_p
   ggtitle("B. Pharmacy First Medications")
 ```
 
-```{r}
+```{r fig.height = 8, fig.width=10}
 # Combine plots
 validation_combined_adjusted_plot <- pf_validation_consultation_adjusted_plot / pf_medication_validation_adjusted_plot + plot_layout(guides = "collect") & theme(legend.position = "bottom")
 
