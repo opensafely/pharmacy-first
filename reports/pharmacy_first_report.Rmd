@@ -25,6 +25,7 @@ library(ggrepel)
 # Load functions
 source(here("lib", "functions", "tidy_measures.R"))
 source(here("lib", "functions", "plot_measures.R"))
+source(here("lib", "functions", "create_tables.R"))
 
 # Load validation data:
 # - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
@@ -508,7 +509,42 @@ plot_pf_med_condition_linkage
 
 ### Pharmacy First Medications
 
-- Add existing table from paper once updated with released outputs (or table to start with)
+```{r, message=FALSE, warning=FALSE}
+df_consultation_med_counts <- read_csv(
+  here("released_output", "measures", "pf_medications_measures_tidy.csv"),
+  col_types = cols(dmd_code = col_character())
+)
+vmp_lookup <- read_csv(
+  here("lib", "reference", "vmp_vtm_lookup.csv"),
+  col_types = cols(id = col_character())
+) %>%
+  rename(code = id)
+
+df_pf_med_counts <- df_consultation_med_counts |>
+  select(numerator, code = dmd_code, pharmacy_first_med) |>
+  left_join(vmp_lookup, by = "code") |>
+  filter(numerator > 0) |>
+  select(-code) %>%
+  group_by(pharmacy_first_med, vmp_nm) |>
+  summarise(count = sum(numerator, na.rm = TRUE)) |>
+  filter(!is.na(vmp_nm)) %>%
+  ungroup() |>
+  group_by(pharmacy_first_med) |>
+  mutate(ratio_by_group = count / sum(count, na.na.rm = TRUE)) |>
+  slice_max(order_by = ratio_by_group, n = 10) |>
+  ungroup()
+
+df_pf_and_non_pf_med_counts <- df_pf_med_counts %>%
+  arrange(!pharmacy_first_med) %>%
+  mutate(pharmacy_first_med = factor(pharmacy_first_med,
+    levels = c(FALSE, TRUE),
+    labels = c(("Medication not included in codelists"), "Medication included in codelists")
+  )) %>%
+  group_by(pharmacy_first_med)
+
+gt_top_meds(df_pf_and_non_pf_med_counts)
+```
+**Table 3**. Top ten medications linked to Pharmacy First consultations during the first 12 months following the service's launch date on 31 January 2024.
 
 ## Comparison with NHS BSA data
 
