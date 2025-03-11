@@ -140,14 +140,14 @@ gt_top_meds <- function(data) {
   data |>
     gt(
       groupname_col = "pharmacy_first_med",
-      rowname_col = "term"
+      rowname_col = "vmp_nm"
     ) %>%
     tab_header(
-      title = "Top 5 medications linked to Pharmacy First consultations",
-      subtitle = "Timeframe: 1st Feb 2024 to 31st December 2024"
+      title = "Top 10 medications linked to Pharmacy First consultations",
+      subtitle = "Timeframe: 1st Feb 2024 to 31st January 2025"
     ) %>%
     cols_label(
-      term = md("**Medication**"),
+      vmp_nm = md("**Medication**"),
       count = md("**Count**"),
       ratio_by_group = md("**%**")
     ) %>%
