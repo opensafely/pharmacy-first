@@ -80,7 +80,7 @@ df_pf_med_counts <- df_consultation_med_counts |>
   mutate(ratio_by_group = count / sum(count, na.na.rm = TRUE)) |>
   slice_max(order_by = ratio_by_group, n = 10) |>
   ungroup()
-View(df_pf_med_counts)
+
 # %>%
 # filter(pharmacy_first_med == TRUE) %>%
 # summarise(total = sum(count))
