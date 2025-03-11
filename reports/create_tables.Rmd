@@ -34,6 +34,10 @@ df_consultation_med_counts <- read_csv(
   col_types = cols(dmd_code = col_character())
 )
 
+# VMP lookup was taken from the dmd tables held in BigQuery
+# This lookup table will need to be updated periodically if new VMPs appear in the data
+# To find SQL code for this query, please refer to Chris's comment in PR #144 ("Update VMP mapping")
+
 vmp_lookup <- read_csv(
   here("lib", "reference", "vmp_vtm_lookup.csv"),
   col_types = cols(id = col_character())
