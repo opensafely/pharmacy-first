@@ -124,7 +124,7 @@ Code for data management and analysis, as well as codelists, are available for r
 
 ```{r, message=FALSE, warning=FALSE}
 population_table <- read_csv(here("released_output", "population", "pf_tables.csv"))
-
+View(population_table)
 df_demographics_table <- population_table %>% 
   filter(table=="tab_demographics") %>% 
   pivot_wider(names_from = metric, values_from = value) %>% 
@@ -535,6 +535,36 @@ plot_pf_med_condition_linkage
 ```
 
 ### Pharmacy First Clinical Pathways
+
+```{r, message=FALSE, warning=FALSE}
+df_clinical_pathways_by_sex <- population_table %>% 
+  filter(table=="tab_pf_pathways_by_sex") %>% 
+  pivot_wider(names_from = metric, values_from = value) %>% 
+  select(-table) %>% 
+  pivot_wider(names_from = category, values_from = numerator) %>% 
+  group_by(subcategory) %>% 
+  mutate(total = female + male) %>% 
+  ungroup() %>% 
+  mutate(pct = total/sum(total) * 100,
+  subcategory = factor(subcategory, levels = c(
+    "otitismedia",
+    "impetigo",
+    "insectbite",
+    "shingles",
+    "sinusitis",
+    "sorethroat",
+    "uti"),
+  labels = c(
+    "Acute otitis media", 
+    "Impetigo", 
+    "Infected insect bites", 
+    "Shingles", 
+    "Sinusitis", 
+    "Sore throat", 
+    "Uncomplicated UTI")))
+
+gt_pathways(df_clinical_pathways_by_sex)
+```
 
 - Add existing breakdown figures for: Age band, Ethnicity, IMD (or table to start with)
 

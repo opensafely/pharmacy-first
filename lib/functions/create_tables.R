@@ -327,3 +327,45 @@ ethnicity_labels <- c(
   "Any other White background", 
   "Missing"
 )
+
+gt_pathways <- function(data) {
+  data |>
+    gt(
+      rowname_col = "subcategory"
+    ) %>%
+    tab_header(
+      title = "Clinical Pathways Count by Sex",
+      subtitle = "Timeframe: 1st Feb 2024 to 31st January 2025"
+    ) %>%
+    cols_label(
+      subcategory = md("**Medication**"),
+      female = md("**Female**"),
+      male = md("**Male**"),
+      total = md("**Total**"),
+      pct = md("**%**")
+    ) %>%
+    fmt_number(
+      columns = female,
+      decimals = 0
+    ) %>%
+    fmt_number(
+      columns = male,
+      decimals = 0
+    ) %>%
+    fmt_number(
+      columns = total,
+      decimals = 0
+    ) %>%
+    fmt_percent(
+      columns = pct,
+      decimals = 1
+    ) %>%
+    tab_style(
+      style = cell_text(weight = "bold"),
+      locations = cells_row_groups(groups = everything())
+    ) %>%
+    tab_stub_indent(
+      rows = everything(),
+      indent = 3
+    )
+}
