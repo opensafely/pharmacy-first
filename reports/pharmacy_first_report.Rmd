@@ -122,7 +122,38 @@ Code for data management and analysis, as well as codelists, are available for r
 
 ## Cohort descriptions
 
-- TODO ADD TABLE 1 using GT
+```{r, message=FALSE, warning=FALSE}
+population_table <- read_csv(here("released_output", "population", "pf_tables.csv"))
+
+df_demographics_table <- population_table %>% 
+  filter(table=="tab_demographics") %>% 
+  pivot_wider(names_from = metric, values_from = value) %>% 
+  select(-table) %>%
+  mutate(category = factor(category, levels = c("sex", "age_band", "ethnicity", "imd", "region"), 
+  labels = c("Sex", "Age Band", "Ethnicity", "IMD", "Region"))) %>%
+  mutate(subcategory = recode(subcategory, 
+    "female" = "Female", 
+    "male" = "Male"
+  ))
+
+# Addressing an ordering problem (see PR description)
+df_demographics_table <- df_demographics_table %>%  
+  mutate(subcategory = if_else(
+    category == "Ethnicity", 
+    factor(subcategory, levels = ethnicity_levels, labels = ethnicity_labels), 
+    factor(subcategory, levels = subcategory_levels, labels = subcategory_labels)
+  )) %>%
+  arrange(category, match(subcategory, ethnicity_labels)) %>% 
+  group_by(category) %>% 
+  arrange(category, 
+          ifelse(subcategory == "Missing", Inf, as.numeric(subcategory))) %>%
+  ungroup()
+
+
+gt_demographics(df_demographics_table)
+
+```
+**Table 1**. Cohort description for all patients with at least one Pharmacy First consultation code during 12 months following the services’ launch date 31 January 2024.
 
 ## Count of Pharmacy First Consultations
 

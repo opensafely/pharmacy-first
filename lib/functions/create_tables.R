@@ -168,3 +168,162 @@ gt_top_meds <- function(data) {
       indent = 3
     )
 }
+
+gt_demographics <- function(data) {
+  data |>
+    gt(
+      groupname_col = "category",
+      rowname_col = "subcategory"
+    ) %>%
+    tab_header(
+      title = "Cohort Description",
+      subtitle = "Timeframe: 1st Feb 2024 to 31st January 2025 (N = 337,860)"
+    ) %>%
+    cols_label(
+      subcategory = md("**Medication**"),
+      n = md("**Count**"),
+      pct = md("**%**")
+    ) %>%
+    fmt_number(
+      columns = n,
+      decimals = 0
+    ) %>%
+    fmt_percent(
+      columns = pct,
+      decimals = 1
+    ) %>%
+    tab_style(
+      style = cell_text(weight = "bold"),
+      locations = cells_row_groups(groups = everything())
+    ) %>%
+    tab_stub_indent(
+      rows = everything(),
+      indent = 3
+    )
+}
+
+subcategory_levels <- c(
+  "Female",
+  "Male",
+  "0-19",
+  "20-39",
+  "40-59",
+  "60-79",
+  "80+",
+  "East",
+  "East Midlands",
+  "London",
+  "North East",
+  "North West",
+  "South East",
+  "South West",
+  "West Midlands",
+  "Yorkshire and The Humber",
+  "Missing",
+  "1 (Most Deprived)",
+  "2",
+  "3",
+  "4",
+  "5 (Least Deprived)",
+  "Missing",
+  "Bangladeshi",
+  "Indian",
+  "Pakistani",
+  "Other South Asian",
+  "African",
+  "Caribbean",
+  "Other Black",
+  "White and Asian",
+  "White and African",
+  "White and Caribbean",
+  "Other Mixed",
+  "Chinese",
+  "All other ethnic groups",
+  "White British",
+  "White Irish",
+  "Other White", 
+  "Missing"
+)
+
+
+subcategory_labels <- c(
+  "Female",
+  "Male",
+  "0-19",
+  "20-39",
+  "40-59",
+  "60-79",
+  "80+",
+  "East",
+  "East Midlands",
+  "London",
+  "North East",
+  "North West",
+  "South East",
+  "South West",
+  "West Midlands",
+  "Yorkshire and The Humber",
+  "Missing",
+  "1 (Most Deprived)",
+  "2",
+  "3",
+  "4",
+  "5 (Least Deprived)",
+  "Missing",
+  "Bangladeshi",
+  "Indian",
+  "Pakistani",
+  "Any other Asian background",
+  "African",
+  "Caribbean",
+  "Any other Black background",
+  "White and Asian",
+  "White and African",
+  "White and Caribbean",
+  "Any other mixed background",
+  "Chinese",
+  "Any other ethnic group",
+  "White British",
+  "White Irish",
+  "Any other White background", 
+  "Missing"
+)
+ethnicity_levels <- c(
+"Bangladeshi",
+  "Indian",
+  "Pakistani",
+  "Other South Asian",
+  "African",
+  "Caribbean",
+  "Other Black",
+  "White and Asian",
+  "White and African",
+  "White and Caribbean",
+  "Other Mixed",
+  "Chinese",
+  "All other ethnic groups",
+  "White British",
+  "White Irish",
+  "Other White", 
+  "Missing"
+)
+
+ethnicity_labels <- c(
+  "Bangladeshi",
+  "Indian",
+  "Pakistani",
+  "Any other Asian background",
+  "African",
+  "Caribbean",
+  "Any other Black background",
+  "White and Asian",
+  "White and African",
+  "White and Caribbean",
+  "Any other mixed background",
+  "Chinese",
+  "Any other ethnic group",
+  "White British",
+  "White Irish",
+  "Any other White background", 
+  "Missing"
+)
