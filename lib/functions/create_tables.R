@@ -169,15 +169,15 @@ gt_top_meds <- function(data) {
     )
 }
 
-gt_demographics <- function(data) {
+gt_demographics <- function(data, title = NULL, subtitle = NULL) {
   data |>
     gt(
       groupname_col = "category",
       rowname_col = "subcategory"
     ) %>%
     tab_header(
-      title = "Cohort Description",
-      subtitle = "Timeframe: 1st Feb 2024 to 31st January 2025 (N = 337,860)"
+      title = title,
+      subtitle = subtitle
     ) %>%
     cols_label(
       subcategory = md("**Medication**"),
@@ -202,145 +202,19 @@ gt_demographics <- function(data) {
     )
 }
 
-subcategory_levels <- c(
-  "Female",
-  "Male",
-  "0-19",
-  "20-39",
-  "40-59",
-  "60-79",
-  "80+",
-  "East",
-  "East Midlands",
-  "London",
-  "North East",
-  "North West",
-  "South East",
-  "South West",
-  "West Midlands",
-  "Yorkshire and The Humber",
-  "Missing",
-  "1 (Most Deprived)",
-  "2",
-  "3",
-  "4",
-  "5 (Least Deprived)",
-  "Missing",
-  "Bangladeshi",
-  "Indian",
-  "Pakistani",
-  "Other South Asian",
-  "African",
-  "Caribbean",
-  "Other Black",
-  "White and Asian",
-  "White and African",
-  "White and Caribbean",
-  "Other Mixed",
-  "Chinese",
-  "All other ethnic groups",
-  "White British",
-  "White Irish",
-  "Other White", 
-  "Missing"
-)
-
-
-subcategory_labels <- c(
-  "Female",
-  "Male",
-  "0-19",
-  "20-39",
-  "40-59",
-  "60-79",
-  "80+",
-  "East",
-  "East Midlands",
-  "London",
-  "North East",
-  "North West",
-  "South East",
-  "South West",
-  "West Midlands",
-  "Yorkshire and The Humber",
-  "Missing",
-  "1 (Most Deprived)",
-  "2",
-  "3",
-  "4",
-  "5 (Least Deprived)",
-  "Missing",
-  "Bangladeshi",
-  "Indian",
-  "Pakistani",
-  "Any other Asian background",
-  "African",
-  "Caribbean",
-  "Any other Black background",
-  "White and Asian",
-  "White and African",
-  "White and Caribbean",
-  "Any other mixed background",
-  "Chinese",
-  "Any other ethnic group",
-  "White British",
-  "White Irish",
-  "Any other White background", 
-  "Missing"
-)
-ethnicity_levels <- c(
-"Bangladeshi",
-  "Indian",
-  "Pakistani",
-  "Other South Asian",
-  "African",
-  "Caribbean",
-  "Other Black",
-  "White and Asian",
-  "White and African",
-  "White and Caribbean",
-  "Other Mixed",
-  "Chinese",
-  "All other ethnic groups",
-  "White British",
-  "White Irish",
-  "Other White", 
-  "Missing"
-)
-
-ethnicity_labels <- c(
-  "Bangladeshi",
-  "Indian",
-  "Pakistani",
-  "Any other Asian background",
-  "African",
-  "Caribbean",
-  "Any other Black background",
-  "White and Asian",
-  "White and African",
-  "White and Caribbean",
-  "Any other mixed background",
-  "Chinese",
-  "Any other ethnic group",
-  "White British",
-  "White Irish",
-  "Any other White background", 
-  "Missing"
-)
-
-gt_pathways <- function(data) {
+gt_pathways <- function(data, title = NULL, subtitle = NULL) {
   data |>
     gt(
       rowname_col = "subcategory"
     ) %>%
     tab_header(
-      title = "Clinical Pathways Count by Sex",
-      subtitle = "Timeframe: 1st Feb 2024 to 31st January 2025"
+      title = NULL,
+      subtitle = NULL
     ) %>%
     cols_label(
       subcategory = md("**Medication**"),
-      female = md("**Female**"),
-      male = md("**Male**"),
+      female = md("Female"),
+      male = md("Male"),
       total = md("**Total**"),
       pct = md("**%**")
     ) %>%
@@ -364,8 +238,9 @@ gt_pathways <- function(data) {
       style = cell_text(weight = "bold"),
       locations = cells_row_groups(groups = everything())
     ) %>%
-    tab_stub_indent(
-      rows = everything(),
-      indent = 3
-    )
+  tab_spanner(
+    label = "Sex",
+    columns = c(female, male)
+  ) %>%
+  cols_align(align = "left", columns = subcategory)
 }
