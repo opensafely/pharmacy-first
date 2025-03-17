@@ -168,3 +168,79 @@ gt_top_meds <- function(data) {
       indent = 3
     )
 }
+
+gt_demographics <- function(data, title = NULL, subtitle = NULL) {
+  data |>
+    gt(
+      groupname_col = "category",
+      rowname_col = "subcategory"
+    ) %>%
+    tab_header(
+      title = title,
+      subtitle = subtitle
+    ) %>%
+    cols_label(
+      subcategory = md("**Medication**"),
+      n = md("**Count**"),
+      pct = md("**%**")
+    ) %>%
+    fmt_number(
+      columns = n,
+      decimals = 0
+    ) %>%
+    fmt_percent(
+      columns = pct,
+      decimals = 1
+    ) %>%
+    tab_style(
+      style = cell_text(weight = "bold"),
+      locations = cells_row_groups(groups = everything())
+    ) %>%
+    tab_stub_indent(
+      rows = everything(),
+      indent = 3
+    )
+}
+
+gt_pathways <- function(data, title = NULL, subtitle = NULL) {
+  data |>
+    gt(
+      rowname_col = "subcategory"
+    ) %>%
+    tab_header(
+      title = NULL,
+      subtitle = NULL
+    ) %>%
+    cols_label(
+      subcategory = md("**Medication**"),
+      female = md("Female"),
+      male = md("Male"),
+      total = md("**Total**"),
+      pct = md("**%**")
+    ) %>%
+    fmt_number(
+      columns = female,
+      decimals = 0
+    ) %>%
+    fmt_number(
+      columns = male,
+      decimals = 0
+    ) %>%
+    fmt_number(
+      columns = total,
+      decimals = 0
+    ) %>%
+    fmt_percent(
+      columns = pct,
+      decimals = 1
+    ) %>%
+    tab_style(
+      style = cell_text(weight = "bold"),
+      locations = cells_row_groups(groups = everything())
+    ) %>%
+  tab_spanner(
+    label = "Sex",
+    columns = c(female, male)
+  ) %>%
+  cols_align(align = "left", columns = subcategory)
+}

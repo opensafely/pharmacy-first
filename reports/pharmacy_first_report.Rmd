@@ -25,6 +25,7 @@ library(ggrepel)
 # Load functions
 source(here("lib", "functions", "tidy_measures.R"))
 source(here("lib", "functions", "plot_measures.R"))
+source(here("lib", "functions", "create_tables.R"))
 
 # Load validation data:
 # - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
@@ -121,7 +122,33 @@ Code for data management and analysis, as well as codelists, are available for r
 
 ## Cohort descriptions
 
-- TODO ADD TABLE 1 using GT
+```{r, message=FALSE, warning=FALSE}
+population_table <- read_csv(here("released_output", "population", "pf_tables.csv"))
+
+df_demographics_table <- population_table %>%
+  filter(table == "tab_demographics") %>%
+  pivot_wider(names_from = metric, values_from = value) %>%
+  select(-table) %>%
+  mutate(category = factor(category,
+    levels = c("sex", "age_band", "ethnicity", "imd", "region"),
+    labels = c("Sex", "Age Band", "Ethnicity", "IMD", "Region")
+  )) %>%
+  mutate(
+    subcategory = recode(subcategory,
+    "female" = "Female",
+    "male" = "Male",
+    "Other South Asian" = "Any other Asian background",
+    "Other Black" = "Any other Black background",
+    "Other Mixed" = "Any other mixed background",
+    "All other ethnic groups" = "Any other ethnic group",
+    "Other White" = "Any other White background")) |>
+  mutate(order = c(1:23, 28, 36, 24, 29, 35, 25, 40, 30, 34, 27, 39, 26, 37, 38, 32, 31, 33)) |> 
+  arrange(order) |>
+  select(-order)
+
+gt_demographics(df_demographics_table)
+```
+**Table 1**. Cohort description for all patients with at least one Pharmacy First consultation code during 12 months following the services’ launch date 31 January 2024.
 
 ## Count of Pharmacy First Consultations
 
@@ -504,11 +531,80 @@ plot_pf_med_condition_linkage
 
 ### Pharmacy First Clinical Pathways
 
-- Add existing breakdown figures for: Age band, Ethnicity, IMD (or table to start with)
+```{r, message=FALSE, warning=FALSE}
+df_clinical_pathways_by_sex <- population_table %>%
+  filter(table == "tab_pf_pathways_by_sex") %>%
+  pivot_wider(names_from = metric, values_from = value) %>%
+  select(-table) %>%
+  pivot_wider(names_from = category, values_from = numerator) %>%
+  group_by(subcategory) %>%
+  mutate(total = female + male) %>%
+  ungroup() %>%
+  mutate(
+    pct = total / sum(total),
+    subcategory = factor(subcategory,
+      levels = c(
+        "otitismedia",
+        "impetigo",
+        "insectbite",
+        "shingles",
+        "sinusitis",
+        "sorethroat",
+        "uti"
+      ),
+      labels = c(
+        "Acute otitis media",
+        "Impetigo",
+        "Infected insect bites",
+        "Shingles",
+        "Sinusitis",
+        "Sore throat",
+        "Uncomplicated UTI"
+      )
+    )
+  )
+
+gt_pathways(df_clinical_pathways_by_sex)
+```
 
 ### Pharmacy First Medications
 
-- Add existing table from paper once updated with released outputs (or table to start with)
+```{r, message=FALSE, warning=FALSE}
+df_consultation_med_counts <- read_csv(
+  here("released_output", "measures", "pf_medications_measures_tidy.csv"),
+  col_types = cols(dmd_code = col_character())
+)
+vmp_lookup <- read_csv(
+  here("lib", "reference", "vmp_vtm_lookup.csv"),
+  col_types = cols(id = col_character())
+) %>%
+  rename(code = id)
+
+df_pf_med_counts <- df_consultation_med_counts |>
+  select(numerator, code = dmd_code, pharmacy_first_med) |>
+  left_join(vmp_lookup, by = "code") |>
+  filter(numerator > 0) |>
+  select(-code) %>%
+  group_by(pharmacy_first_med, vmp_nm) |>
+  summarise(count = sum(numerator, na.rm = TRUE)) |>
+  filter(!is.na(vmp_nm)) %>%
+  ungroup() |>
+  group_by(pharmacy_first_med) |>
+  mutate(ratio_by_group = count / sum(count, na.na.rm = TRUE)) |>
+  slice_max(order_by = ratio_by_group, n = 10) |>
+  ungroup()
+
+df_pf_and_non_pf_med_counts <- df_pf_med_counts %>%
+  arrange(!pharmacy_first_med) %>%
+  mutate(pharmacy_first_med = factor(pharmacy_first_med,
+    levels = c(FALSE, TRUE),
+    labels = c(("Medication not included in codelists"), "Medication included in codelists")
+  )) %>%
+  group_by(pharmacy_first_med)
+
+gt_top_meds(df_pf_and_non_pf_med_counts)
+```
+**Table 3**. Top ten medications linked to Pharmacy First consultations during the first 12 months following the service's launch date on 31 January 2024.
 
 ## Comparison with NHS BSA data
 
@@ -626,6 +722,43 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
 pf_validatio_consultation_plot
 ```
 
+```{r, message=FALSE, warning=FALSE}
+# This commented out code contains code to generate a map of England, which presents cohort counts by region
+# It is just an idea, so the code is not efficient (just wanted to see if it was possible), but if this is a good idea, happy to work on it
+# library(sf)
+# library(RColorBrewer)
+
+# england_map <- st_read(here("lib","map", "RGN_DEC_24_EN_BUC.shp"))
+# print(unique(england_map$RGN24NM))
+
+# regions_table <- df_demographics_table[df_demographics_table$category=="Region", ]
+# regions_table$subcategory <- as.character(regions_table$subcategory)
+# regions_table$subcategory[regions_table$subcategory == "East"] <- "East of England"
+# regions_table <- regions_table %>%
+#  filter(subcategory != "Missing") %>%
+#  rename(RGN24NM = subcategory)
+
+# england_regions <- england_map %>%
+#   left_join(regions_table, by = "RGN24NM")
+
+# region_map <- ggplot(england_regions) +
+#   geom_sf(aes(fill = pct*100), color = "black") +
+#   geom_label(aes(label = RGN24NM, geometry = geometry),
+#   data = england_regions,
+#   stat = "sf_coordinates",
+#   size = 2, color = "black") +
+#   scale_fill_distiller(palette = "Blues", direction = 1) +
+#   theme_minimal() +
+#   theme(panel.grid.major = element_blank(),
+#       panel.grid.minor = element_blank(),
+#       axis.text = element_blank(),
+#       axis.ticks = element_blank(),
+#       axis.title = element_blank()) +
+#   labs(title = "Pharmacy First Consultation Code Usage by Region",
+#        fill = "% of Study Cohort")
+
+# region_map
+```
 
 ### Pharmacy First Medications
 
