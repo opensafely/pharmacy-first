@@ -75,7 +75,11 @@ df_pf_med_counts <- df_consultation_med_counts |>
   select(numerator, code = dmd_code, pharmacy_first_med) |>
   left_join(combined_med_code_desc, by = "code") |>
   filter(numerator > 0) |>
-  select(-code) %>%
+  select(-code) %>% 
+  mutate(vmp_nm = case_when(
+    is.na(vmp_nm) ~ term, 
+    TRUE ~ vmp_nm
+   )) %>% 
   group_by(pharmacy_first_med, vmp_nm) |>
   summarise(count = sum(numerator, na.rm = TRUE)) |>
   filter(!is.na(vmp_nm)) %>%
