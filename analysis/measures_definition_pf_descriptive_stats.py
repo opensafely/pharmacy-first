@@ -65,7 +65,7 @@ selected_pf_id_non_pf_events = (
     )
 )
 
-has_pf_id_condition = selected_pf_id_conditions.exists_for_patient()
+has_pf_id_condition = selected_pf_id_conditions.consultation_id.count_distinct_for_patient()
 # Counts all PF conditions per month
 pf_condition_count = selected_pf_id_conditions.count_for_patient()
 # Counts all other clinical events linked to PF ID per month
@@ -80,7 +80,7 @@ selected_pf_id_non_pf_medications = selected_medications.where(
     selected_medications.consultation_id.is_in(pf_ids)
 ).except_where(selected_medications.dmd_code.is_in(pf_med_codelist))
 
-has_pf_id_med = selected_pf_id_medications.exists_for_patient()
+has_pf_id_med = selected_pf_id_medications.consultation_id.count_distinct_for_patient()
 # Counts all PF medications per month
 pf_med_count = selected_pf_id_medications.count_for_patient()
 # Counts all other medications linked to PF ID per month
