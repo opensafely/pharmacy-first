@@ -9,6 +9,22 @@ library(patchwork)
 
 ```{r echo=FALSE, message=FALSE}
 source(here("lib", "functions", "create_tables.R"))
+
+# Load functions
+source(here("lib", "functions", "tidy_measures.R"))
+source(here("lib", "functions", "plot_measures.R"))
+
+# Load validation data:
+# - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
+# - df_bsa_consultation_validation: date, consultation_type, source, count_method, count
+source(here("lib", "functions", "load_validation_data.R"))
+
+# Load opensafely ouputs:
+# - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
+# - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
+# - df_pfmed: measure, interval_start, interval_end, ratio, numerator, denominator, dmd_code
+# - df_condition_provider: measure, interval_start, interval_end, ratio, numerator, denominator, pf_status, imd
+source(here("lib", "functions", "load_opensafely_outputs.R"))
 ```
 
 ```{r echo=FALSE, message=FALSE}
@@ -104,13 +120,56 @@ gtsave(
   here("released_output", "results", "tables", "tab_pf_med_counts.png"),
 )
 ```
+
+# Table 2
+
 ```{r echo=FALSE}
 # Used this code to calculate table 2 total counts and percentages
 population_csv <- read_csv(here("released_output", "population", "pf_tables.csv"))
-clinical_pathways_table_by_sex <- population_csv %>%
+
+clinical_pathways_table <- population_csv %>%
   filter(table == "tab_pf_pathways_by_sex") %>%
   group_by(subcategory) %>%
   reframe(total = sum(value)) %>%
   ungroup() %>%
-  mutate(pct = total / sum(total) * 100)
+  mutate(pct = total / sum(total) * 100) %>%
+  mutate(
+    subcategory = as.character(factor(
+      subcategory,
+      levels = c(
+        "otitismedia",
+        "sorethroat",
+        "sinusitis",
+        "shingles",
+        "impetigo",
+        "insectbite",
+        "uti"
+      ),
+      labels = c(
+        "Acute Otitis Media",
+        "Acute Pharyngitis",
+        "Acute Sinusitis",
+        "Herpes Zoster",
+        "Impetigo",
+        "Infected Insect Bite",
+        "UTI"
+      )
+    ))
+  )
+
+tab_bsa_condition_validation <- df_bsa_validation |>
+  select(data_source, data_desc, count_group, count_method, count) |>
+  filter(count_method == "count_100pct", data_desc == "pf_consultation") |>
+  group_by(count_group) |>
+  summarise(total = sum(count)) |>
+  ungroup() |>
+  mutate(pct = total / sum(total) * 100) |>
+  rename(subcategory = count_group)
+
+clinical_pathways_table |>
+  left_join(
+    tab_bsa_condition_validation,
+    suffix = c("_ostpp", "_nhsbsa"),
+    by = "subcategory") |>
+  arrange(subcategory)
 ```
