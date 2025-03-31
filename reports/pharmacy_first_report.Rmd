@@ -67,44 +67,60 @@ df_pf_consultations_total <- df_pf_consultations |>
 # Background
 
 The COVID-19 pandemic has had a significant impact on the access to and provision of NHS healthcare services.
-In response to this, NHS England announced a recovery plan to "*make it easier and quicker for patients to get the help they need from primary care*"<!-- [@NHSEngland2023a] -->.
+In response to this, NHS England announced a recovery plan to "*make it easier and quicker for patients to get the help they need from 
+primary care*"<!-- [@NHSEngland2023a] -->.
 
-A key element of the recovery plan is the Pharmacy First scheme<!-- [@NHSEngland2024] -->, launched on 31st January 2024 which replaces and expands upon the Community Pharmacist Consultation Service (CPCS), which ran from 29th Oct 2019<!-- [@NHSEngland2024a] -->.
-CPCS incorporated two services - Urgent Repeat Medicine Supply and NHS Referrals for Minor Illness - these services continue under Pharmacy First but there is also a new clinical pathways service<!-- [@NHSEngland2023] -->.
-This aspect allows community pharmacists to follow specified clinical pathways to assess for and manage seven common conditions (Sinusitis, Sore throat, Earache, Infected insect bite, Impetigo, Shingles, and Uncomplicated urinary tract infections in women), including supplying NHS funded prescription only medications where appropriate<!--  [@NHSEngland2024] -->. 
+A key element of the recovery plan is the Pharmacy First scheme, which launched on 31st January 2024<!-- [@NHSEngland2024] -->.
+This includes a new clinical pathways service<!-- [@NHSEngland2023] -->, which allows community pharmacists to follow specified
+clinical pathways to assess for and manage seven common conditions (Sinusitis, Sore throat, Earache, Infected insect bite, 
+Impetigo, Shingles, and Uncomplicated urinary tract infections in women), including supplying NHS funded prescription only 
+medications where appropriate<!--  [@NHSEngland2024] -->. 
 
-As part of efforts to improve and simplify information sharing between general practice and community pharmacy GP Connect: Update Record has been created, allowing registered community pharmacy professionals to send summaries in a structured format from Pharmacy First consultations, using pre-specified SNOMED CT codes, directly into general practice workflow<!--  [@NHSEngland2023b] -->.
-However, there has been a gradual roll out of Update Record and it has also been the target of GP collective action adding some uncertainty about how reliably data has flowed into general practice records following the launch of the Pharmacy First service, with reliance on manual transfer and recording of consultation summaries where Update Record was not available<!--  [@Colivicchi2024; @CommunityPharmacyEngland2024] -->.
+As part of efforts to improve and simplify information sharing between general practice and community pharmacy 
+GP Connect: Update Record has been created, allowing registered community pharmacy professionals to send summaries in a 
+structured format from Pharmacy First consultations, using pre-specified SNOMED CT codes, directly into general practice 
+workflow<!--  [@NHSEngland2023b] -->.
+However, the roll out of Update Record has been gradual due to the involvement of multiple community pharmacy and GP system 
+suppliers, with each being ready at different stages<!--  [@Colivicchi2024; @CommunityPharmacyEngland2024] -->.
 
 The aims of this report are to:
 
-1. describe the clinical data associated with Pharmacy First Clinical Pathways in GP records including demographic and regional subgroup descriptions of patients
-2. describe the clinical conditions and medications being treated/supplied under Pharmacy First Clinical Pathways and recorded in GP records,
-3. compare volumes of Pharmacy First Clinical Pathways activity taking place in GP records accessible via OpenSAFELY-TPP against openly available sources of Pharmacy First Clinical Pathways data,
+1. describe the patient population using the Pharmacy First Clinical Pathway service, 
+including demographic and regional subgroups
+2. describe the clinical conditions and medications being treated/supplied under Pharmacy First Clinical Pathways and 
+recorded in GP records
+3. compare Pharmacy First activity in GP records accessible via OpenSAFELY-TPP with publicly available data
 
 # Methods
 
 ## Data Sources
 ### OpenSAFELY-TPP
 
-Primary care records managed by the GP software provider TPP were accessed through OpenSAFELY OpenSAFELY (https://www.opensafely.org/), a secure analytics platform for EHRs built during the COVID-19 pandemic.
+Primary care records managed by the GP software provider TPP were accessed through OpenSAFELY (https://www.opensafely.org/), a secure analytics 
+platform for EHRs built during the COVID-19 pandemic.
 OpenSAFELY operates within the data centres of EHR providers, allowing for analysis without transferring raw data outside the secure environment.
 Data were accessed from OpenSAFELY-TPP, which covers approximately 40% of the English population, and includes pseudonymised, structured data 
-The data used comprised coded diagnoses, medications and physiological parameters. Data from individuals who opted out of NHS data sharing with their GP surgery (Type 1 Opt-out) were excluded and free-text data were also not included.
+The data used comprised coded diagnoses, medications and physiological parameters. Data from individuals who opted out of NHS data sharing with their 
+GP surgery (Type 1 Opt-out) were excluded and free-text data were also not included.
 
 ### NHS BSA comparison data
-To explore the accuracy and completeness of the data used in this study, we compared Pharmacy First consultation counts and trends observed in OpenSAFELY-TPP against equivalent metrics reported by NHS Business Services Authority (NHS BSA), which provides publically available records of dispensing activity and service usage.
-We used the Pharmacy and appliance contractor dispensing dataset which includes monthly counts of Pharmacy First Clinical Pathways<!--  [@NHSBusinessServiceAuthority2025] -->.
+To explore the accuracy and completeness of the data used in this study, we compared Pharmacy First consultation counts and trends observed in 
+OpenSAFELY-TPP against equivalent metrics reported by NHS Business Services Authority (NHS BSA), which provides publically available records of 
+dispensing activity and service usage.
+We used the Pharmacy and appliance contractor dispensing dataset which includes monthly counts of Pharmacy First Clinical 
+Pathways<!--  [@NHSBusinessServiceAuthority2025] -->.
 
 ## Study Measures
 ### Pharmacy First consultations
 
 The identification of Pharmacy First consultations relied on the presence of relevant SNOMED CT codes recorded in GP records.
-Using the GP Connect: Update Record technical documentation<!--  [@NHSEngland2024b] --> and OpenCodelists (https://www.opencodelists.org/), we identified three codes associated with Pharmacy First consultations (see Table A1 in Supplementary Materials).
+Using the GP Connect: Update Record technical documentation<!--  [@NHSEngland2024b] --> and OpenCodelists (https://www.opencodelists.org/), 
+we identified three codes associated with Pharmacy First consultations (see Table A1 in Supplementary Materials).
 
 ### Pharmacy First clinical conditions
 
-The Pharmacy First service includes the supply of medication for the following seven clinical conditions: acute otitis media, impetigo, infected insect bites, shingles, sinusitis, sore throat, and uncomplicated urinary tract infections<!--  [@NHSEngland2024] -->.
+The Pharmacy First service includes the supply of medication for the following seven clinical conditions: acute otitis media, impetigo, 
+infected insect bites, shingles, sinusitis, sore throat, and uncomplicated urinary tract infections<!--  [@NHSEngland2024] -->.
 To identify these clinical conditions within Pharmacy First consultations, we implemented the clinical pathways codelist.
 This codelist included a single code for each condition, with each code being specifically used for GP Connect: Update Record. 
 Each clinical condition has its own specific inclusion and exclusion criteria<!--  [@NHSEngland2023c] -->.
@@ -116,7 +132,8 @@ We created codelists for each of the seven clinical conditions based on the medi
 
 ## Software and Reproducibility
 Data management was performed using Python v3.9.1 and R v4.0.5.
-Code for data management and analysis, as well as codelists, are available for review and reuse under the MIT open license at https://github.com/opensafely/pharmacy-first/.
+Code for data management and analysis, as well as codelists, are available for review and reuse under the MIT open license 
+at https://github.com/opensafely/pharmacy-first/.
 
 # Results
 
@@ -151,7 +168,8 @@ if (nrow(population_table) < 136) {
 gt_demographics(df_demographics_table)
 }
 ```
-**Table 1**. Cohort description for all patients with at least one Pharmacy First consultation between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
+**Table 1**. Cohort description for all patients with at least one Pharmacy First consultation between `r min(df_measures$interval_start)` 
+and `r max(df_measures$interval_end)`.
 
 ## Count of Pharmacy First Consultations
 
@@ -478,19 +496,15 @@ df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
   mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
   arrange(desc(measure), .by_group = TRUE) |>
   mutate(
-    numerator_exclusive = case_when(
-      measure == "Both" ~ numerator,
-      measure %in% c("Clinical condition", "Medication") ~ numerator - numerator[measure == "Both"]
-    ),
-    ratio_exclusive = numerator_exclusive / pf_consultation_total,
-    cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
+    ratio_pct = numerator / pf_consultation_total,
+    cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_pct), TRUE ~ NA)
   )
 
 plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   ggplot(
     aes(
       x = interval_start,
-      y = ratio_exclusive,
+      y = ratio_pct,
       fill = measure
     )
   ) +
@@ -502,7 +516,7 @@ plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   geom_label(
     aes(
       y = cumulative_ratio_exclusive,
-      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
+      label = ifelse(is.na(ratio_pct), "", scales::percent(ratio_pct, accuracy = .1)),
     ),
     vjust = -0.05,
     size = 3.5,

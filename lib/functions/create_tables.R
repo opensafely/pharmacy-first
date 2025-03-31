@@ -142,10 +142,6 @@ gt_top_meds <- function(data) {
       groupname_col = "pharmacy_first_med",
       rowname_col = "vmp_nm"
     ) %>%
-    tab_header(
-      title = "Top 10 medications linked to Pharmacy First consultations",
-      subtitle = "Timeframe: 1st Feb 2024 to 31st January 2025"
-    ) %>%
     cols_label(
       vmp_nm = md("**Medication**"),
       count = md("**Count**"),
@@ -166,6 +162,10 @@ gt_top_meds <- function(data) {
     tab_stub_indent(
       rows = everything(),
       indent = 3
+    ) %>% 
+    tab_options(
+      table.font.size = 14, 
+      data_row.padding = px(5)
     )
 }
 
@@ -199,6 +199,10 @@ gt_demographics <- function(data, title = NULL, subtitle = NULL) {
     tab_stub_indent(
       rows = everything(),
       indent = 3
+    ) %>% 
+    tab_options(
+      table.font.size = 14, 
+      data_row.padding = px(5)
     )
 }
 
@@ -242,5 +246,10 @@ gt_pathways <- function(data, title = NULL, subtitle = NULL) {
     label = "Sex",
     columns = c(female, male)
   ) %>%
-  cols_align(align = "left", columns = subcategory)
+  cols_align(align = "left", columns = subcategory
+  ) %>%  
+  tab_options(
+    table.font.size = 14, 
+    data_row.padding = px(5)
+    )
 }
