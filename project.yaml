@@ -1,11 +1,10 @@
-version: '3.0'
+version: "3.0"
 
 # Ignore this`expectation` block. It is required but not used, and will be removed in future versions.
 expectations:
   population_size: 1000
 
 actions:
-
   generate_dataset_definition_tables:
     run: >
       ehrql:v1
@@ -55,7 +54,7 @@ actions:
     needs: [generate_pf_med_counts_measures]
     outputs:
       moderately_sensitive:
-        measure_pf_meds: output/measures/pf_medications_measures_tidy.csv 
+        measure_pf_meds: output/measures/pf_medications_measures_tidy.csv
 
   generate_pf_opensafely_report:
     run: >
@@ -65,13 +64,12 @@ actions:
         output_dir = "/workspace/output/report"
       )'
     needs:
-    - generate_dataset_definition_tables
-    - create_tables
-    - generate_pf_statistics_measures
-    - generate_pf_breakdown_measures
-    - generate_pf_med_counts_measures
-    - tidy_med_measures
+      - generate_dataset_definition_tables
+      - create_tables
+      - generate_pf_statistics_measures
+      - generate_pf_breakdown_measures
+      - generate_pf_med_counts_measures
+      - tidy_med_measures
     outputs:
       moderately_sensitive:
-        html: output/report/pharmacy_first_report.html  
-
+        html: output/report/pharmacy_first_report.html

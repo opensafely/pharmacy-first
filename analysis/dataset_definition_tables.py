@@ -32,7 +32,8 @@ pf_consultation_events = select_events(
     selected_events,
     codelist=codelists.pf_consultation_events_dict["pf_consultation_services_combined"],
 )
-has_pf_consultation = pf_consultation_events.exists_for_patient()
+
+dataset.has_pf_consultation = pf_consultation_events.exists_for_patient()
 
 pf_ids = pf_consultation_events.consultation_id
 selected_pf_id_events = selected_events.where(
@@ -85,5 +86,4 @@ dataset.impetigo_numerator = has_event(
 dataset.define_population(
     registration.exists_for_patient()
     & patients.sex.is_in(["male", "female"])
-    & has_pf_consultation
 )
