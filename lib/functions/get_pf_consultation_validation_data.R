@@ -5,6 +5,29 @@ library(dplyr)
 library(lubridate)
 library(tidyverse)
 library(readr)
+library(jsonlite)
+
+#' Get ICB code to region lookup data
+get_icb_region_lookup <- function() {
+  query_url <- "https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/SICBL22_ICB22_NHSER22_EN_LU/FeatureServer/0/query"
+
+  query_params <- list(
+    where = "1=1",
+    outFields = "NHSER22NM,ICB22CDH",
+    outSR = "4326",
+    f = "json"
+  )
+
+  response <- GET(query_url, query = query_params)
+
+  json_text <- content(response, as = "text", encoding = "UTF-8")
+
+  fromJSON(json_text, flatten = TRUE)$features |>
+    bind_rows() |>
+    as_tibble() |>
+    rename(region = attributes.NHSER22NM, icb_code = attributes.ICB22CDH) |>
+    distinct()
+}
 
 #' Extract dates from dispensing data URL
 #'
@@ -132,5 +155,42 @@ df_dispensing_data_summary <- df_dispensing_data |>
   ) |>
   mutate(consultation_type = str_replace(consultation_type, "^n_pf_consultation_", ""))
 
-range(df_dispensing_data_summary$date)
 write_csv(df_dispensing_data_summary, here("lib", "validation", "data", "pf_consultation_validation_data.csv"))
+
+# Get counts by region
+icb_region_lookup <- get_icb_region_lookup()
+
+df_dispensing_data_by_region <- df_dispensing_data |>
+  left_join(icb_region_lookup, by = "icb_code")
+
+df_dispensing_data_summary_by_region <- df_dispensing_data_by_region |>
+  group_by(date, region) |>
+  summarise(
+    n_pf_consultation_acute_otitis_media = sum(n_pf_consultation_acute_otitis_media, na.rm = TRUE),
+    n_pf_consultation_acute_sore_throat = sum(n_pf_consultation_acute_sore_throat, na.rm = TRUE),
+    n_pf_consultation_impetigo = sum(n_pf_consultation_impetigo, na.rm = TRUE),
+    n_pf_consultation_infected_insect_bites = sum(n_pf_consultation_infected_insect_bites, na.rm = TRUE),
+    n_pf_consultation_shingles = sum(n_pf_consultation_shingles, na.rm = TRUE),
+    n_pf_consultation_sinusitis = sum(n_pf_consultation_sinusitis, na.rm = TRUE),
+    n_pf_consultation_uncomplicated_uti = sum(n_pf_consultation_uncomplicated_uti, na.rm = TRUE),
+    # n_pf_urgent_medicine_supply_consultations = sum(n_pf_urgent_medicine_supply_consultations, na.rm = TRUE),
+    # n_pf_minor_illness_referral_consultations = sum(n_pf_minor_illness_referral_consultations, na.rm = TRUE)
+  ) |>
+  pivot_longer(
+    cols = c(
+      n_pf_consultation_acute_otitis_media,
+      n_pf_consultation_acute_sore_throat,
+      n_pf_consultation_impetigo,
+      n_pf_consultation_infected_insect_bites,
+      n_pf_consultation_shingles,
+      n_pf_consultation_sinusitis,
+      n_pf_consultation_uncomplicated_uti,
+      # n_pf_urgent_medicine_supply_consultations,
+      # n_pf_minor_illness_referral_consultations
+    ),
+    names_to = "consultation_type",
+    values_to = "count"
+  ) |>
+  mutate(consultation_type = str_replace(consultation_type, "^n_pf_consultation_", ""))
+  
+write_csv(df_dispensing_data_summary_by_region, here("lib", "validation", "data", "pf_consultation_validation_data_by_region.csv"))
