@@ -1,15 +1,29 @@
-patient_id,sex,age,age_band,region,imd,ethnicity,uti_numerator,sinusitis_numerator,insectbite_numerator,otitismedia_numerator,sorethroat_numerator,shingles_numerator,impetigo_numerator
-1640,female,5,0-19,East,Missing,Other White,T,T,T,T,T,T,T
-3104,female,19,0-19,East Midlands,Missing,White Irish,T,T,T,T,T,T,T
-3599,male,7,0-19,North East,Missing,Other White,T,T,T,T,T,T,T
-6979,female,1,0-19,,2,White British,T,T,T,T,T,T,T
-7344,female,50,40-59,London,Missing,Other Mixed,T,T,T,T,T,T,T
-8443,male,2,0-19,South West,Missing,Chinese,T,T,T,T,T,T,T
-8510,female,40,40-59,,Missing,Pakistani,T,T,T,T,T,T,T
-9854,female,15,0-19,East,Missing,White and Caribbean,T,T,T,T,T,T,T
-10276,male,0,0-19,Yorkshire and The Humber,Missing,Other White,T,T,T,T,T,T,T
-11568,female,0,0-19,South West,Missing,White and African,T,T,T,T,T,T,T
-13091,male,28,20-39,West Midlands,Missing,Indian,T,T,T,T,T,T,T
-13632,male,33,20-39,,Missing,Missing,T,T,T,T,T,T,T
-17010,female,0,0-19,Yorkshire and The Humber,3,Other White,T,T,T,T,T,T,T
-17858,male,4,0-19,North East,Missing,White and African,T,T,T,T,T,T,T
+patient_id,has_pf_consultation,sex,age,age_band,region,imd,ethnicity,uti_numerator,sinusitis_numerator,insectbite_numerator,otitismedia_numerator,sorethroat_numerator,shingles_numerator,impetigo_numerator
+1640,T,female,5,0-19,East,Missing,Other White,T,T,T,T,T,T,T
+3104,T,female,19,0-19,East Midlands,Missing,White Irish,T,T,T,T,T,T,T
+3599,T,male,7,0-19,North East,Missing,Other White,T,T,T,T,T,T,T
+6979,T,female,1,0-19,,2,White British,T,T,T,T,T,T,T
+7344,T,female,50,40-59,London,Missing,Other Mixed,T,T,T,T,T,T,T
+8443,T,male,2,0-19,South West,Missing,Chinese,T,T,T,T,T,T,T
+8510,T,female,40,40-59,,Missing,Pakistani,T,T,T,T,T,T,T
+9854,T,female,15,0-19,East,Missing,White and Caribbean,T,T,T,T,T,T,T
+10276,T,male,0,0-19,Yorkshire and The Humber,Missing,Other White,T,T,T,T,T,T,T
+11568,T,female,0,0-19,South West,Missing,White and African,T,T,T,T,T,T,T
+13091,T,male,28,20-39,West Midlands,Missing,Indian,T,T,T,T,T,T,T
+13632,T,male,33,20-39,,Missing,Missing,T,T,T,T,T,T,T
+17010,T,female,0,0-19,Yorkshire and The Humber,3,Other White,T,T,T,T,T,T,T
+17858,T,male,4,0-19,North East,Missing,White and African,T,T,T,T,T,T,T
+11640,F,female,5,0-19,East,Missing,Other White,T,T,T,T,T,T,T
+13104,F,female,19,0-19,East Midlands,Missing,White Irish,T,T,T,T,T,T,T
+13599,F,male,7,0-19,North East,Missing,Other White,T,T,T,T,T,T,T
+16979,F,female,1,0-19,,2,White British,T,T,T,T,T,T,T
+17344,F,female,50,40-59,London,Missing,Other Mixed,T,T,T,T,T,T,T
+18443,F,male,2,0-19,South West,Missing,Chinese,T,T,T,T,T,T,T
+18510,F,female,40,40-59,,Missing,Pakistani,T,T,T,T,T,T,T
+19854,F,female,15,0-19,East,Missing,White and Caribbean,T,T,T,T,T,T,T
+110276,F,male,0,0-19,Yorkshire and The Humber,Missing,Other White,T,T,T,T,T,T,T
+111568,F,female,0,0-19,South West,Missing,White and African,T,T,T,T,T,T,T
+113091,F,male,28,20-39,West Midlands,Missing,Indian,T,T,T,T,T,T,T
+113632,F,male,33,20-39,,Missing,Missing,T,T,T,T,T,T,T
+117010,F,female,0,0-19,Yorkshire and The Humber,3,Other White,T,T,T,T,T,T,T
+117858,F,male,4,0-19,North East,Missing,White and African,T,T,T,T,T,T,T
