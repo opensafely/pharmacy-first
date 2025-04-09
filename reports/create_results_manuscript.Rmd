@@ -99,10 +99,17 @@ df_pf_consultations <- df_measures |>
       labels = c("Total", "Breakdown")
     )
   ) |>
-  filter(data_desc == "Breakdown") %>% 
   select(measure, interval_start, data_desc, value)
 
-plot_pf_consultations <- df_pf_consultations |>
+df_pf_consultations_breakdown <- df_pf_consultations %>% 
+  filter(data_desc == "Breakdown")
+
+df_pf_consultation_total <- df_pf_consultations %>% 
+  filter(data_desc == "Total") %>% 
+  distinct() %>% 
+  select(-measure)
+
+plot_pf_consultations <- df_pf_consultations_breakdown |>
   ggplot(
     aes(
       x = interval_start,
@@ -199,8 +206,10 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
         "Both"
       )
     )
-  ) %>%
-  left_join(df_pf_consultations_total,
+  ) 
+  
+  df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  left_join(df_pf_consultation_total,
     by = c("interval_start")
   )
 
@@ -210,11 +219,7 @@ df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
   mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
   arrange(desc(measure), .by_group = TRUE) |>
   mutate(
-    numerator_exclusive = case_when(
-      measure == "Both" ~ numerator,
-      measure %in% c("Clinical condition", "Medication") ~ numerator - numerator[measure == "Both"]
-    ),
-    ratio_exclusive = numerator_exclusive / pf_consultation_total,
+    ratio_exclusive = numerator / value,
     cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
   )
 
@@ -243,6 +248,7 @@ fig_pf_med_condition_linkage <- df_pf_descriptive_stats |>
     fill = "white"
   ) +
   scale_fill_viridis_d() +
+  guides(fill = guide_legend(reverse = TRUE)) +
   scale_y_continuous(
     limits = c(0, .5),
     labels = scales::percent
