@@ -341,9 +341,52 @@ colour_group_1 <- paletteer_c("viridis::inferno", n = 10)[6]
 # Group 1: #1B0C42FF
 colour_group_2 <- paletteer_c("viridis::inferno", n = 10)[2]
 
+vline_dates <- c(
+  as.Date("2024-03-01"),
+  as.Date("2024-05-01"),
+  as.Date("2024-08-01"),
+  as.Date("2024-09-01"),
+  as.Date("2025-01-01")
+)
+
+get_mid_dates <- function(dates) {
+  dates <- sort(as_date(dates))
+  as_date(map2_dbl(dates[-length(dates)], dates[-1], ~ (as.numeric(.x) + as.numeric(.y)) / 2))
+}
+
+vline_label_xintercept <- get_mid_dates(c(as.Date("2024-02-01"), vline_dates))
+
+vline_labels <- c(
+  "Threshold: 1",
+  "Threshold: 5",
+  "Threshold: 10",
+  "Threshold: 15",
+  "Threshold: 20"
+)
+
+y_max <- max(
+  df_pf_consultation_validatio_plot$nhs_bsa_count_100pct,
+  df_pf_consultation_validatio_plot$opensafely_opensafely_tpp, na.rm = TRUE
+)
 # Create consultation validation plot
 pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
   ggplot(aes(x = date)) +
+  geom_vline(
+    xintercept = vline_dates,
+    linetype = "dotted",
+    colour = "gray70",
+    size = 0.3
+  ) +
+  annotate(
+    "text",
+    x = vline_label_xintercept,
+    y = rep(y_max * 1.05, length(vline_dates)),  # adjust multiplier as needed
+    label = vline_labels,
+    angle = 0,
+    size = 2,
+    hjust = 0.5,
+    vjust = 0
+  ) +
   geom_point(
     aes(
       y = nhs_bsa_count_100pct,
@@ -376,7 +419,7 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
   geom_label(
     aes(
       y = opensafely_opensafely_tpp,
-      label = scales::percent(ratio, accuracy = .1),
+      label = scales::percent(ratio, accuracy = .1)
     ),
     colour = colour_group_2,
     vjust = -.5,
@@ -417,6 +460,8 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
     legend.position = "bottom",
     text = element_text(size = 14)
   )
+
+pf_validatio_consultation_plot
 
 ggsave(
   filename = here("released_output", "results", "manuscript", "fig3_pf_os_nhsbsa_comparison.png"),
