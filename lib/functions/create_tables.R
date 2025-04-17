@@ -181,15 +181,25 @@ gt_demographics <- function(data, title = NULL, subtitle = NULL) {
     ) %>%
     cols_label(
       subcategory = md("**Medication**"),
-      n = md("**Count**"),
-      pct = md("**%**")
+      pharmacy_first_n = md("**Count**"),
+      pharmacy_first_pct = md("**%**"),
+      tpp_n = md("**Count**"),
+      tpp_pct = md("**%**")
+    ) %>%
+    tab_spanner(
+      label = md("**Pharmacy First**"),
+      columns = c(pharmacy_first_n, pharmacy_first_pct)
+    ) %>%
+    tab_spanner(
+      label = md("**OpenSAFELY-TPP**"),
+      columns = c(tpp_n, tpp_pct)
     ) %>%
     fmt_number(
-      columns = n,
+      columns = c(pharmacy_first_n, tpp_n),
       decimals = 0
     ) %>%
     fmt_percent(
-      columns = pct,
+      columns = c(pharmacy_first_pct, tpp_pct),
       decimals = 1
     ) %>%
     tab_style(
