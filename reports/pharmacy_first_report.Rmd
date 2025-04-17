@@ -539,6 +539,9 @@ plot_pf_med_condition_linkage
 
 ```{r, message=FALSE, warning=FALSE}
 
+population_table <- population_table %>%
+  filter(population == "pharmacy_first")
+
 if (nrow(population_table) < 136) {
   print("Table cannot be generated with current dummy data")
 } else if (nrow(population_table) == 136) {
@@ -572,10 +575,11 @@ df_clinical_pathways_by_sex <- population_table %>%
         "Uncomplicated UTI"
       )
     )
-  )
+  ) %>% 
+  arrange(subcategory) %>% 
+  select(-population)
 
 gt_pathways(df_clinical_pathways_by_sex)
-
 }
 ```
 
