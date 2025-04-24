@@ -123,13 +123,15 @@ Code for data management and analysis, as well as codelists, are available for r
 ## Cohort description
 
 ```{r, message=FALSE, warning=FALSE}
+population_table_demo <- population_table %>% 
+  pivot_wider(names_from = "population", values_from = "value")
 
-if (nrow(population_table) < 136) {
+if (nrow(population_table_demo) < 136) {
   print("Table 1 cannot be generated with current dummy data")
-} else if (nrow(population_table) == 136) {
-  df_demographics_table <- population_table %>%
+} else if (nrow(population_table_demo) == 136) {
+  df_demographics_table <- population_table_demo %>%
   filter(table == "tab_demographics") %>%
-  pivot_wider(names_from = metric, values_from = value) %>%
+  pivot_wider(names_from = metric, values_from = c(pharmacy_first, tpp)) %>%
   select(-table) %>%
   mutate(category = factor(category,
     levels = c("sex", "age_band", "ethnicity", "imd", "region"),
@@ -150,6 +152,7 @@ if (nrow(population_table) < 136) {
 
 gt_demographics(df_demographics_table)
 }
+
 ```
 **Table 1**. Cohort description for all patients with at least one Pharmacy First consultation between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
 
@@ -536,6 +539,9 @@ plot_pf_med_condition_linkage
 
 ```{r, message=FALSE, warning=FALSE}
 
+population_table <- population_table %>%
+  filter(population == "pharmacy_first")
+
 if (nrow(population_table) < 136) {
   print("Table cannot be generated with current dummy data")
 } else if (nrow(population_table) == 136) {
@@ -569,10 +575,11 @@ df_clinical_pathways_by_sex <- population_table %>%
         "Uncomplicated UTI"
       )
     )
-  )
+  ) %>% 
+  arrange(subcategory) %>% 
+  select(-population)
 
 gt_pathways(df_clinical_pathways_by_sex)
-
 }
 ```
 
