@@ -23,6 +23,7 @@ library(paletteer)
 # Load functions
 source(here("lib", "functions", "tidy_measures.R"))
 source(here("lib", "functions", "plot_measures.R"))
+source(here("lib", "functions", "create_tables.R"))
 
 # Load validation data:
 # - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
@@ -38,6 +39,43 @@ source(here("lib", "functions", "load_opensafely_outputs.R"))
 ```
 
 # Results
+
+## Table 1
+
+```{r, message=FALSE, warning=FALSE}
+population_table_demo <- population_table %>% 
+  pivot_wider(names_from = "population", values_from = "value")
+
+if (nrow(population_table_demo) < 136) {
+  print("Table 1 cannot be generated with current dummy data")
+} else if (nrow(population_table_demo) == 136) {
+  df_demographics_table <- population_table_demo %>%
+  filter(table == "tab_demographics") %>%
+  pivot_wider(names_from = metric, values_from = c(pharmacy_first, tpp)) %>%
+  select(-table) %>%
+  mutate(category = factor(category,
+    levels = c("sex", "age_band", "ethnicity", "imd", "region"),
+    labels = c("Sex", "Age Band", "Ethnicity", "IMD", "Region")
+  )) %>%
+  mutate(
+    subcategory = recode(subcategory,
+    "female" = "Female",
+    "male" = "Male",
+    "Other South Asian" = "Any other Asian background",
+    "Other Black" = "Any other Black background",
+    "Other Mixed" = "Any other mixed background",
+    "All other ethnic groups" = "Any other ethnic group",
+    "Other White" = "Any other White background")) |>
+  mutate(order = c(1:23, 28, 36, 24, 29, 35, 25, 40, 30, 34, 27, 39, 26, 37, 38, 32, 31, 33)) |> 
+  arrange(order) |>
+  select(-order)
+
+demographics_table <- gt_demographics(df_demographics_table)
+}
+
+gt_demographics(df_demographics_table)
+gtsave(demographics_table, here("released_output", "results", "manuscript", "table1_demographics.png"))
+```
 
 ## OpenSAFELY total counts
 
@@ -153,7 +191,7 @@ plot_pf_consultations <- df_pf_consultations_breakdown |>
 plot_pf_consultations
 
 ggsave(
-  filename = here("released_output", "results", "manuscript", "fig1_pf_consultation_count_total.png"),
+  filename = here("released_output", "results", "manuscript", "fig1_pf_consultation_counts_by_consultation_code.png"),
   plot_pf_consultations,
   height = 3.5,
   width = 8
@@ -184,136 +222,21 @@ df_results_pf_total_counts %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
 ```
 
-## OpenSAFELY Linkage
+## Data comparison
 
 ### Figure 2
 
-```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.height = 4, fig.width = 8}
-# Create figure to show & of PF Med, Condition and both with linked PF consultations
-
-df_pf_descriptive_stats <- df_descriptive_stats %>%
-  filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
-  mutate(
-    measure = factor(measure,
-      levels = c(
-        "pfmed_with_pfid",
-        "pfcondition_with_pfid",
-        "pfmed_and_pfcondition_with_pfid"
-      ),
-      labels = c(
-        "Medication",
-        "Clinical condition",
-        "Both"
-      )
-    )
-  ) 
-  
-  df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
-  left_join(df_pf_consultation_total,
-    by = c("interval_start")
-  )
-
-df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
-  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
-  group_by(interval_start) %>%
-  mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
-  arrange(desc(measure), .by_group = TRUE) |>
-  mutate(
-    ratio_exclusive = numerator / value,
-    cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
-  )
-
-fig_pf_med_condition_linkage <- df_pf_descriptive_stats |>
-  ggplot(
-    aes(
-      x = interval_start,
-      y = ratio_exclusive,
-      fill = measure
-    )
-  ) +
-  geom_area(
-    alpha = 0.85,
-    linewidth = .5,
-    colour = "white"
-  ) +
-  geom_label(
-    aes(
-      y = cumulative_ratio_exclusive,
-      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
-    ),
-    vjust = -0.05,
-    size = 3.5,
-    show.legend = FALSE,
-    color = "black",
-    fill = "white"
-  ) +
-  scale_fill_viridis_d() +
-  guides(fill = guide_legend(reverse = TRUE)) +
-  scale_y_continuous(
-    limits = c(0, .5),
-    labels = scales::percent
-  ) +
-  labs(
-    x = NULL,
-    y = NULL,
-    fill = "Pharmacy First consultations linked to: "
-  ) +
-  scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
-  ) +
-  theme(
-    panel.background = element_blank(),
-    axis.line = element_line(colour = "grey50"),
-    legend.position = "bottom",
-    text = element_text(size = 14)
-  )
-
-fig_pf_med_condition_linkage
-
-ggsave(
-  filename = here("released_output", "results", "manuscript", "fig2_pf_med_condition.png"),
-  fig_pf_med_condition_linkage,
-  height = 4,
-  width = 8
-)
-```
-
-### Results for Figure 2 description
-
-```{r}
-df_results_pf_linkage <- df_pf_descriptive_stats %>%
-  select(measure, interval_start, ratio, numerator) %>%
-  group_by(interval_start) %>%
-  mutate(
-    ratio_total_linked = sum(ratio),
-    ratio_total_unlinked = 1 - sum(ratio)
-  ) %>%
-  mutate(
-    ratio_linked = percent(ratio, accuracy = 0.1),
-    ratio_total_linked = percent(ratio_total_linked, accuracy = 0.1),
-    ratio_total_unlinked = percent(ratio_total_unlinked, accuracy = 0.1),
-  )
-
-df_results_pf_linkage %>%
-  filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
-
-linkage_feb_to_dec <- df_results_pf_linkage %>%
-  group_by(interval_start) %>%
-  summarise(sum_ratio = sum(ratio)) %>%
-  mutate(
-    linkage_diff = sum_ratio - lag(sum_ratio),
-    pct_diff = percent(linkage_diff, accuracy = 0.1)
-  )
-```
-
-## Data comparison
-
-### Figure 3
-
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
-# Ideally I would like to load this at the top of this script
-# But this file uses datasets created further down so it easiest to load it here
+
+df_pf_consultations_total <- df_pf_consultations |>
+  filter(data_desc == "Total") |>
+  mutate(
+    data_desc = "Pharmacy First Consultation"
+  ) |>
+  select(interval_start, pf_consultation_total = value, data_desc) |>
+  unique()
+
+
 source(here("lib", "functions", "combine_os_nhsbsa_validation_data.R"))
 
 # Pharmacy First Consultations
@@ -418,310 +341,261 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
     text = element_text(size = 14)
   )
 
+pf_validatio_consultation_plot
+
 ggsave(
-  filename = here("released_output", "results", "manuscript", "fig3_pf_os_nhsbsa_comparison.png"),
+  filename = here("released_output", "results", "manuscript", "fig2_pf_os_nhsbsa_comparison.png"),
   pf_validatio_consultation_plot,
   height = 4,
   width = 8
 )
 ```
-# Appendix
 
-## Data comparison adjusted for % linkage
+## OpenSAFELY Linkage
 
-### Consultation
+### Figure 3
 
-```{r, message=FALSE, warning=FALSE, echo = FALSE}
-# Pharmacy First Consultations
-# Instead of only using the count of PF consultations in OS with a clinical
-# condition we are using all PF consultations with a consultation id
-df_pf_consultation_validation_plot <- pf_validation |>
-  filter(
-    (data_source == "opensafely" &
-      data_desc == "pf_consultation" &
-      count_desc == "consultation_type") |
-      (data_source == "nhs_bsa" &
-        data_desc == "pf_consultation" &
-        count_desc == "consultation_type")
-  )
+```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.height = 4, fig.width = 8}
+# Create figure to show & of PF Med, Condition and both with linked PF consultations
 
-# Pivot wider to calculate ratio
-df_pf_consultation_validation_plot <- df_pf_consultation_validation_plot |>
-  select(date, data_source, count_method, count_total) |>
-  pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
-  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
-
-join_ratio <- df_pf_descriptive_stats |>
-  select(date = interval_start, measure, ratio) |>
-  filter(measure %in% c("Clinical condition", "Both")) |>
-  group_by(date) |>
-  mutate(ratio_consultation_type_in_os = sum(ratio, na.rm = TRUE)) |>
-  ungroup() |>
-  select(date, ratio_consultation_type_in_os)
-
-df_pf_consultation_validation_adjusted_plot <- df_pf_consultation_validation_plot |>
-  left_join(join_ratio) |>
+df_pf_descriptive_stats <- df_descriptive_stats %>%
+  filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
   mutate(
-    os_tpp_adjusted = round((opensafely_opensafely_tpp / (ratio_consultation_type_in_os * 100)) * 100, 0),
-    ratio_adjusted = os_tpp_adjusted / nhs_bsa_count_100pct
+    measure = factor(measure,
+      levels = c(
+        "pfmed_with_pfid",
+        "pfcondition_with_pfid",
+        "pfmed_and_pfcondition_with_pfid"
+      ),
+      labels = c(
+        "Medication",
+        "Clinical condition",
+        "Both"
+      )
+    )
+  ) 
+  
+  df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  left_join(df_pf_consultation_total,
+    by = c("interval_start")
   )
 
-# Select colours for groups
-# Group 1: #CF4446FF
-colour_group_1 <- paletteer_c("viridis::inferno", n = 10)[6]
-# Group 1: #1B0C42FF
-colour_group_2 <- paletteer_c("viridis::inferno", n = 10)[2]
-# Group 1: #781C6DFF
-colour_group_3 <- paletteer_c("viridis::inferno", n = 10)[4]
+df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
+  group_by(interval_start) %>%
+  mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
+  arrange(desc(measure), .by_group = TRUE) |>
+  mutate(
+    ratio_exclusive = numerator / value,
+    cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
+  )
 
-# Create consultation validation plot
-pf_validation_consultation_adjusted_plot <- df_pf_consultation_validation_adjusted_plot |>
-  ggplot(aes(x = date)) +
-  geom_point(
+fig_pf_med_condition_linkage <- df_pf_descriptive_stats |>
+  ggplot(
     aes(
-      y = nhs_bsa_count_100pct,
-      colour = "NHS BSA",
-      shape = "NHS BSA"
-    ),
-    size = 2.6
+      x = interval_start,
+      y = ratio_exclusive,
+      fill = measure
+    )
   ) +
-  geom_line(
-    aes(y = nhs_bsa_count_100pct, colour = "NHS BSA"),
-    alpha = .3,
-    size = .5
-  ) +
-  geom_point(
-    aes(
-      y = opensafely_opensafely_tpp,
-      colour = "OpenSAFELY-TPP",
-      shape = "OpenSAFELY-TPP"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(
-      y = opensafely_opensafely_tpp,
-      colour = "OpenSAFELY-TPP"
-    ),
-    alpha = .3,
-    size = .5
+  geom_area(
+    alpha = 0.85,
+    linewidth = .5,
+    colour = "white"
   ) +
   geom_label(
     aes(
-      y = opensafely_opensafely_tpp,
-      label = scales::percent(ratio, accuracy = .1),
+      y = cumulative_ratio_exclusive,
+      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
     ),
-    colour = colour_group_2,
-    vjust = -.5,
-    size = 3.5
+    vjust = -0.05,
+    size = 3.5,
+    show.legend = FALSE,
+    color = "black",
+    fill = "white"
   ) +
-  geom_point(
-    aes(
-      y = os_tpp_adjusted,
-      colour = "OpenSAFELY-TPP (Adjusted)",
-      shape = "OpenSAFELY-TPP (Adjusted)"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(
-      y = os_tpp_adjusted,
-      colour = "OpenSAFELY-TPP (Adjusted)"
-    ),
-    alpha = .3,
-    size = .5
-  ) +
-  geom_label(
-    aes(
-      y = os_tpp_adjusted,
-      label = scales::percent(ratio_adjusted, accuracy = .1),
-    ),
-    colour = colour_group_3,
-    vjust = -.5,
-    size = 3.5
-  ) +
-  scale_y_continuous(labels = scales::number) +
-  scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
-  ) +
-  scale_colour_manual(
-    values = c(
-      "NHS BSA" = colour_group_1,
-      "OpenSAFELY-TPP" = colour_group_2,
-      "OpenSAFELY-TPP (Adjusted)" = colour_group_3
-    ),
-    name = NULL
-  ) +
-  scale_shape_manual(
-    values = c(
-      "NHS BSA" = 15,
-      "OpenSAFELY-TPP" = 16,
-      "OpenSAFELY-TPP (Adjusted)" = 17
-    ),
-    name = NULL
+  scale_fill_viridis_d() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  scale_y_continuous(
+    limits = c(0, .5),
+    labels = scales::percent
   ) +
   labs(
     x = NULL,
     y = NULL,
-    colour = NULL,
-    shape = NULL
+    fill = "Pharmacy First consultations linked to: "
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
   ) +
   theme(
     panel.background = element_blank(),
     axis.line = element_line(colour = "grey50"),
     legend.position = "bottom",
     text = element_text(size = 14)
-  ) +
-  ggtitle("A. Pharmacy First Consultations")
-```
-
-### Medications
-
-```{r, message=FALSE, warning=FALSE, echo = FALSE}
-df_pf_medication_validation <- pf_validation |>
-  filter(
-    (data_source == "opensafely" &
-      data_desc == "pf_medication" &
-      count_desc == "dmd_code") |
-      (data_source == "nhs_bsa" &
-        data_desc == "pf_medication" &
-        count_desc == "bnf_paragraph")
   )
 
-df_pf_medication_validation_plot <- df_pf_medication_validation |>
-  select(date, data_source, count_method, count_total) |>
-  pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
-  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
-
-linked_ratio <- df_pf_descriptive_stats |>
-  select(date = interval_start, measure, ratio) |>
-  filter(measure %in% c("Medication", "Both")) |>
-  group_by(date) |>
-  mutate(ratio_medication_in_os = sum(ratio, na.rm = TRUE)) |>
-  ungroup() |>
-  select(date, ratio_medication_in_os)
-
-
-df_pf_medication_validation_adjusted_plot <- df_pf_medication_validation_plot |>
-  left_join(linked_ratio) |>
-  mutate(
-    os_tpp_adjusted = round((opensafely_opensafely_tpp / (ratio_medication_in_os * 100)) * 100, 0),
-    ratio_adjusted = os_tpp_adjusted / nhs_bsa_count_100pct
-  )
-
-# Create consultation validation plot
-pf_medication_validation_adjusted_plot <- df_pf_medication_validation_adjusted_plot |>
-  ggplot(aes(x = date)) +
-  geom_point(
-    aes(
-      y = nhs_bsa_count_100pct,
-      colour = "NHS BSA",
-      shape = "NHS BSA"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(y = nhs_bsa_count_100pct, colour = "NHS BSA"),
-    alpha = .3,
-    size = .5
-  ) +
-  geom_point(
-    aes(
-      y = opensafely_opensafely_tpp,
-      colour = "OpenSAFELY-TPP",
-      shape = "OpenSAFELY-TPP"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(
-      y = opensafely_opensafely_tpp,
-      colour = "OpenSAFELY-TPP"
-    ),
-    alpha = .3,
-    size = .5
-  ) +
-  geom_label(
-    aes(
-      y = opensafely_opensafely_tpp,
-      label = scales::percent(ratio, accuracy = .1),
-    ),
-    colour = colour_group_2,
-    vjust = -.5,
-    size = 3.5
-  ) +
-  geom_point(
-    aes(
-      y = os_tpp_adjusted,
-      colour = "OpenSAFELY-TPP (Adjusted)",
-      shape = "OpenSAFELY-TPP (Adjusted)"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(
-      y = os_tpp_adjusted,
-      colour = "OpenSAFELY-TPP (Adjusted)"
-    ),
-    alpha = .3,
-    size = .5
-  ) +
-  geom_label(
-    aes(
-      y = os_tpp_adjusted,
-      label = scales::percent(ratio_adjusted, accuracy = .1),
-    ),
-    colour = colour_group_3,
-    vjust = -.5,
-    size = 3.5
-  ) +
-  scale_y_continuous(labels = scales::number) +
-  scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
-  ) +
-  scale_colour_manual(
-    values = c(
-      "NHS BSA" = colour_group_1,
-      "OpenSAFELY-TPP" = colour_group_2,
-      "OpenSAFELY-TPP (Adjusted)" = colour_group_3
-    ),
-    name = NULL
-  ) +
-  scale_shape_manual(
-    values = c(
-      "NHS BSA" = 15,
-      "OpenSAFELY-TPP" = 16,
-      "OpenSAFELY-TPP (Adjusted)" = 17
-    ),
-    name = NULL
-  ) +
-  labs(
-    x = NULL,
-    y = NULL,
-    colour = NULL,
-    shape = NULL
-  ) +
-  theme(
-    panel.background = element_blank(),
-    axis.line = element_line(colour = "grey50"),
-    legend.position = "bottom",
-    text = element_text(size = 14)
-  ) +
-  ggtitle("B. Pharmacy First Medications")
-```
-
-```{r fig.height = 8, fig.width=10}
-# Combine plots
-validation_combined_adjusted_plot <- pf_validation_consultation_adjusted_plot / pf_medication_validation_adjusted_plot + plot_layout(guides = "collect") & theme(legend.position = "bottom")
-
-validation_combined_adjusted_plot
+fig_pf_med_condition_linkage
 
 ggsave(
-  filename = here("released_output", "results", "manuscript", "figX_pf_os_nhsbsa_adjusted_comparison.png"),
-  validation_combined_adjusted_plot,
-  height = 8,
-  width = 10
+  filename = here("released_output", "results", "manuscript", "fig3_pf_consultation_completeness.png"),
+  fig_pf_med_condition_linkage,
+  height = 4,
+  width = 8
+)
+```
+
+### Results for Figure 3 description
+
+```{r}
+df_results_pf_linkage <- df_pf_descriptive_stats %>%
+  select(measure, interval_start, ratio, numerator) %>%
+  group_by(interval_start) %>%
+  mutate(
+    ratio_total_linked = sum(ratio),
+    ratio_total_unlinked = 1 - sum(ratio)
+  ) %>%
+  mutate(
+    ratio_linked = percent(ratio, accuracy = 0.1),
+    ratio_total_linked = percent(ratio_total_linked, accuracy = 0.1),
+    ratio_total_unlinked = percent(ratio_total_unlinked, accuracy = 0.1),
+  )
+
+df_results_pf_linkage %>%
+  filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
+
+linkage_feb_to_dec <- df_results_pf_linkage %>%
+  group_by(interval_start) %>%
+  summarise(sum_ratio = sum(ratio)) %>%
+  mutate(
+    linkage_diff = sum_ratio - lag(sum_ratio),
+    pct_diff = percent(linkage_diff, accuracy = 0.1)
+  )
+```
+
+## Table 2
+
+```{r, message=FALSE, warning=FALSE}
+population_table <- population_table %>%
+  filter(population == "pharmacy_first")
+
+if (nrow(population_table) < 136) {
+  print("Table cannot be generated with current dummy data")
+} else if (nrow(population_table) == 136) {
+df_clinical_pathways_by_sex <- population_table %>%
+  filter(table == "tab_pf_pathways_by_sex") %>%
+  pivot_wider(names_from = metric, values_from = value) %>%
+  select(-table) %>%
+  pivot_wider(names_from = category, values_from = numerator) %>%
+  group_by(subcategory) %>%
+  mutate(total = female + male) %>%
+  ungroup() %>%
+  mutate(
+    pct = total / sum(total),
+    subcategory = factor(subcategory,
+      levels = c(
+        "otitismedia",
+        "impetigo",
+        "insectbite",
+        "shingles",
+        "sinusitis",
+        "sorethroat",
+        "uti"
+      ),
+      labels = c(
+        "Acute otitis media",
+        "Impetigo",
+        "Infected insect bites",
+        "Shingles",
+        "Sinusitis",
+        "Sore throat",
+        "Uncomplicated UTI"
+      )
+    )
+  ) %>% 
+  arrange(subcategory) %>% 
+  select(-population)
+
+clinical_pathways_by_sex <- gt_pathways(df_clinical_pathways_by_sex)
+}
+
+gt_pathways(df_clinical_pathways_by_sex)
+gtsave(clinical_pathways_by_sex, here("released_output", "results", "manuscript", "table2_conditions_by_sex.png"))
+```
+
+## Table 3
+
+```{r, message=FALSE, warning=FALSE, echo = FALSE}
+df_consultation_med_counts <- read_csv(
+  here("released_output", "measures", "pf_medications_measures_tidy.csv"),
+  col_types = cols(dmd_code = col_character())
+)
+
+# VMP lookup was taken from the dmd tables held in BigQuery
+# This lookup table will need to be updated periodically if new VMPs appear in the data
+# To find SQL code for this query, please refer to Chris's comment in PR #144 ("Update VMP mapping")
+
+vmp_lookup <- read_csv(
+  here("lib", "reference", "vmp_vtm_lookup.csv"),
+  col_types = cols(id = col_character())
+) %>%
+  rename(code = id)
+
+# Total number of medication linked to a PF consultation
+med_counts <- df_consultation_med_counts %>%
+  summarise(total = sum(numerator))
+
+codelist_file_names <- list.files(
+  here("codelists"),
+  pattern = "\\.csv$",
+  full.names = FALSE
+)
+
+top10_nonpf_med_code_desc <- tribble(
+  ~code, ~term,
+  "37388111000001102", "Macrobid 100mg modified-release capsules",
+  "531611000001106", "Difflam 0.15% spray",
+  "3697711000001104", "EarCalm 2% spray",
+  "42533911000001101", "Coryen 27.5micrograms/dose nasal spray",
+  "623911000001105", "Hydrocortisone 1% cream",
+  "4530711000001104", "Covonia Sore Throat 0.2%/0.05% oromucosal spray menthol",
+  "42100111000001106", "Benzydamine 0.15% oromucosal spray sugar free",
+  "29311000001104", "Piriton 2mg/5ml syrup",
+  "17290311000001107", "Benzydamine 0.15% oromucosal spray sugar free",
+  "4648111000001108", "Robitussin Chesty Cough 100mg/5ml oral solution"
+)
+
+combined_med_code_desc <- vmp_lookup |>
+  dplyr::bind_rows(top10_nonpf_med_code_desc)
+
+df_pf_med_counts <- df_consultation_med_counts |>
+  select(numerator, code = dmd_code, pharmacy_first_med) |>
+  left_join(combined_med_code_desc, by = "code") |>
+  filter(numerator > 0) |>
+  select(-code) %>%
+  group_by(pharmacy_first_med, vmp_nm) |>
+  summarise(count = sum(numerator, na.rm = TRUE)) |>
+  filter(!is.na(vmp_nm)) %>%
+  ungroup() |>
+  group_by(pharmacy_first_med) |>
+  mutate(ratio_by_group = count / sum(count, na.na.rm = TRUE)) |>
+  slice_max(order_by = ratio_by_group, n = 10) |>
+  ungroup()
+
+df_pf_and_non_pf_med_counts <- df_pf_med_counts %>%
+  arrange(!pharmacy_first_med) %>%
+  mutate(pharmacy_first_med = factor(pharmacy_first_med,
+    levels = c(FALSE, TRUE),
+    labels = c(("Medication not included in codelists"), "Medication included in codelists")
+  )) %>%
+  group_by(pharmacy_first_med)
+
+gt_top_meds(df_pf_and_non_pf_med_counts)
+tab_pf_med_counts <- gt_top_meds(df_pf_and_non_pf_med_counts)
+
+gtsave(
+  tab_pf_med_counts,
+  here("released_output", "results", "manuscript", "table3_top_ten_meds.png"),
 )
 ```
