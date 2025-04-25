@@ -507,9 +507,9 @@ df_clinical_pathways_by_sex <- population_table %>%
         "Acute otitis media",
         "Impetigo",
         "Infected insect bites",
-        "Shingles",
-        "Sinusitis",
-        "Sore throat",
+        "Herpes zoster",
+        "Acute sinusitis",
+        "Acute pharyngitis",
         "Uncomplicated UTI"
       )
     )
