@@ -43,9 +43,11 @@ source(here("lib", "functions", "load_opensafely_outputs.R"))
 ## Table 1
 
 ```{r, message=FALSE, warning=FALSE}
+# population_table from load_opensafely_outputs.R
 population_table_demo <- population_table %>% 
   pivot_wider(names_from = "population", values_from = "value")
 
+# Create table for demographics (without clinical conditions)
 if (nrow(population_table_demo) < 136) {
   print("Table 1 cannot be generated with current dummy data")
 } else if (nrow(population_table_demo) == 136) {
@@ -227,7 +229,7 @@ df_results_pf_total_counts %>%
 ### Figure 2
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
-
+# Create figure to compare OpenSAFELY-TPP counts with NHS BSA counts
 df_pf_consultations_total <- df_pf_consultations |>
   filter(data_desc == "Total") |>
   mutate(
@@ -242,7 +244,7 @@ source(here("lib", "functions", "combine_os_nhsbsa_validation_data.R"))
 # Pharmacy First Consultations
 # Instead of only using the count of PF consultations in OS with a clinical
 # condition we are using all PF consultations with a consultation id
-df_pf_consultation_validatio_plot <- pf_validation |>
+df_pf_consultation_validation_plot <- pf_validation |>
   filter(
     (data_source == "opensafely" &
       data_desc == "pf_consultation" &
@@ -253,7 +255,7 @@ df_pf_consultation_validatio_plot <- pf_validation |>
   )
 
 # Pivot wider to calculate ratio
-df_pf_consultation_validatio_plot <- df_pf_consultation_validatio_plot |>
+df_pf_consultation_validation_plot <- df_pf_consultation_validation_plot |>
   select(date, data_source, count_method, count_total) |>
   pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
   mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
@@ -265,7 +267,7 @@ colour_group_1 <- paletteer_c("viridis::inferno", n = 10)[6]
 colour_group_2 <- paletteer_c("viridis::inferno", n = 10)[2]
 
 # Create consultation validation plot
-pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
+pf_validation_consultation_plot <- df_pf_consultation_validation_plot |>
   ggplot(aes(x = date)) +
   geom_point(
     aes(
@@ -341,11 +343,11 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
     text = element_text(size = 14)
   )
 
-pf_validatio_consultation_plot
+pf_validation_consultation_plot
 
 ggsave(
   filename = here("released_output", "results", "manuscript", "fig2_pf_os_nhsbsa_comparison.png"),
-  pf_validatio_consultation_plot,
+  pf_validation_consultation_plot,
   height = 4,
   width = 8
 )
@@ -380,6 +382,7 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
     by = c("interval_start")
   )
 
+# Set positions in graph for figure 3 percentage labels
 df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
   group_by(interval_start) %>%
@@ -477,6 +480,7 @@ linkage_feb_to_dec <- df_results_pf_linkage %>%
 ## Table 2
 
 ```{r, message=FALSE, warning=FALSE}
+# Create table for clinical conditions by sex counts
 population_table <- population_table %>%
   filter(population == "pharmacy_first")
 
@@ -527,6 +531,7 @@ gtsave(clinical_pathways_by_sex, here("released_output", "results", "manuscript"
 ## Table 3
 
 ```{r, message=FALSE, warning=FALSE, echo = FALSE}
+# Create table for top 10 PF and non-PF medication counts
 df_consultation_med_counts <- read_csv(
   here("released_output", "measures", "pf_medications_measures_tidy.csv"),
   col_types = cols(dmd_code = col_character())
@@ -546,32 +551,9 @@ vmp_lookup <- read_csv(
 med_counts <- df_consultation_med_counts %>%
   summarise(total = sum(numerator))
 
-codelist_file_names <- list.files(
-  here("codelists"),
-  pattern = "\\.csv$",
-  full.names = FALSE
-)
-
-top10_nonpf_med_code_desc <- tribble(
-  ~code, ~term,
-  "37388111000001102", "Macrobid 100mg modified-release capsules",
-  "531611000001106", "Difflam 0.15% spray",
-  "3697711000001104", "EarCalm 2% spray",
-  "42533911000001101", "Coryen 27.5micrograms/dose nasal spray",
-  "623911000001105", "Hydrocortisone 1% cream",
-  "4530711000001104", "Covonia Sore Throat 0.2%/0.05% oromucosal spray menthol",
-  "42100111000001106", "Benzydamine 0.15% oromucosal spray sugar free",
-  "29311000001104", "Piriton 2mg/5ml syrup",
-  "17290311000001107", "Benzydamine 0.15% oromucosal spray sugar free",
-  "4648111000001108", "Robitussin Chesty Cough 100mg/5ml oral solution"
-)
-
-combined_med_code_desc <- vmp_lookup |>
-  dplyr::bind_rows(top10_nonpf_med_code_desc)
-
 df_pf_med_counts <- df_consultation_med_counts |>
   select(numerator, code = dmd_code, pharmacy_first_med) |>
-  left_join(combined_med_code_desc, by = "code") |>
+  left_join(vmp_lookup, by = "code") |>
   filter(numerator > 0) |>
   select(-code) %>%
   group_by(pharmacy_first_med, vmp_nm) |>
