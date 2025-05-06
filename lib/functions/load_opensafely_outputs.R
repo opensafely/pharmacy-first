@@ -1,4 +1,5 @@
-# Load data based on execution environment
+# Check if the script is running in the OpenSAFELY backend environment
+# If yes, opensafely data will be loaded from output directory
 if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
   # Load data from output directory
   df_measures <- read_csv(
@@ -35,7 +36,7 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
   population_table <- read_csv(here("output", "population", "pf_tables.csv"))
 
 } else {
-  # Load data from released_output directory
+  # Else (locally), opensafely data will be loaded from released_output directory
   df_measures <- read_csv(
     here("released_output", "measures", "pf_breakdown_measures.csv")
   )
@@ -53,6 +54,10 @@ if (Sys.getenv("OPENSAFELY_BACKEND") != "") {
   population_table <- read_csv(here("released_output", "population", "pf_tables.csv"))
 }
 
+# Clean and standardise the measures dataset:
+# - Splits the 'measure' column into summary statistic, measure type, and group
+# - Applies human-readable labels from dictionaries
+# - Factors key breakdown variables (e.g. age, sex, ethnicity, region) with defined order
 df_measures <- tidy_measures(
   data = df_measures,
   pf_measures_name_dict = pf_measures_name_dict,
