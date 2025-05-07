@@ -151,7 +151,6 @@ if (nrow(population_table) < 216) {
 
 gt_demographics(df_demographics_table)
 }
-View(population_table)
 ```
 **Table 1**. Cohort description for all patients with at least one Pharmacy First consultation between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
 
