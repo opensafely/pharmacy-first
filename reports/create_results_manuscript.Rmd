@@ -240,6 +240,11 @@ df_pf_consultations_total <- df_pf_consultations |>
 
 
 source(here("lib", "functions", "combine_os_nhsbsa_validation_data.R"))
+# The sourced script above requires the following datasets:
+# 1. df_bsa_validation (loaded from load_validation_data.R)
+# 2. df_measures (loaded from load_opensafely_outputs.R)
+# 3. df_pf_consultations_total (loaded from lines 233-239)
+# 4. df_pfmed (loaded from load_opensafely_outputs.R)
 
 # Pharmacy First Consultations
 # Instead of only using the count of PF consultations in OS with a clinical
