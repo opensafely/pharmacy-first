@@ -19,15 +19,15 @@ No clinical, policy or safety conclusions must be drawn from the contents of thi
 ## Repository Structure
 
 ```
-├── analysis/               # Study definitions, config, analysis scripts
+├── analysis/               # Study and measures definitions and analyses
 ├── codelists/              # Clinical code lists
 ├── docs/                   # Project-level documentation
-├── dummy_data/             # Synthetic data for testing
-├── dummy_tables/           # Dummy tables for development
-├── lib/                    # Shared lookups, functions, and validation
-├── logs/                   # Output logs
-├── output/                 # Analysis outputs (excluded via .gitignore)
-├── renv/                   # R environment management
+├── dummy_data/             # Dummy data for local development and testing
+├── dummy_tables/           # Dummy tables for local development and testing
+├── lib/                    # Library with functions for getting comparison data
+├── logs/                   # Logs of actions, excluded via .gitignore
+├── output/                 # Analysis outputs, excluded via .gitignore
+├── renv/                   # R environment management, excluded via .gitignore
 ├── reports/                # RMarkdown scripts for tables/reports
 ├── project.yaml            # Study definition file for OpenSAFELY framework
 ```
