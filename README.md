@@ -32,70 +32,46 @@ No clinical, policy or safety conclusions must be drawn from the contents of thi
 ├── project.yaml            # Study definition file for OpenSAFELY framework
 ```
 
-## Key Analysis Files (`analysis/`)
-
-| File | Purpose |
-|------|---------|
-| `codelists.py` | Loads relevant codelists from the `codelists/` folder and assigns labels to SNOMED codes. |
-| `config.py` | Contains centralised start dates and interval settings for dataset and measure scripts across the project. |
-| `create_tables.R` | Script which uses the output produced by `dataset_definition_tables.py` to generate a demographics table and clinical conditions tables (by sex and imd) |
-| `dataset_definition_tables.py` | Defines the study population and variables to generate demographics of the population |
-| `measures_definition_pf_breakdown.py` | Specifies OpenSAFELY measures for overall Pharmacy First consultation counts and Pharmacy First consultation counts by pharmacy first condition. |
-| `measures_definition_pf_condition_provider.py` | Tracks prescribing activity by provider (GP vs OpenSAFELY) and condition. |
-| `measures_definition_pf_descriptive_stats.py` | Generates descriptive statistics for the study population, including completeness of Pharmacy First consultations. |
-| `measures_definition_pf_med_counts.py` | Defines measures to calculate medication-specific prescribing counts under the Pharmacy First service. |
-| `pf_dataset.py` | Contains functions which are called in `dataset_definition_tables.py` that allows for variables such as IMD, ethnicity and age band to be retrieved. |
-| `pf_variables_library.py` | Contains reusable event selection and filtering functions to build variables dynamically in other scripts |
-| `test_dataset_definition_tables.py` | Unit tests for checking table generation logic and structure. |
-| `tidy_measures_med_counts.R` | R script to process and tidy the output of `measures_definition_pf_med_counts.py` for reporting. |
+## Overview of ehrQL and analysis scripts
+- `analysis/codelists.py`: Loads relevant codelists from the `codelists/` folder and assigns labels to SNOMED codes.
+- `analysis/config.py`: Contains centralised start dates and interval settings for dataset and measure scripts across the project.
+- `analysis/create_tables.R`: Script which uses the output produced by `dataset_definition_tables.py` to generate a demographics table and clinical conditions tables (by sex and IMD).
+- `analysis/dataset_definition_tables.py`: Defines the study population and variables to generate demographics of the population.
+- `analysis/measures_definition_pf_breakdown.py`: Specifies OpenSAFELY measures for overall Pharmacy First consultation counts and Pharmacy First consultation counts by pharmacy first condition.
+- `analysis/measures_definition_pf_condition_provider.py`: Tracks prescribing activity by provider (GP vs OpenSAFELY) and condition.
+- `analysis/measures_definition_pf_descriptive_stats.py`: Generates descriptive statistics for the study population, including completeness of Pharmacy First consultations.
+- `analysis/measures_definition_pf_med_counts.py`: Defines measures to calculate medication-specific prescribing counts under the Pharmacy First service.
+- `analysis/pf_dataset.py`: Contains functions which are called in `dataset_definition_tables.py` that allows for variables such as IMD, ethnicity and age band to be retrieved.
+- `analysis/pf_variables_library.py`: Contains reusable event selection and filtering functions to build variables dynamically in other scripts.
+- `test_dataset_definition_tables.py`: Unit tests for checking table generation logic and structure.
+- `analysis/tidy_measures_med_counts.R`: R script to process and tidy the output of `measures_definition_pf_med_counts.py` for reporting.
 
 ---
 
 ## Key Library Files (`lib/`)
 
-| File | Purpose |
-|------|---------|
-| `reference/vmp_vtm_lookup.csv` | Maps Virtual Medicinal Product codes (VMPs) to Virtual Therapeutic Moiety codes (VTMs) to support aggregated prescribing analysis. |
-| `validation/data/pf_consultation_validation_data.csv` | Validation data taken from NHS BSA containing Pharmacy First consultation counts by condition. |
-| `validation/data/pf_consultation_validation_data_by_region.csv` | Validation data taken from NHS BSA containing Pharmacy First consultation counts by condition and by region. |
-| `validation/data/pf_medication_validation_data.csv` | Validation data taken from NHS BSA containing counts of Medication prescribed in Pharmacy First clinical pathways. |
-
----
+- `reference/vmp_vtm_lookup.csv`: Maps Virtual Medicinal Product codes (VMPs) to Virtual Therapeutic Moiety codes (VTMs) to support aggregated prescribing analysis.
+- `validation/data/pf_consultation_validation_data.csv`: Validation data taken from NHS BSA containing Pharmacy First consultation counts by condition.
+- `validation/data/pf_consultation_validation_data_by_region.csv`: Validation data taken from NHS BSA containing Pharmacy First consultation counts by condition and by region.
+- `validation/data/pf_medication_validation_data.csv`: Validation data taken from NHS BSA containing counts of Medication prescribed in Pharmacy First clinical pathways.
 
 ## Library Functions (`lib/functions/`)
 
-| File | Description |
-|------|-------------|
-| `combine_os_nhsbsa_validation_data.R` | Combines data from OpenSAFELY and NHSBSA for cross-validation of consultation and prescribing metrics. |
-| `create_tables.R` | Contains functions to generate formatted tables for `create_results_manuscript.Rmd` and `pharmacy_first_report.Rmd`. |
-| `get_pf_consultation_validation_data.R` | Extracts validation metrics for Pharmacy First consultations to generate `validation/data/pf_consultation_validation_data.csv` and `validation/data/pf_consultation_validation_data_by_region.csv`. |
-| `get_pf_medication_validation_data.R` | Extracts validation metrics for Pharmacy First prescribing to generate `validation/data/pf_medication_validation_data.csv`. |
-| `load_opensafely_outputs.R` | Loads and parses output files generated by OpenSAFELY for analysis, using outputs from either the `/output` directory or `/released_output` directory (both in .gitignore). |
-| `load_validation_data.R` | Processing the `/data` csv's to tailor for analyses |
-| `plot_measures.R` | Contains graphing function. |
-| `tidy_measures.R` | Cleans and standardises OpenSAFELY measure files to long format suitable for visualisation, and adds labels for measure names. |
+- `combine_os_nhsbsa_validation_data.R`: Combines data from OpenSAFELY and NHSBSA for cross-validation of consultation and prescribing metrics.
+- `create_tables.R`: Contains functions to generate formatted tables for `create_results_manuscript.Rmd` and `pharmacy_first_report.Rmd`.
+- `get_pf_consultation_validation_data.R`: Extracts validation metrics for Pharmacy First consultations to generate `validation/data/pf_consultation_validation_data.csv` and `validation/data/pf_consultation_validation_data_by_region.csv`.
+- `get_pf_medication_validation_data.R`: Extracts validation metrics for Pharmacy First prescribing to generate `validation/data/pf_medication_validation_data.csv`.
+- `load_opensafely_outputs.R`: Loads and parses output files generated by OpenSAFELY for analysis, using outputs from either the `/output` directory or `/released_output` directory (both in .gitignore).
+- `load_validation_data.R`: Processing the `/data` csv's to tailor for analyses
+- `plot_measures.R`: Contains graphing function.
+- `tidy_measures.R`: Cleans and standardises OpenSAFELY measure files to long format suitable for visualisation, and adds labels for measure names.
 
 ---
 
 ## Reports (`reports/`)
 
-| File | Purpose |
-|------|---------|
-| `pharmacy_first_report.Rmd` | R Markdown file to create pharmacy first dashboard. |
-| `create_results_manuscript.Rmd` | Compiles main manuscript results in publication-ready format. |
-
----
-
-## Outputs
-
-Files written to the `/output/` folder include:
-- CSV files of measures/population
-
-Following successful request of outputs, outputs are released to us, and are saved in a `/released_output` folder. This folder contains:
-- Figures and tables (present in manuscript and dashboard)
-- CSV files of measures/population
-
-> ⚠️ The `/released_output` folder will not appear, and the `/output` folder will appear empty as both are specified in `.gitignore` to prevent accidental commits of sensitive data.
+- `pharmacy_first_report.Rmd`: R Markdown file to create pharmacy first dashboard.
+- `create_results_manuscript.Rmd`: Compiles main manuscript results in publication-ready format.
 
 ---
 
