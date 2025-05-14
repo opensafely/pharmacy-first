@@ -48,14 +48,14 @@ No clinical, policy or safety conclusions must be drawn from the contents of thi
 
 ---
 
-## Key Library Files (`lib/`)
+## Data files for validation and medication lookups
 
 - `reference/vmp_vtm_lookup.csv`: Maps Virtual Medicinal Product codes (VMPs) to Virtual Therapeutic Moiety codes (VTMs) to support aggregated prescribing analysis.
 - `validation/data/pf_consultation_validation_data.csv`: Validation data taken from NHS BSA containing Pharmacy First consultation counts by condition.
 - `validation/data/pf_consultation_validation_data_by_region.csv`: Validation data taken from NHS BSA containing Pharmacy First consultation counts by condition and by region.
 - `validation/data/pf_medication_validation_data.csv`: Validation data taken from NHS BSA containing counts of Medication prescribed in Pharmacy First clinical pathways.
 
-## Library Functions (`lib/functions/`)
+## Reusable functions for creating results and getting comparison data
 
 - `combine_os_nhsbsa_validation_data.R`: Combines data from OpenSAFELY and NHSBSA for cross-validation of consultation and prescribing metrics.
 - `create_tables.R`: Contains functions to generate formatted tables for `create_results_manuscript.Rmd` and `pharmacy_first_report.Rmd`.
@@ -68,12 +68,11 @@ No clinical, policy or safety conclusions must be drawn from the contents of thi
 
 ---
 
-## Reports (`reports/`)
+## RMarkdown reports
 
-- `pharmacy_first_report.Rmd`: R Markdown file to create pharmacy first dashboard.
-- `create_results_manuscript.Rmd`: Compiles main manuscript results in publication-ready format.
+- `reports/pharmacy_first_report.Rmd`: R Markdown file to create pharmacy first dashboard.
+- `reports/create_results_manuscript.Rmd`: Compiles main manuscript results in publication-ready format.
 
----
 
 # About the OpenSAFELY framework
 
