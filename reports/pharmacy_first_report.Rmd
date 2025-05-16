@@ -69,18 +69,17 @@ df_pf_consultations_total <- df_pf_consultations |>
 The COVID-19 pandemic has had a significant impact on the access to and provision of NHS healthcare services.
 In response to this, NHS England announced a recovery plan to "*make it easier and quicker for patients to get the help they need from primary care*"<!-- [@NHSEngland2023a] -->.
 
-A key element of the recovery plan is the Pharmacy First scheme<!-- [@NHSEngland2024] -->, launched on 31st January 2024 which replaces and expands upon the Community Pharmacist Consultation Service (CPCS), which ran from 29th Oct 2019<!-- [@NHSEngland2024a] -->.
-CPCS incorporated two services - Urgent Repeat Medicine Supply and NHS Referrals for Minor Illness - these services continue under Pharmacy First but there is also a new clinical pathways service<!-- [@NHSEngland2023] -->.
-This aspect allows community pharmacists to follow specified clinical pathways to assess for and manage seven common conditions (Sinusitis, Sore throat, Earache, Infected insect bite, Impetigo, Shingles, and Uncomplicated urinary tract infections in women), including supplying NHS funded prescription only medications where appropriate<!--  [@NHSEngland2024] -->. 
+A key element of the recovery plan is the Pharmacy First scheme, which launched on 31st January 2024<!-- [@NHSEngland2024] -->.
+This includes a new clinical pathways service<!-- [@NHSEngland2023] -->, which allows community pharmacists to follow specified clinical pathways to assess for and manage seven common conditions (sinusitis, acute pharyngitis, acute otitis media, infected insect bites, impetigo, herpes zoster, and uncomplicated urinary tract infections in women), including supplying NHS funded prescription only medications where appropriate<!--  [@NHSEngland2024] -->. 
 
-As part of efforts to improve and simplify information sharing between general practice and community pharmacy GP Connect: Update Record has been created, allowing registered community pharmacy professionals to send summaries in a structured format from Pharmacy First consultations, using pre-specified SNOMED CT codes, directly into general practice workflow<!--  [@NHSEngland2023b] -->.
-However, there has been a gradual roll out of Update Record and it has also been the target of GP collective action adding some uncertainty about how reliably data has flowed into general practice records following the launch of the Pharmacy First service, with reliance on manual transfer and recording of consultation summaries where Update Record was not available<!--  [@Colivicchi2024; @CommunityPharmacyEngland2024] -->.
+As part of efforts to improve and simplify information sharing between general practice and community pharmacy, GP Connect: Update Record has been created, allowing registered community pharmacy professionals to send summaries in a structured format from Pharmacy First consultations, using pre-specified SNOMED CT codes, directly into general practice workflow<!--  [@NHSEngland2023b] -->.
+However, the roll out of Update Record has been gradual due to the involvement of multiple community pharmacy and GP system suppliers, with each being ready at different stages<!--  [@Colivicchi2024; @CommunityPharmacyEngland2024] -->.
 
 The aims of this report are to:
 
-1. describe the clinical data associated with Pharmacy First Clinical Pathways in GP records including demographic and regional subgroup descriptions of patients
-2. describe the clinical conditions and medications being treated/supplied under Pharmacy First Clinical Pathways and recorded in GP records,
-3. compare volumes of Pharmacy First Clinical Pathways activity taking place in GP records accessible via OpenSAFELY-TPP against openly available sources of Pharmacy First Clinical Pathways data,
+1. describe the patient population using the Pharmacy First Clinical Pathway service, including demographic and regional subgroups
+2. describe the clinical conditions and medications being treated/supplied under Pharmacy First Clinical Pathways and recorded in GP records
+3. compare Pharmacy First activity in GP records accessible via OpenSAFELY-TPP with publicly available data
 
 # Methods
 
@@ -125,7 +124,13 @@ Code for data management and analysis, as well as codelists, are available for r
 ```{r, message=FALSE, warning=FALSE}
 # Create cohort description table (excluding clinical conditions)
 df_demographics_table <- generate_demographics_dataset(population_table)
-gt_demographics(df_demographics_table)
+
+if (!is.null(df_demographics_table)) {
+  gt_demographics(df_demographics_table)
+} else {
+  print("Skipping demographics table: dataset not generated")
+}
+
 ```
 **Table 1**. Cohort description for all patients with at least one Pharmacy First consultation between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
 
@@ -428,7 +433,13 @@ plot_pf_med_condition_linkage
 ```{r, message=FALSE, warning=FALSE}
 # Creates table of clinical condition counts by sex
 df_clinical_pathways_by_sex <- generate_clinical_conditions_dataset(population_table)
-gt_pathways(df_clinical_pathways_by_sex)
+
+if (!is.null(df_clinical_pathways_by_sex)) {
+  gt_pathways(df_clinical_pathways_by_sex)
+} else {
+  print("Skipping clinical conditions table: dataset not generated")
+}
+
 ```
 
 ### Pharmacy First Medications

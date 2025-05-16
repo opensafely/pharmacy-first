@@ -199,6 +199,7 @@ generate_linkage_dataset <- function(df_descriptive_stats, df_pf_consultations) 
 generate_clinical_conditions_dataset <- function(population_table) {
   if (nrow(population_table) < 216) {
     print("Table cannot be generated with current dummy data")
+    return(NULL)
   } else if (nrow(population_table) == 216) {
     population_table <- population_table %>%
     filter(population == "pharmacy_first")
