@@ -121,6 +121,9 @@ Code for data management and analysis, as well as codelists, are available for r
 
 ## Cohort description
 
+This table compares the demographic breakdown of patients receiving a Pharmacy First consultation to the overall OpenSAFELY-TPP population.
+
+**Table 1**. Description of patient population with at least one Pharmacy First consultation code (n = 337,860) and total population in OpenSAFELY-TPP (N = 26,067,975) between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
 ```{r, message=FALSE, warning=FALSE}
 # Create cohort description table (excluding clinical conditions)
 df_demographics_table <- generate_demographics_dataset(population_table)
@@ -132,13 +135,14 @@ if (!is.null(df_demographics_table)) {
 }
 
 ```
-**Table 1**. Cohort description for all patients with at least one Pharmacy First consultation between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
 
 ## Count of Pharmacy First Consultations
 
-### Total
+The monthly counts of patients with a recorded Pharmacy First consultation in OpenSAFELY-TPP broken down by individual Pharmacy First consultation codes are presented in Figure 1. All consultations were recorded either with the Pharmacy First service code or the Consultation Service for minor illness code.
+Only the *Consultation Service for minor illness* code (see purple triangles in Figure 1) is referenced in the service specification. <!--  [@NHSEngland] --> 
 
-```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10, fig.cap="**Figure 1**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP."}
+**Figure 1**. Monthly count of patients with a Pharmacy First consultation code in their GP records in OpenSAFELY-TPP, broken down by individual Pharmacy First consultation codes. CP = Community Pharmacy.
+```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10}
 # Create figure for total count of Pharmacy First consultations for each code (3 codes)
 df_pf_consultations <- generate_pf_consultation_counts(df_measures)
 
@@ -187,275 +191,14 @@ plot_pf_consultations <- df_pf_consultations |>
 plot_pf_consultations
 ```
 
-### Demographic breakdowns
-
-#### Sex
-
-```{r plot-pf-consultations-by-sex, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 2**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by sex."}
-df_measures %>%
-  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
-  filter(measure_desc == "pharmacy_first_services") %>%
-  filter(group_by == "Sex") |>
-  plot_measures(
-    select_value = numerator,
-    select_interval_date = interval_start,
-    colour_var = sex,
-    guide_nrow = 1,
-    facet_wrap = FALSE,
-    add_vline = FALSE,
-    title = NULL,
-    y_label = NULL
-  )
-```
-
-#### Age band
-
-```{r plot-pf-consultations-by-age-band, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 3**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by age bands."}
-unique_categories <- sort(unique(df_measures$age_band))
-manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
-shape_mapping <- setNames(manual_ggplot2_shapes[1:length(unique_categories)], unique_categories)
-
-df_measures %>%
-  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
-  filter(measure_desc == "pharmacy_first_services") %>%
-  filter(group_by == "Age band") |>
-  plot_measures(
-    select_value = numerator,
-    select_interval_date = interval_start,
-    colour_var = age_band,
-    guide_nrow = 1,
-    facet_wrap = FALSE,
-    add_vline = FALSE,
-    title = NULL,
-    y_label = NULL
-  ) +
-  scale_shape_manual(values = shape_mapping)
-```
-
-#### Index of Multiple Deprivation (IMD)
-
-```{r plot-pf-consultations-by-imd, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 4**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by IMD."}
-unique_categories <- sort(unique(df_measures$imd))
-
-manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
-shape_mapping <- setNames(
-  manual_ggplot2_shapes[1:length(unique_categories)],
-  unique_categories
-)
-
-# Get one more colour than I need from viridis so I avoid using yellow in the plot
-# paletteer_c("viridis::viridis", n = 7)
-manual_ggplot2_colours <- c(
-  "#440154FF",
-  "#443A83FF",
-  "#31688EFF",
-  "#21908CFF",
-  "#35B779FF",
-  "#8FD744FF",
-  "#FDE725FF"
-)
-colour_mapping <- setNames(
-  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
-  unique_categories
-)
-
-df_measures %>%
-  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
-  filter(measure_desc == "pharmacy_first_services") %>%
-  filter(group_by == "IMD") |>
-  plot_measures(
-    select_value = numerator,
-    select_interval_date = interval_start,
-    colour_var = imd,
-    guide_nrow = 1,
-    facet_wrap = FALSE,
-    add_vline = FALSE,
-    title = NULL,
-    y_label = NULL
-  ) +
-  scale_shape_manual(values = shape_mapping) +
-  scale_colour_manual(values = colour_mapping) +
-  scale_fill_manual(values = colour_mapping)
-```
-
-#### Region
-
-```{r plot-pf-consultations-by-region, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 5**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
-unique_categories <- sort(unique(df_measures$region))
-
-manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 8, 4, 10, 7, 1)
-shape_mapping <- setNames(
-  manual_ggplot2_shapes[1:length(unique_categories)],
-  unique_categories
-)
-
-# Get one more colour than I need from viridis so I avoid using yellow in the plot
-# paletteer::paletteer_c("viridis::viridis", n = 11)
-manual_ggplot2_colours <- c(
-  "#440154FF",
-  "#482576FF",
-  "#414487FF",
-  "#35608DFF",
-  "#2A788EFF",
-  "#21908CFF",
-  "#22A884FF",
-  "#43BF71FF",
-  "#7AD151FF",
-  "#BBDF27FF",
-  "#FDE725FF"
-)
-
-colour_mapping <- setNames(
-  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
-  unique_categories
-)
-
-df_measures %>%
-  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
-  filter(measure_desc == "pharmacy_first_services") %>%
-  filter(group_by == "Region") |>
-  plot_measures(
-    select_value = numerator,
-    select_interval_date = interval_start,
-    colour_var = region,
-    guide_nrow = 2,
-    facet_wrap = FALSE,
-    add_vline = FALSE,
-    title = NULL,
-    y_label = NULL
-  ) +
-  scale_shape_manual(values = shape_mapping) +
-  scale_colour_manual(values = colour_mapping) +
-  scale_fill_manual(values = colour_mapping)
-```
-
-#### Ethnicity
-
-```{r plot-pf-consultations-by-ethnicity, message=FALSE, warning=FALSE, fig.height=15, fig.width=10, fig.cap="**Figure 5**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region."}
-unique_categories <- sort(unique(df_measures$ethnicity))
-
-manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
-shape_mapping <- setNames(
-  manual_ggplot2_shapes[1:length(unique_categories)],
-  unique_categories
-)
-
-# Get one more colour than I need from viridis so I avoid using yellow in the plot
-# paletteer::paletteer_c("viridis::viridis", n = 6)
-manual_ggplot2_colours <- c(
-  "#440154FF",
-  "#414487FF",
-  "#2A788EFF",
-  "#22A884FF",
-  "#7AD151FF",
-  "#FDE725FF"
-)
-
-colour_mapping <- setNames(
-  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
-  unique_categories
-)
-
-df_measures %>%
-  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
-  filter(measure_desc == "pharmacy_first_services") %>%
-  filter(group_by == "Ethnicity") |>
-  plot_measures(
-    select_value = numerator,
-    select_interval_date = interval_start,
-    colour_var = ethnicity,
-    guide_nrow = 2,
-    facet_wrap = FALSE,
-    add_vline = FALSE,
-    title = NULL,
-    y_label = NULL
-  ) +
-  scale_shape_manual(values = shape_mapping) +
-  scale_colour_manual(values = colour_mapping) +
-  scale_fill_manual(values = colour_mapping) +
-  facet_wrap(~ethnicity, ncol = 1, scales = "free_y")
-```
-
-## Linkage of Pharmacy First Consultations
-
-```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 6**. Monthly breakdown of Pharmacy First consultation codes linked to a Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP."}
-# Create figure which shows completeness of PF consultations
-df_pf_descriptive_stats <- generate_linkage_dataset(df_descriptive_stats, df_pf_consultations)
-
-plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
-  ggplot(
-    aes(
-      x = interval_start,
-      y = ratio_exclusive,
-      fill = measure
-    )
-  ) +
-  geom_area(
-    alpha = 0.85,
-    linewidth = .5,
-    colour = "white"
-  ) +
-  geom_label(
-    aes(
-      y = cumulative_ratio_exclusive,
-      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
-    ),
-    vjust = -0.05,
-    size = 3.5,
-    show.legend = FALSE,
-    color = "black",
-    fill = "white"
-  ) +
-  scale_fill_viridis_d() +
-  scale_y_continuous(
-    limits = c(0, 1),
-    labels = scales::percent
-  ) +
-  labs(
-    x = NULL,
-    y = NULL,
-    fill = "Pharmacy First consultations linked to: "
-  ) +
-  scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
-  ) +
-  theme(
-    legend.position = "bottom",
-    text = element_text(size = 14)
-  )
-
-plot_pf_med_condition_linkage
-```
-
-### Pharmacy First Clinical Pathways
-
-```{r, message=FALSE, warning=FALSE}
-# Creates table of clinical condition counts by sex
-df_clinical_pathways_by_sex <- generate_clinical_conditions_dataset(population_table)
-
-if (!is.null(df_clinical_pathways_by_sex)) {
-  gt_pathways(df_clinical_pathways_by_sex)
-} else {
-  print("Skipping clinical conditions table: dataset not generated")
-}
-
-```
-
-### Pharmacy First Medications
-
-```{r, message=FALSE, warning=FALSE}
-# Creates table of top 10 med grouped by whether they are included in PF codelist or not
-df_pf_and_non_pf_med_counts <- generate_meds_dataset(df_consultation_med_counts)
-gt_top_meds(df_pf_and_non_pf_med_counts)
-```
-**Table 3**. Top ten medications linked to Pharmacy First consultations during the first 12 months following the service's launch date on 31 January 2024.
-
 ## Comparison with NHS BSA data
 
 ### Pharmacy First Consultations
 
-```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 7**. Monthly counts and ratio of patients with a Pharmacy First consultation code in OpenSAFELY-TPP and the NHS BSA comparison dataset."}
+We compared the number of Pharmacy First consultations recorded in OpenSAFELY-TPP to NHS BSA data. NHS BSA captures 100% of Pharmacy First activity across England, while OpenSAFELY-TPP represents only around 40% of the population. This figure highlights the difference in counts and shows what proportion of nationally recorded consultations are captured in OpenSAFELY-TPP GP records.
+
+**Figure 2**. Monthly counts and ratio of patients with a Pharmacy First consultation code in OpenSAFELY-TPP and the NHS BSA comparison dataset.
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
 # Ideally I would like to load this at the top of this script
 # But this file uses datasets created further down so it easiest to load it here
 df_pf_consultations_total <- df_pf_consultations |>
@@ -554,6 +297,285 @@ pf_validatio_consultation_plot <- df_pf_consultation_validation_plot |>
   )
 
 pf_validatio_consultation_plot
+```
+
+### Demographic breakdowns
+
+These charts show how the number of Pharmacy First consultations changed over time across key demographic groups. Counts are broken down by sex, age, IMD quintile, region, and ethnicity to highlight patterns in service use across the population.
+
+#### Sex
+
+**Figure 3**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by sex.
+```{r plot-pf-consultations-by-sex, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Sex") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = sex,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  )
+```
+
+#### Age
+
+**Figure 4**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by age bands.
+```{r plot-pf-consultations-by-age-band, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+unique_categories <- sort(unique(df_measures$age_band))
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
+shape_mapping <- setNames(manual_ggplot2_shapes[1:length(unique_categories)], unique_categories)
+
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Age band") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = age_band,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping)
+```
+
+#### Index of Multiple Deprivation (IMD)
+
+**Figure 5**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by IMD.
+```{r plot-pf-consultations-by-imd, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+unique_categories <- sort(unique(df_measures$imd))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer_c("viridis::viridis", n = 7)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#443A83FF",
+  "#31688EFF",
+  "#21908CFF",
+  "#35B779FF",
+  "#8FD744FF",
+  "#FDE725FF"
+)
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "IMD") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = imd,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping)
+```
+
+#### Region
+
+**Figure 6**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region.
+```{r plot-pf-consultations-by-region, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+unique_categories <- sort(unique(df_measures$region))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 8, 4, 10, 7, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer::paletteer_c("viridis::viridis", n = 11)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#482576FF",
+  "#414487FF",
+  "#35608DFF",
+  "#2A788EFF",
+  "#21908CFF",
+  "#22A884FF",
+  "#43BF71FF",
+  "#7AD151FF",
+  "#BBDF27FF",
+  "#FDE725FF"
+)
+
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Region") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = region,
+    guide_nrow = 2,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping)
+```
+
+#### Ethnicity
+
+**Figure 7**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by ethnicity.
+```{r plot-pf-consultations-by-ethnicity, message=FALSE, warning=FALSE, fig.height=15, fig.width=10}
+unique_categories <- sort(unique(df_measures$ethnicity))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer::paletteer_c("viridis::viridis", n = 6)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#414487FF",
+  "#2A788EFF",
+  "#22A884FF",
+  "#7AD151FF",
+  "#FDE725FF"
+)
+
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
+df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Ethnicity") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = ethnicity,
+    guide_nrow = 2,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping) +
+  facet_wrap(~ethnicity, ncol = 1, scales = "free_y")
+```
+
+## Completeness of recorded Pharmacy First consultations in OpenSAFELY-TPP
+
+Completeness of Pharmacy First consultations is summarised here by showing the proportion of consultations with a recorded medication, clinical condition, or both. This gives an indication of how complete consultations are captured in GP records over time.
+
+**Figure 8**. Monthly breakdown of all Pharmacy First consultation codes with either a recorded Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP.
+```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+# Create figure which shows completeness of PF consultations
+df_pf_descriptive_stats <- generate_linkage_dataset(df_descriptive_stats, df_pf_consultations)
+
+plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
+  ggplot(
+    aes(
+      x = interval_start,
+      y = ratio_exclusive,
+      fill = measure
+    )
+  ) +
+  geom_area(
+    alpha = 0.85,
+    linewidth = .5,
+    colour = "white"
+  ) +
+  geom_label(
+    aes(
+      y = cumulative_ratio_exclusive,
+      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
+    ),
+    vjust = -0.05,
+    size = 3.5,
+    show.legend = FALSE,
+    color = "black",
+    fill = "white"
+  ) +
+  scale_fill_viridis_d() +
+  scale_y_continuous(
+    limits = c(0, 1),
+    labels = scales::percent
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Pharmacy First consultations linked to: "
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  )
+
+plot_pf_med_condition_linkage
+```
+
+### Summary of clinical conditions recorded in Pharmacy First consultations
+
+Pharmacy First consultations involving a clinical condition are shown here, grouped by condition type and sex. This highlights which pathways were most commonly used during the study period.
+
+**Table 2**. Clinical conditions recorded in Pharmacy First consultations grouped by sex in OpenSAFELY-TPP between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
+```{r, message=FALSE, warning=FALSE}
+# Creates table of clinical condition counts by sex
+df_clinical_pathways_by_sex <- generate_clinical_conditions_dataset(population_table)
+
+if (!is.null(df_clinical_pathways_by_sex)) {
+  gt_pathways(df_clinical_pathways_by_sex)
+} else {
+  print("Skipping clinical conditions table: dataset not generated")
+}
+
+```
+
+### Summary of medications recorded in Pharmacy First consultations
+
+This table presents the most commonly recorded medications recorded in Pharmacy First consultations, grouped by whether they were included in the Pharmacy First medications codelists or not.
+
+**Table 3**. Top ten medications recorded in Pharmacy First consultations between `r min(df_consultation_med_counts$interval_start)` and `r max(df_consultation_med_counts$interval_end)`.
+```{r, message=FALSE, warning=FALSE}
+# Creates table of top 10 med grouped by whether they are included in PF codelist or not
+df_pf_and_non_pf_med_counts <- generate_meds_dataset(df_consultation_med_counts)
+gt_top_meds(df_pf_and_non_pf_med_counts)
 ```
 
 # References
