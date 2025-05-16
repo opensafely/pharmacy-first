@@ -123,34 +123,9 @@ Code for data management and analysis, as well as codelists, are available for r
 ## Cohort description
 
 ```{r, message=FALSE, warning=FALSE}
-if (nrow(population_table) < 216) {
-  print("Table 1 cannot be generated with current dummy data")
-} else if (nrow(population_table) == 216) {
-  population_table_demo <- population_table %>% 
-    pivot_wider(names_from = "population", values_from = "value")
-  df_demographics_table <- population_table_demo %>%
-  filter(table == "tab_demographics") %>%
-  pivot_wider(names_from = metric, values_from = c(pharmacy_first, tpp)) %>%
-  select(-table) %>%
-  mutate(category = factor(category,
-    levels = c("sex", "age_band", "ethnicity", "imd", "region"),
-    labels = c("Sex", "Age Band", "Ethnicity", "IMD", "Region")
-  )) %>%
-  mutate(
-    subcategory = recode(subcategory,
-    "female" = "Female",
-    "male" = "Male",
-    "Other South Asian" = "Any other Asian background",
-    "Other Black" = "Any other Black background",
-    "Other Mixed" = "Any other mixed background",
-    "All other ethnic groups" = "Any other ethnic group",
-    "Other White" = "Any other White background")) |>
-  mutate(order = c(1:23, 28, 36, 24, 29, 35, 25, 40, 30, 34, 27, 39, 26, 37, 38, 32, 31, 33)) |> 
-  arrange(order) |>
-  select(-order)
-
+# Create cohort description table (excluding clinical conditions)
+df_demographics_table <- generate_demographics_dataset(population_table)
 gt_demographics(df_demographics_table)
-}
 ```
 **Table 1**. Cohort description for all patients with at least one Pharmacy First consultation between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
 
@@ -160,61 +135,7 @@ gt_demographics(df_demographics_table)
 
 ```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10, fig.cap="**Figure 1**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP."}
 # Create figure for total count of Pharmacy First consultations for each code (3 codes)
-df_pf_consultations <- df_measures |>
-  filter(measure_desc == "clinical_service") |>
-  filter(is.na(group_by)) |>
-  select(measure, interval_start, numerator) |>
-  mutate(measure = factor(measure,
-    levels = c(
-      "Consultation Service",
-      "Pharmacy First Consultation",
-      "Community Pharmacy First Service"
-    ),
-    labels = c(
-      "CP Consultation Service for minor illness (1577041000000109)",
-      "Pharmacy First service (983341000000102)",
-      "CP Pharmacy First Service (2129921000000100)"
-    )
-  )) |>
-  group_by(interval_start) |>
-  mutate(
-    pf_consultation_total = sum(numerator, na.rm = TRUE),
-    data_desc = "Pharmacy First Consultation"
-  ) |>
-  rename(pf_code = measure) |>
-  filter(interval_start >= "2024-02-01") |>
-  ungroup() |>
-  pivot_longer(
-    cols = c(numerator, pf_consultation_total),
-    names_to = "measure"
-  ) |>
-  mutate(
-    measure = case_when(
-      measure == "pf_consultation_total" ~ "Pharmacy First Service Total",
-      measure == "numerator" ~ pf_code
-    ),
-    data_desc = case_when(
-      measure == "Pharmacy First Service Total" ~ "total",
-      measure %in% c(
-        "CP Consultation Service for minor illness (1577041000000109)",
-        "Pharmacy First service (983341000000102)",
-        "CP Pharmacy First Service (2129921000000100)"
-      ) ~ "breakdown"
-    ),
-    measure = factor(measure,
-      levels = c(
-        "Pharmacy First Service Total",
-        "CP Consultation Service for minor illness (1577041000000109)",
-        "Pharmacy First service (983341000000102)",
-        "CP Pharmacy First Service (2129921000000100)"
-      )
-    ),
-    data_desc = factor(data_desc,
-      levels = c("total", "breakdown"),
-      labels = c("Total", "Breakdown")
-    )
-  ) |>
-  select(measure, interval_start, data_desc, value)
+df_pf_consultations <- generate_pf_consultation_counts(df_measures)
 
 plot_pf_consultations <- df_pf_consultations |>
   ggplot(
@@ -453,39 +374,8 @@ df_measures %>%
 ## Linkage of Pharmacy First Consultations
 
 ```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10, fig.cap="**Figure 6**. Monthly breakdown of Pharmacy First consultation codes linked to a Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP."}
-df_pf_descriptive_stats <- df_descriptive_stats %>%
-  filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
-  mutate(
-    measure = factor(measure,
-      levels = c(
-        "pfmed_with_pfid",
-        "pfcondition_with_pfid",
-        "pfmed_and_pfcondition_with_pfid"
-      ),
-      labels = c(
-        "Medication",
-        "Clinical condition",
-        "Both"
-      )
-    )
-  ) %>%
-  left_join(df_pf_consultations_total,
-    by = c("interval_start")
-  )
-
-df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
-  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
-  group_by(interval_start) %>%
-  mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
-  arrange(desc(measure), .by_group = TRUE) |>
-  mutate(
-    numerator_exclusive = case_when(
-      measure == "Both" ~ numerator,
-      measure %in% c("Clinical condition", "Medication") ~ numerator - numerator[measure == "Both"]
-    ),
-    ratio_exclusive = numerator_exclusive / pf_consultation_total,
-    cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
-  )
+# Create figure which shows completeness of PF consultations
+df_pf_descriptive_stats <- generate_linkage_dataset(df_descriptive_stats, df_pf_consultations)
 
 plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   ggplot(
@@ -536,80 +426,16 @@ plot_pf_med_condition_linkage
 ### Pharmacy First Clinical Pathways
 
 ```{r, message=FALSE, warning=FALSE}
-if (nrow(population_table) < 216) {
-  print("Table cannot be generated with current dummy data")
-} else if (nrow(population_table) == 216) {
-  population_table <- population_table %>%
-  filter(population == "pharmacy_first")
-df_clinical_pathways_by_sex <- population_table %>%
-  filter(table == "tab_pf_pathways_by_sex") %>%
-  pivot_wider(names_from = metric, values_from = value) %>%
-  select(-table) %>%
-  pivot_wider(names_from = category, values_from = numerator) %>%
-  group_by(subcategory) %>%
-  mutate(total = female + male) %>%
-  ungroup() %>%
-  mutate(
-    pct = total / sum(total),
-    subcategory = factor(subcategory,
-      levels = c(
-        "otitismedia",
-        "impetigo",
-        "insectbite",
-        "shingles",
-        "sinusitis",
-        "sorethroat",
-        "uti"
-      ),
-      labels = c(
-        "Acute otitis media",
-        "Impetigo",
-        "Infected insect bites",
-        "Herpes zoster",
-        "Acute sinusitis",
-        "Acute pharyngitis",
-        "Uncomplicated UTI"
-      )
-    )
-  ) %>% 
-  arrange(subcategory) %>% 
-  select(-population)
-
+# Creates table of clinical condition counts by sex
+df_clinical_pathways_by_sex <- generate_clinical_conditions_dataset(population_table)
 gt_pathways(df_clinical_pathways_by_sex)
-}
 ```
 
 ### Pharmacy First Medications
 
 ```{r, message=FALSE, warning=FALSE}
-vmp_lookup <- read_csv(
-  here("lib", "reference", "vmp_vtm_lookup.csv"),
-  col_types = cols(id = col_character())
-) %>%
-  rename(code = id)
-
-df_pf_med_counts <- df_consultation_med_counts |>
-  select(numerator, code = dmd_code, pharmacy_first_med) |>
-  left_join(vmp_lookup, by = "code") |>
-  filter(numerator > 0) |>
-  select(-code) %>%
-  group_by(pharmacy_first_med, vmp_nm) |>
-  summarise(count = sum(numerator, na.rm = TRUE)) |>
-  filter(!is.na(vmp_nm)) %>%
-  ungroup() |>
-  group_by(pharmacy_first_med) |>
-  mutate(ratio_by_group = count / sum(count, na.na.rm = TRUE)) |>
-  slice_max(order_by = ratio_by_group, n = 10) |>
-  ungroup()
-
-df_pf_and_non_pf_med_counts <- df_pf_med_counts %>%
-  arrange(!pharmacy_first_med) %>%
-  mutate(pharmacy_first_med = factor(pharmacy_first_med,
-    levels = c(FALSE, TRUE),
-    labels = c(("Medication not included in codelists"), "Medication included in codelists")
-  )) %>%
-  group_by(pharmacy_first_med)
-
+# Creates table of top 10 med grouped by whether they are included in PF codelist or not
+df_pf_and_non_pf_med_counts <- generate_meds_dataset(df_consultation_med_counts)
 gt_top_meds(df_pf_and_non_pf_med_counts)
 ```
 **Table 3**. Top ten medications linked to Pharmacy First consultations during the first 12 months following the service's launch date on 31 January 2024.
@@ -631,24 +457,13 @@ df_pf_consultations_total <- df_pf_consultations |>
 
 source(here("lib", "functions", "combine_os_nhsbsa_validation_data.R"))
 
-# Pharmacy First Consultations
-# Instead of only using the count of PF consultations in OS with a clinical
-# condition we are using all PF consultations with a consultation id
-df_pf_consultation_validatio_plot <- pf_validation |>
-  filter(
-    (data_source == "opensafely" &
-      data_desc == "pf_consultation" &
-      count_desc == "consultation_id") |
-      (data_source == "nhs_bsa" &
-        data_desc == "pf_consultation" &
-        count_desc == "consultation_type")
-  )
-
-# Pivot wider to calculate ratio
-df_pf_consultation_validatio_plot <- df_pf_consultation_validatio_plot |>
-  select(date, data_source, count_method, count_total) |>
-  pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
-  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
+# Creates comparison dataset by combining datasets listed in arguments
+df_pf_consultation_validation_plot <- generate_validation_comparison_dataset(
+  df_bsa_validation,
+  df_measures,
+  df_pf_consultations_total,
+  df_pfmed
+)
 
 # Select colours for groups
 # Group 1:
@@ -657,7 +472,7 @@ colour_group_1 <- "#CF4446FF"
 colour_group_2 <- "#1B0C42FF"
 
 # Create consultation validation plot
-pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
+pf_validatio_consultation_plot <- df_pf_consultation_validation_plot |>
   ggplot(aes(x = date)) +
   geom_point(
     aes(
@@ -728,44 +543,6 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
   )
 
 pf_validatio_consultation_plot
-```
-
-```{r, message=FALSE, warning=FALSE}
-# This commented out code contains code to generate a map of England, which presents cohort counts by region
-# It is just an idea, so the code is not efficient (just wanted to see if it was possible), but if this is a good idea, happy to work on it
-# library(sf)
-# library(RColorBrewer)
-
-# england_map <- st_read(here("lib","map", "RGN_DEC_24_EN_BUC.shp"))
-# print(unique(england_map$RGN24NM))
-
-# regions_table <- df_demographics_table[df_demographics_table$category=="Region", ]
-# regions_table$subcategory <- as.character(regions_table$subcategory)
-# regions_table$subcategory[regions_table$subcategory == "East"] <- "East of England"
-# regions_table <- regions_table %>%
-#  filter(subcategory != "Missing") %>%
-#  rename(RGN24NM = subcategory)
-
-# england_regions <- england_map %>%
-#   left_join(regions_table, by = "RGN24NM")
-
-# region_map <- ggplot(england_regions) +
-#   geom_sf(aes(fill = pct*100), color = "black") +
-#   geom_label(aes(label = RGN24NM, geometry = geometry),
-#   data = england_regions,
-#   stat = "sf_coordinates",
-#   size = 2, color = "black") +
-#   scale_fill_distiller(palette = "Blues", direction = 1) +
-#   theme_minimal() +
-#   theme(panel.grid.major = element_blank(),
-#       panel.grid.minor = element_blank(),
-#       axis.text = element_blank(),
-#       axis.ticks = element_blank(),
-#       axis.title = element_blank()) +
-#   labs(title = "Pharmacy First Consultation Code Usage by Region",
-#        fill = "% of Study Cohort")
-
-# region_map
 ```
 
 # References
