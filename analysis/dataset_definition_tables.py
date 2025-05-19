@@ -48,7 +48,7 @@ dataset.region = registration.practice_nuts1_region_name
 dataset.imd = get_imd(addresses, index_date)
 dataset.ethnicity = get_latest_ethnicity(
     index_date,
-    selected_events,
+    clinical_events,
     codelists.ethnicity_group16_codelist,
     ethnicity_from_sus,
     grouping=16,
