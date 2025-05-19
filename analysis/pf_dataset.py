@@ -8,6 +8,7 @@ from pf_variables_library import check_pregnancy_status, count_past_events
 def has_event(events, codelist):
     return events.where(events.snomedct_code.is_in(codelist)).exists_for_patient()
 
+
 # Create denominator variables for each clinical condition
 # These are based on NHS England rules using sex, age, pregnancy status and repeated diagnoses
 # NOTE: The following exclusions have not been added:
@@ -187,7 +188,6 @@ def get_latest_ethnicity(
             when(latest_ethnicity_from_codes_category_num == "16").then(
                 "All other ethnic groups"
             ),
-            when(latest_ethnicity_from_codes_category_num == "17").then("Not stated"),
         )
 
         ethnicity_from_sus = case(
@@ -207,7 +207,6 @@ def get_latest_ethnicity(
             when(ethnicity_from_sus.code == "P").then("Other Black"),
             when(ethnicity_from_sus.code == "R").then("Chinese"),
             when(ethnicity_from_sus.code == "S").then("All other ethnic groups"),
-            when(ethnicity_from_sus.code == "Z").then("Not stated"),
         )
 
     ethnicity_combined = case(
