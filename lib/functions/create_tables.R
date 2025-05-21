@@ -319,7 +319,8 @@ generate_meds_dataset <- function(df_consultation_med_counts) {
       levels = c(FALSE, TRUE),
       labels = c(("Medication not included in codelists"), "Medication included in codelists")
     )) %>%
-    group_by(pharmacy_first_med)
+    group_by(pharmacy_first_med) %>% 
+    filter(pharmacy_first_med == "Medication included in codelists")
 
   return(df_pf_and_non_pf_med_counts)
 }
