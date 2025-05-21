@@ -76,6 +76,7 @@ demographics_table <- gt_demographics(df_demographics_table)
 }
 
 gt_demographics(df_demographics_table)
+fs::dir_create(here("released_output", "results", "manuscript"))
 gtsave(demographics_table, here("released_output", "results", "manuscript", "table1_demographics.png"))
 ```
 

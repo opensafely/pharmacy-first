@@ -3,6 +3,7 @@ title: "Pharmacy First Consultations in OpenSAFELY-TPP"
 output:
   html_document:
     toc: true
+    toc_depth: 2
 toc-title: "Overview"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 # bibliography: "references.bib"
@@ -63,14 +64,13 @@ df_pf_consultations_total <- df_pf_consultations |>
   ungroup() |>
   distinct()
 ```
-# Overview
 
 This OpenSAFELY report presents real-time analyses of the Pharmacy First service using data from OpenSAFELY-TPP. 
 It is designed to support policymakers and clinicians in making timely, data-driven decisions to enable targeted improvements in service delivery.
 The analysis is based on approximately 26 million individuals registered with general practices using TPP SystmOne software. 
 This report will be updated regularly (frequency TBD) to incorporate new data when available. 
 
-The code for this report can be found in the OpenSAFELY Pharmacy First [repository](https://github.com/opensafely/pharmacy-first). 
+The code for this report can be found in the [OpenSAFELY Pharmacy First GitHub repository](https://github.com/opensafely/pharmacy-first). 
 For a more detailed description of the underlying data sources, methods, and results, please refer to the accompanying manuscript (link to be added once available).
 
 
