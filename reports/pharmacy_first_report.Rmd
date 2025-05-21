@@ -620,7 +620,6 @@ We reported monthly consultation counts to capture the total activity in GP reco
 
 To contextualise the data used in this report, we compared overall consultation counts in OpenSAFELY-TPP with publicly available NHS BSA data, which captures 100% of Pharmacy First consultation activity that was reimbursed by NHS England.
 This comparison focused on aggregate consultation counts and the proportion of Pharmacy First consultations recorded in OpenSAFELY-TPP relative to NHS BSA over time.
-We also compared counts of Pharmacy First consultations by clinical condition to assess the representativeness of our population.
 
 ### Completeness of recorded Pharmacy First consultations in GP records 
 Completeness was assessed to determine the extent to which key clinical information - specifically conditions and medications - is consistently recorded in Pharmacy First consultations.
@@ -630,8 +629,7 @@ Monthly proportions were calculated to assess changes in recording patterns over
 ### Summary of clinical conditions recorded in Pharmacy First consultations
 
 We identified Pharmacy First clinical conditions by extracting all SNOMED CT codes recorded during Pharmacy First consultations that matched the seven NHS England-defined clinical conditions.
-Counts of clinical conditions were grouped by pathway and broken down by patient sex and Index of Multiple Deprivation (IMD) to get a better understanding of the population using the service for each condition.
-To compare clinical condition recording between data sources, we calculated the percentage of Pharmacy First consultations attributed to each of the seven NHS England-specified clinical conditions in OpenSAFELY-TPP and NHS BSA data.
+Counts of clinical conditions were grouped by pathway and broken down by patient sex to get a better understanding of the population using the service for each condition.
 
 ### Summary of medications recorded in Pharmacy First consultations
 
