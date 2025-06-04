@@ -587,3 +587,19 @@ gtsave(
   here("released_output", "results", "manuscript", "table3_top_ten_meds.png"),
 )
 ```
+
+
+```{r}
+
+df_table_a3 <- read_csv(here("lib/validation/data/pf_consultation_validation_data.csv"))
+
+df_table_a3 |>
+  filter(date >= "2024-02-01" & date <= "2025-01-01") |>
+  group_by(consultation_type) |>
+  summarise(
+    count = sum(count)
+  ) |>
+  ungroup() |>
+  mutate(pct = count / sum(count))
+
+```
