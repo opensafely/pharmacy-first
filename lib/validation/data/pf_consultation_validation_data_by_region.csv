@@ -685,3 +685,101 @@ date,region,consultation_type,count
 2024-12-01,South West,shingles,607
 2024-12-01,South West,sinusitis,3479
 2024-12-01,South West,uncomplicated_uti,6455
+2025-01-01,East of England,acute_otitis_media,3419
+2025-01-01,East of England,acute_sore_throat,9711
+2025-01-01,East of England,impetigo,909
+2025-01-01,East of England,infected_insect_bites,399
+2025-01-01,East of England,shingles,551
+2025-01-01,East of England,sinusitis,4528
+2025-01-01,East of England,uncomplicated_uti,6155
+2025-01-01,London,acute_otitis_media,2867
+2025-01-01,London,acute_sore_throat,19091
+2025-01-01,London,impetigo,899
+2025-01-01,London,infected_insect_bites,858
+2025-01-01,London,shingles,558
+2025-01-01,London,sinusitis,5650
+2025-01-01,London,uncomplicated_uti,8761
+2025-01-01,Midlands,acute_otitis_media,5360
+2025-01-01,Midlands,acute_sore_throat,18551
+2025-01-01,Midlands,impetigo,1866
+2025-01-01,Midlands,infected_insect_bites,911
+2025-01-01,Midlands,shingles,947
+2025-01-01,Midlands,sinusitis,6902
+2025-01-01,Midlands,uncomplicated_uti,12575
+2025-01-01,North East and Yorkshire,acute_otitis_media,3907
+2025-01-01,North East and Yorkshire,acute_sore_throat,13452
+2025-01-01,North East and Yorkshire,impetigo,1931
+2025-01-01,North East and Yorkshire,infected_insect_bites,705
+2025-01-01,North East and Yorkshire,shingles,912
+2025-01-01,North East and Yorkshire,sinusitis,5758
+2025-01-01,North East and Yorkshire,uncomplicated_uti,9878
+2025-01-01,North West,acute_otitis_media,3327
+2025-01-01,North West,acute_sore_throat,12254
+2025-01-01,North West,impetigo,1539
+2025-01-01,North West,infected_insect_bites,513
+2025-01-01,North West,shingles,802
+2025-01-01,North West,sinusitis,5334
+2025-01-01,North West,uncomplicated_uti,9074
+2025-01-01,South East,acute_otitis_media,4642
+2025-01-01,South East,acute_sore_throat,12707
+2025-01-01,South East,impetigo,1513
+2025-01-01,South East,infected_insect_bites,558
+2025-01-01,South East,shingles,883
+2025-01-01,South East,sinusitis,6110
+2025-01-01,South East,uncomplicated_uti,8569
+2025-01-01,South West,acute_otitis_media,2516
+2025-01-01,South West,acute_sore_throat,7545
+2025-01-01,South West,impetigo,1310
+2025-01-01,South West,infected_insect_bites,386
+2025-01-01,South West,shingles,604
+2025-01-01,South West,sinusitis,3831
+2025-01-01,South West,uncomplicated_uti,5911
+2025-02-01,East of England,acute_otitis_media,4430
+2025-02-01,East of England,acute_sore_throat,10510
+2025-02-01,East of England,impetigo,926
+2025-02-01,East of England,infected_insect_bites,457
+2025-02-01,East of England,shingles,571
+2025-02-01,East of England,sinusitis,4529
+2025-02-01,East of England,uncomplicated_uti,5902
+2025-02-01,London,acute_otitis_media,3418
+2025-02-01,London,acute_sore_throat,19370
+2025-02-01,London,impetigo,858
+2025-02-01,London,infected_insect_bites,868
+2025-02-01,London,shingles,563
+2025-02-01,London,sinusitis,5524
+2025-02-01,London,uncomplicated_uti,8123
+2025-02-01,Midlands,acute_otitis_media,6400
+2025-02-01,Midlands,acute_sore_throat,19808
+2025-02-01,Midlands,impetigo,1761
+2025-02-01,Midlands,infected_insect_bites,1049
+2025-02-01,Midlands,shingles,953
+2025-02-01,Midlands,sinusitis,6706
+2025-02-01,Midlands,uncomplicated_uti,12081
+2025-02-01,North East and Yorkshire,acute_otitis_media,5263
+2025-02-01,North East and Yorkshire,acute_sore_throat,15414
+2025-02-01,North East and Yorkshire,impetigo,1964
+2025-02-01,North East and Yorkshire,infected_insect_bites,774
+2025-02-01,North East and Yorkshire,shingles,964
+2025-02-01,North East and Yorkshire,sinusitis,5984
+2025-02-01,North East and Yorkshire,uncomplicated_uti,9625
+2025-02-01,North West,acute_otitis_media,3889
+2025-02-01,North West,acute_sore_throat,13265
+2025-02-01,North West,impetigo,1425
+2025-02-01,North West,infected_insect_bites,649
+2025-02-01,North West,shingles,871
+2025-02-01,North West,sinusitis,5419
+2025-02-01,North West,uncomplicated_uti,8480
+2025-02-01,South East,acute_otitis_media,5804
+2025-02-01,South East,acute_sore_throat,12828
+2025-02-01,South East,impetigo,1498
+2025-02-01,South East,infected_insect_bites,656
+2025-02-01,South East,shingles,871
+2025-02-01,South East,sinusitis,5930
+2025-02-01,South East,uncomplicated_uti,8041
+2025-02-01,South West,acute_otitis_media,3050
+2025-02-01,South West,acute_sore_throat,7837
+2025-02-01,South West,impetigo,1225
+2025-02-01,South West,infected_insect_bites,471
+2025-02-01,South West,shingles,559
+2025-02-01,South West,sinusitis,3739
+2025-02-01,South West,uncomplicated_uti,5511

@@ -327,7 +327,7 @@ df_pf_consultation_validatio_plot <- pf_validation |>
       (data_source == "nhs_bsa" &
         data_desc == "pf_consultation" &
         count_desc == "consultation_type")
-  )
+  ) |> filter(date <= "2025-01-01")
 
 # Pivot wider to calculate ratio
 df_pf_consultation_validatio_plot <- df_pf_consultation_validatio_plot |>
@@ -464,7 +464,7 @@ pf_validatio_consultation_plot <- df_pf_consultation_validatio_plot |>
 pf_validatio_consultation_plot
 
 ggsave(
-  filename = here("released_output", "results", "manuscript", "fig3_pf_os_nhsbsa_comparison.png"),
+  filename = here("released_output", "results", "manuscript", "fig3_pf_os_nhsbsa_comparison_thresholds.png"),
   pf_validatio_consultation_plot,
   height = 4,
   width = 8
