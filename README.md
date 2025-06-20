@@ -85,6 +85,5 @@ Read more at [OpenSAFELY.org](https://opensafely.org).
 # Licences
 As standard, research projects have a MIT license. 
 
-NHS BSA data is retrieved via their API ([code](https://github.com/opensafely/pharmacy-first/blob/1a2659a718b4139fa5863c16e11bc751e529e7d5/lib/functions/get_pf_consultation_validation_data.R#L60)) and used for comparison in our analyses ([code](https://github.com/opensafely/pharmacy-first/blob/main/lib/functions/combine_os_nhsbsa_validation_data.R)).  
-The dataset used is the [Pharmacy and Appliance Contractor Dispensing Data](https://www.nhsbsa.nhs.uk/prescription-data/dispensing-data/dispensing-contractors-data), which is made available under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+NHS BSA data of Pharmacy First consultations on a national and regional level is retrieved via their API ([link](https://www.nhsbsa.nhs.uk/prescription-data/dispensing-data/dispensing-contractors-data)), which is made available under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
 
