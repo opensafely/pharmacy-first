@@ -84,3 +84,6 @@ Read more at [OpenSAFELY.org](https://opensafely.org).
 
 # Licences
 As standard, research projects have a MIT license. 
+
+NHS BSA data of Pharmacy First consultations on a national and regional level is retrieved via their API ([link](https://www.nhsbsa.nhs.uk/prescription-data/dispensing-data/dispensing-contractors-data)), which is made available under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
+
