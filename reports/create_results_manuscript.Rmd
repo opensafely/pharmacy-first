@@ -25,11 +25,6 @@ source(here("lib", "functions", "tidy_measures.R"))
 source(here("lib", "functions", "plot_measures.R"))
 source(here("lib", "functions", "create_tables.R"))
 
-# Load validation data:
-# - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
-# - df_bsa_consultation_validation: date, consultation_type, source, count_method, count
-source(here("lib", "functions", "load_validation_data.R"))
-
 # Load opensafely ouputs:
 # - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
 # - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
