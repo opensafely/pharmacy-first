@@ -28,11 +28,6 @@ source(here("lib", "functions", "tidy_measures.R"))
 source(here("lib", "functions", "plot_measures.R"))
 source(here("lib", "functions", "create_tables.R"))
 
-# Load validation data:
-# - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
-# - df_bsa_consultation_validation: date, consultation_type, source, count_method, count
-source(here("lib", "functions", "load_validation_data.R"))
-
 # Load opensafely ouputs:
 # - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
 # - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
@@ -87,9 +82,8 @@ However, the roll out of Update Record has been gradual due to the involvement o
 The aims of this report are to:
 
 1. Describe the **patient population** using the Pharmacy First Clinical Pathway service, including demographic and regional subgroups;
-1. **Compare recorded Pharmacy First activity across different data sources** (OpenSAFELY-TPP and NHS BSA);
-1. Describe the **completeness of recorded Pharmacy First consultations** (clinical conditions and medications)
-1. Describe the **clinical conditions and medications being treated/supplied** under Pharmacy First Clinical Pathways and recorded in GP records
+2. Describe the **completeness of recorded Pharmacy First consultations** (clinical conditions and medications)
+3. Describe the **clinical conditions and medications being treated/supplied** under Pharmacy First Clinical Pathways and recorded in GP records
 
 # Results
 
@@ -369,115 +363,6 @@ df_measures %>%
   facet_wrap(~ethnicity, ncol = 1, scales = "free_y")
 ```
 
-## Comparison of Pharmacy First consultation counts in GP records and NHS BSA data
-
-We compared the number of Pharmacy First consultations recorded in OpenSAFELY-TPP to NHS BSA data.
-NHS BSA captures 100% of Pharmacy First activity across England, while OpenSAFELY-TPP represents only around 40% of the population.
-This figure highlights the difference in counts and shows what proportion of nationally recorded consultations are captured in OpenSAFELY-TPP GP records.
-
-**Figure 7**. Monthly counts and ratio of patients with a Pharmacy First consultation code in OpenSAFELY-TPP and the NHS BSA comparison dataset.
-
-```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
-# Ideally I would like to load this at the top of this script
-# But this file uses datasets created further down so it easiest to load it here
-df_pf_consultations_total <- df_pf_consultations |>
-  filter(data_desc == "Total") |>
-  mutate(
-    data_desc = "Pharmacy First Consultation"
-  ) |>
-  select(interval_start, pf_consultation_total = value, data_desc) |>
-  unique()
-
-source(here("lib", "functions", "combine_os_nhsbsa_validation_data.R"))
-
-# Creates comparison dataset by combining datasets listed in arguments
-df_pf_consultation_validation_plot <- generate_validation_comparison_dataset(
-  df_bsa_validation,
-  df_measures,
-  df_pf_consultations_total,
-  df_pfmed
-)
-
-# Select colours for groups
-# Group 1:
-colour_group_1 <- "#CF4446FF"
-# Group 1: #1B0C42FFpaletteer_c("viridis::inferno", n = 10)[2]
-colour_group_2 <- "#1B0C42FF"
-
-# Create consultation validation plot
-pf_validatio_consultation_plot <- df_pf_consultation_validation_plot |>
-  ggplot(aes(x = date)) +
-  geom_point(
-    aes(
-      y = nhs_bsa_count_100pct,
-      colour = "NHS BSA",
-      shape = "NHS BSA"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(y = nhs_bsa_count_100pct, colour = "NHS BSA"),
-    alpha = .3,
-    linewidth = .5
-  ) +
-  geom_point(
-    aes(
-      y = opensafely_opensafely_tpp,
-      colour = "OpenSAFELY-TPP",
-      shape = "OpenSAFELY-TPP"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(
-      y = opensafely_opensafely_tpp,
-      colour = "OpenSAFELY-TPP"
-    ),
-    alpha = .3,
-    linewidth = .5
-  ) +
-  geom_label(
-    aes(
-      y = opensafely_opensafely_tpp,
-      label = scales::percent(ratio, accuracy = .1),
-    ),
-    colour = colour_group_2,
-    vjust = -.5,
-    size = 3.5
-  ) +
-  scale_y_continuous(labels = scales::number) +
-  scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
-  ) +
-  scale_colour_manual(
-    values = c(
-      "NHS BSA" = colour_group_1,
-      "OpenSAFELY-TPP" = colour_group_2
-    ),
-    name = NULL
-  ) +
-  scale_shape_manual(
-    values = c(
-      "NHS BSA" = 15,
-      "OpenSAFELY-TPP" = 16
-    ),
-    name = NULL
-  ) +
-  labs(
-    x = NULL,
-    y = NULL,
-    colour = NULL,
-    shape = NULL
-  ) +
-  theme(
-    legend.position = "bottom",
-    text = element_text(size = 14)
-  )
-
-pf_validatio_consultation_plot
-```
-
 ## Completeness of recorded Pharmacy First consultations in GP records
 
 Completeness of Pharmacy First consultations is summarised here by showing the proportion of consultations with a recorded medication, clinical condition, or both.
@@ -577,12 +462,6 @@ Data from individuals who opted out of NHS data sharing with their GP surgery (T
 
 To reduce the risk of re-identification, all counts smaller or equal 7 were redacted, then all counts were rounded to the nearest 5.
 
-### NHS BSA comparison data
-
-To contextualise the Pharmacy First consultation data recorded in OpenSAFELY-TPP, we compared consultation counts with service activity data submitted by community pharmacies and published by NHS Business Services Authority (NHS BSA).
-NHS BSA provides publicly available records of monthly dispensing activity and service usage with a three-month delay.
-We used the *Pharmacy and appliance contractor dispensing dataset* which includes monthly counts of Pharmacy First Clinical Pathways covering 100% of the English population.
-
 ## Identification of clinical events and medications
 
 ### Pharmacy First consultations
@@ -615,11 +494,6 @@ Initial data collection covered the first year of service, from 31 January 2024 
 
 Patients with at least one recorded Pharmacy First consultation code each month were included in this report.
 We reported monthly consultation counts to capture the total activity in GP records.
-
-### Comparison of Pharmacy First consultation counts in GP records and NHS BSA data
-
-To contextualise the data used in this report, we compared overall consultation counts in OpenSAFELY-TPP with publicly available NHS BSA data, which captures 100% of Pharmacy First consultation activity that was reimbursed by NHS England.
-This comparison focused on aggregate consultation counts and the proportion of Pharmacy First consultations recorded in OpenSAFELY-TPP relative to NHS BSA over time.
 
 ### Completeness of recorded Pharmacy First consultations in GP records 
 Completeness was assessed to determine the extent to which key clinical information - specifically conditions and medications - is consistently recorded in Pharmacy First consultations.

@@ -25,11 +25,6 @@ source(here("lib", "functions", "tidy_measures.R"))
 source(here("lib", "functions", "plot_measures.R"))
 source(here("lib", "functions", "create_tables.R"))
 
-# Load validation data:
-# - df_bsa_medication_validation: date, pharmacy_advanced_service, bnf_paragraph, count
-# - df_bsa_consultation_validation: date, consultation_type, source, count_method, count
-source(here("lib", "functions", "load_validation_data.R"))
-
 # Load opensafely ouputs:
 # - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
 # - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
@@ -225,139 +220,6 @@ df_results_pf_total_counts %>%
   filter(interval_start %in% c("2024-02-01", "2024-12-01", "2024-08-01", "2024-09-01", "2024-10-01"))
 ```
 
-## Data comparison
-
-### Figure 2
-
-```{r, message=FALSE, warning=FALSE, echo = FALSE}
-# Create figure to compare OpenSAFELY-TPP counts with NHS BSA counts
-df_pf_consultations_total <- df_pf_consultations |>
-  filter(data_desc == "Total") |>
-  mutate(
-    data_desc = "Pharmacy First Consultation"
-  ) |>
-  select(interval_start, pf_consultation_total = value, data_desc) |>
-  unique()
-
-
-source(here("lib", "functions", "combine_os_nhsbsa_validation_data.R"))
-# The sourced script above requires the following datasets:
-# 1. df_bsa_validation (loaded from load_validation_data.R)
-# 2. df_measures (loaded from load_opensafely_outputs.R)
-# 3. df_pf_consultations_total (loaded from lines 233-239)
-# 4. df_pfmed (loaded from load_opensafely_outputs.R)
-
-# Pharmacy First Consultations
-# Instead of only using the count of PF consultations in OS with a clinical
-# condition we are using all PF consultations with a consultation id
-df_pf_consultation_validation_plot <- pf_validation |>
-  filter(
-    (data_source == "opensafely" &
-      data_desc == "pf_consultation" &
-      count_desc == "consultation_id") |
-      (data_source == "nhs_bsa" &
-        data_desc == "pf_consultation" &
-        count_desc == "consultation_type")
-  )
-
-# Pivot wider to calculate ratio
-df_pf_consultation_validation_plot <- df_pf_consultation_validation_plot |>
-  select(date, data_source, count_method, count_total) |>
-  pivot_wider(names_from = c(data_source, count_method), values_from = count_total) |>
-  mutate(ratio = opensafely_opensafely_tpp / nhs_bsa_count_100pct)
-
-# Select colours for groups
-# Group 1: #CF4446FF
-colour_group_1 <- paletteer_c("viridis::inferno", n = 10)[6]
-# Group 1: #1B0C42FF
-colour_group_2 <- paletteer_c("viridis::inferno", n = 10)[2]
-
-# Create consultation validation plot
-pf_validation_consultation_plot <- df_pf_consultation_validation_plot |>
-  ggplot(aes(x = date)) +
-  geom_point(
-    aes(
-      y = nhs_bsa_count_100pct,
-      colour = "NHS BSA",
-      shape = "NHS BSA"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(y = nhs_bsa_count_100pct, colour = "NHS BSA"),
-    alpha = .3,
-    size = .5
-  ) +
-  geom_point(
-    aes(
-      y = opensafely_opensafely_tpp,
-      colour = "OpenSAFELY-TPP",
-      shape = "OpenSAFELY-TPP"
-    ),
-    size = 2.6
-  ) +
-  geom_line(
-    aes(
-      y = opensafely_opensafely_tpp,
-      colour = "OpenSAFELY-TPP"
-    ),
-    alpha = .3,
-    size = .5
-  ) +
-  geom_label(
-    aes(
-      y = opensafely_opensafely_tpp,
-      label = scales::percent(ratio, accuracy = .1),
-    ),
-    colour = colour_group_2,
-    vjust = -.5,
-    size = 3.5
-  ) +
-  scale_y_continuous(
-    limits = c(0, NA),
-    labels = scales::label_number(),
-    breaks = c(0, 50000, 100000, 150000, 200000, 250000)
-  ) +
-  scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
-  ) +
-  scale_colour_manual(
-    values = c(
-      "NHS BSA" = colour_group_1,
-      "OpenSAFELY-TPP" = colour_group_2
-    ),
-    name = NULL
-  ) +
-  scale_shape_manual(
-    values = c(
-      "NHS BSA" = 15,
-      "OpenSAFELY-TPP" = 16
-    ),
-    name = NULL
-  ) +
-  labs(
-    x = NULL,
-    y = NULL,
-    colour = NULL,
-    shape = NULL
-  ) +
-  theme(
-    panel.background = element_blank(),
-    axis.line = element_line(colour = "grey50"),
-    legend.position = "bottom",
-    text = element_text(size = 14)
-  )
-
-pf_validation_consultation_plot
-
-ggsave(
-  filename = here("released_output", "results", "manuscript", "fig2_pf_os_nhsbsa_comparison.png"),
-  pf_validation_consultation_plot,
-  height = 4,
-  width = 8
-)
-```
 
 ## OpenSAFELY Linkage
 
@@ -586,4 +448,20 @@ gtsave(
   tab_pf_med_counts,
   here("released_output", "results", "manuscript", "table3_top_ten_meds.png"),
 )
+```
+
+
+```{r}
+
+df_table_a3 <- read_csv(here("lib/validation/data/pf_consultation_validation_data.csv"))
+
+df_table_a3 |>
+  filter(date >= "2024-02-01" & date <= "2025-01-01") |>
+  group_by(consultation_type) |>
+  summarise(
+    count = sum(count)
+  ) |>
+  ungroup() |>
+  mutate(pct = count / sum(count))
+
 ```
