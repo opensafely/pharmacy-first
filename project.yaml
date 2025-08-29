@@ -73,3 +73,5 @@ actions:
     outputs:
       moderately_sensitive:
         html: output/report/pharmacy_first_report.html
+        png: output/figures/*.png
+        csv: output/data/*.csv
