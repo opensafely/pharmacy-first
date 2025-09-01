@@ -73,5 +73,14 @@ actions:
     outputs:
       moderately_sensitive:
         html: output/report/pharmacy_first_report.html
-        png: output/figures/*.png
-        csv: output/data/*.csv
+        pf_breakdowns: output/report/data/df_measures.csv
+        pf_med_counts: output/report/data/df_pf_and_non_pf_med_counts.csv
+        pf_consultations: output/report/data/df_pf_consultations.csv
+        pf_descriptive_stats: output/report/data/df_pf_descriptive_stats.csv
+        pf_counts: output/report/figures/figure1.png
+        pf_by_sex: output/report/figures/figure2sex.png
+        pf_by_age: output/report/figures/figure3age.png
+        pf_by_imd: output/report/figures/figure4imd.png
+        pf_by_region: output/report/figures/figure5region.png
+        pf_by_ethnicity: output/report/figures/figure6ethnicity.png
+        pf_completeness: output/report/figures/figure7.png
