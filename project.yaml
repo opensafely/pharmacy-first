@@ -73,7 +73,9 @@ actions:
     outputs:
       moderately_sensitive:
         html: output/report/pharmacy_first_report.html
+        pf_demographics: output/report/data/df_demographics_table.csv
         pf_breakdowns: output/report/data/df_measures.csv
+        pf_clinical_conditions: output/report/data/df_clinical_pathways_by_sex.csv
         pf_med_counts: output/report/data/df_pf_and_non_pf_med_counts.csv
         pf_consultations: output/report/data/df_pf_consultations.csv
         pf_descriptive_stats: output/report/data/df_pf_descriptive_stats.csv

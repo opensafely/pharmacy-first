@@ -484,8 +484,8 @@ This highlights which pathways were most commonly used between `r min(df_measure
 df_clinical_pathways_by_sex <- generate_clinical_conditions_dataset(population_table)
 
 if (!is.null(df_clinical_pathways_by_sex)) {
-  gt_pathways(df_clinical_pathways_by_sex)
   write_csv(df_clinical_pathways_by_sex, here("output", "report", "data", "df_clinical_pathways_by_sex.csv"))
+  gt_pathways(df_clinical_pathways_by_sex)
 } else {
   print("Skipping clinical conditions table: dataset not generated")
 }
