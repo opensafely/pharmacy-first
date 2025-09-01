@@ -4,6 +4,7 @@ output:
   html_document:
     toc: true
     toc_depth: 2
+    theme: null
 toc-title: "Overview"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 # bibliography: "references.bib"
@@ -91,18 +92,44 @@ The aims of this report are to:
 
 This table presents the demographic characteristics of patients with a Pharmacy First consultation code in their GP records and the overall OpenSAFELY-TPP population.
 
-**Table 1**. Description of patient population with at least one Pharmacy First consultation code (n = 337,860) and total population in OpenSAFELY-TPP (N = 26,067,975) between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
 ```{r, message=FALSE, warning=FALSE}
 # Create cohort description table (excluding clinical conditions)
 df_demographics_table <- generate_demographics_dataset(population_table)
+# Create new "data" folder in "output" subdirectory
+fs::dir_create(here("output", "report", "data"))
 
+# Only write_csv and calculate pf/tpp totals if df_demographics_table.csv is not NULL
+if (!is.null(df_demographics_table)) {
+  write_csv(df_demographics_table, here("output", "report", "data", "df_demographics_table.csv"))
+
+  n_pf_total <- df_demographics_table %>%
+    filter(category == "Sex") %>%
+    summarise(total = sum(pharmacy_first_n)) %>%
+    pull(total)
+
+  n_tpp_total <- df_demographics_table %>%
+    filter(category == "Sex") %>%
+    summarise(total = sum(tpp_n)) %>%
+    pull(total)
+
+  n_pf_total <- format(n_pf_total, big.mark = ",", scientific = F)
+  n_tpp_total <- format(n_tpp_total, big.mark = ",", scientific = F)
+} else {
+  message("Skipping write_csv: df_demographics_table is NULL")
+  n_pf_total <- "Unavailable"
+  n_tpp_total <- "Unavailable"
+}
+```
+**Table 1**. Description of patient population with at least one Pharmacy First consultation code (n = `r (n_pf_total)`) and total population in OpenSAFELY-TPP (N = `r (n_tpp_total)`) between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
+
+```{r, message=FALSE, warning=FALSE}
 if (!is.null(df_demographics_table)) {
   gt_demographics(df_demographics_table)
 } else {
   print("Skipping demographics table: dataset not generated")
 }
-
 ```
+
 
 ## Monthly changes in Pharmacy First consultations in GP records
 
@@ -115,6 +142,8 @@ Only the *Consultation Service for minor illness* code (see purple triangles in 
 ```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10}
 # Create figure for total count of Pharmacy First consultations for each code (3 codes)
 df_pf_consultations <- generate_pf_consultation_counts(df_measures)
+
+write_csv(df_pf_consultations, here("output", "report", "data", "df_pf_consultations.csv"))
 
 plot_pf_consultations <- df_pf_consultations |>
   ggplot(
@@ -159,6 +188,9 @@ plot_pf_consultations <- df_pf_consultations |>
   )
 
 plot_pf_consultations
+
+# Saving figure, and creates new directory called "figures"
+ggsave(here("output", "report", "figures", "figure1.png"), plot_pf_consultations, width = 10, height = 8, create.dir = TRUE)
 ```
 
 ### Demographic breakdowns
@@ -171,7 +203,7 @@ Counts are broken down by sex, age, IMD quintile, region, and ethnicity to highl
 **Figure 2**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by sex.
 
 ```{r plot-pf-consultations-by-sex, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
-df_measures %>%
+pf_sex <- df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Sex") |>
@@ -185,6 +217,10 @@ df_measures %>%
     title = NULL,
     y_label = NULL
   )
+
+pf_sex
+write_csv(df_measures, here("output", "report", "data", "df_measures.csv"))
+ggsave(here("output", "report", "figures", "figure2sex.png"), pf_sex, width = 10, height = 4)
 ```
 
 #### Age
@@ -196,7 +232,7 @@ unique_categories <- sort(unique(df_measures$age_band))
 manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
 shape_mapping <- setNames(manual_ggplot2_shapes[1:length(unique_categories)], unique_categories)
 
-df_measures %>%
+pf_age <- df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Age band") |>
@@ -211,6 +247,9 @@ df_measures %>%
     y_label = NULL
   ) +
   scale_shape_manual(values = shape_mapping)
+
+pf_age
+ggsave(here("output", "report", "figures", "figure3age.png"), pf_age, width = 10, height = 4)
 ```
 
 #### Index of Multiple Deprivation (IMD)
@@ -242,7 +281,7 @@ colour_mapping <- setNames(
   unique_categories
 )
 
-df_measures %>%
+pf_imd <- df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "IMD") |>
@@ -259,6 +298,9 @@ df_measures %>%
   scale_shape_manual(values = shape_mapping) +
   scale_colour_manual(values = colour_mapping) +
   scale_fill_manual(values = colour_mapping)
+
+pf_imd
+ggsave(here("output", "report", "figures", "figure4imd.png"), pf_imd, width = 10, height = 4)
 ```
 
 #### Region
@@ -295,7 +337,7 @@ colour_mapping <- setNames(
   unique_categories
 )
 
-df_measures %>%
+pf_region <- df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Region") |>
@@ -312,6 +354,9 @@ df_measures %>%
   scale_shape_manual(values = shape_mapping) +
   scale_colour_manual(values = colour_mapping) +
   scale_fill_manual(values = colour_mapping)
+
+pf_region
+ggsave(here("output", "report", "figures", "figure5region.png"), pf_region, width = 10, height = 4)
 ```
 
 #### Ethnicity (5 Groups)
@@ -343,7 +388,7 @@ colour_mapping <- setNames(
   unique_categories
 )
 
-df_measures %>%
+pf_ethnicity <- df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
   filter(measure_desc == "pharmacy_first_services") %>%
   filter(group_by == "Ethnicity") |>
@@ -361,6 +406,9 @@ df_measures %>%
   scale_colour_manual(values = colour_mapping) +
   scale_fill_manual(values = colour_mapping) +
   facet_wrap(~ethnicity, ncol = 1, scales = "free_y")
+
+pf_ethnicity
+ggsave(here("output", "report", "figures", "figure6ethnicity.png"), pf_sex, width = 10, height = 4)
 ```
 
 ## Completeness of recorded Pharmacy First consultations in GP records
@@ -368,11 +416,13 @@ df_measures %>%
 Completeness of Pharmacy First consultations is summarised here by showing the proportion of consultations with a recorded medication, clinical condition, or both.
 This gives an indication of how complete consultations are captured in GP records over time.
 
-**Figure 8**. Monthly breakdown of all Pharmacy First consultation codes with either a recorded Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP.
+**Figure 7**. Monthly breakdown of all Pharmacy First consultation codes with either a recorded Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP.
 
 ```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
 # Create figure which shows completeness of PF consultations
 df_pf_descriptive_stats <- generate_linkage_dataset(df_descriptive_stats, df_pf_consultations)
+
+write_csv(df_pf_descriptive_stats, here("output", "report", "data", "df_pf_descriptive_stats.csv"))
 
 plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   ggplot(
@@ -418,6 +468,8 @@ plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   )
 
 plot_pf_med_condition_linkage
+
+ggsave(here("output", "report", "figures", "figure7.png"), plot_pf_med_condition_linkage, width = 10, height = 4)
 ```
 
 ## Summary of clinical conditions recorded in Pharmacy First consultations
@@ -433,10 +485,10 @@ df_clinical_pathways_by_sex <- generate_clinical_conditions_dataset(population_t
 
 if (!is.null(df_clinical_pathways_by_sex)) {
   gt_pathways(df_clinical_pathways_by_sex)
+  write_csv(df_clinical_pathways_by_sex, here("output", "report", "data", "df_clinical_pathways_by_sex.csv"))
 } else {
   print("Skipping clinical conditions table: dataset not generated")
 }
-
 ```
 
 ## Summary of medications recorded in Pharmacy First consultations
@@ -448,6 +500,9 @@ This table presents the most commonly recorded medications recorded in Pharmacy 
 ```{r, message=FALSE, warning=FALSE}
 # Creates table of top 10 med grouped by whether they are included in PF codelist or not
 df_pf_and_non_pf_med_counts <- generate_meds_dataset(df_consultation_med_counts)
+
+write_csv(df_pf_and_non_pf_med_counts, here("output", "report", "data", "df_pf_and_non_pf_med_counts.csv"))
+
 gt_top_meds(df_pf_and_non_pf_med_counts)
 ```
 # Methods
