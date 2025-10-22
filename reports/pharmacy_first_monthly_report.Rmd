@@ -1,0 +1,524 @@
+---
+title: "Pharmacy First Consultations in OpenSAFELY-TPP"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    theme: null
+toc-title: "Overview"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+# bibliography: "references.bib"
+# link-citations: true
+# csl: vancouver.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(here)
+library(readr)
+library(gt)
+library(patchwork)
+library(scales)
+library(ggrepel)
+```
+
+```{r load-data, message=FALSE, warning=FALSE}
+# Load functions
+source(here("lib", "functions", "tidy_measures.R"))
+source(here("lib", "functions", "plot_measures.R"))
+source(here("lib", "functions", "create_tables.R"))
+
+# Load opensafely ouputs:
+# - df_measures: measure, interval_start, interval_end, ratio numerator, denominator, age_band, sex,imd, region, ethnicity
+# - df_descriptive_stats: measure, interval_start, interval_end, ratio numerator, denominator
+# - df_pfmed: measure, interval_start, interval_end, ratio, numerator, denominator, dmd_code
+# - df_condition_provider: measure, interval_start, interval_end, ratio, numerator, denominator, pf_status, imd
+source(here("lib", "functions", "load_opensafely_outputs.R"))
+```
+
+This OpenSAFELY report presents real-time analyses of the Pharmacy First service using data from OpenSAFELY-TPP. 
+It is designed to support policymakers and clinicians in making timely, data-driven decisions to enable targeted improvements in service delivery.
+The analysis is based on approximately 26 million individuals registered with general practices using TPP SystmOne software. 
+This report will be updated monthly to incorporate new data when available. 
+
+The code for this report can be found in the [OpenSAFELY Pharmacy First GitHub repository](https://github.com/opensafely/pharmacy-first). 
+For a more detailed description of the underlying data sources, methods, and results, please refer to the accompanying manuscript.
+
+
+# Background
+
+The COVID-19 pandemic has had a significant impact on the access to and provision of NHS healthcare services.
+In response to this, NHS England announced a recovery plan to "*make it easier and quicker for patients to get the help they need from primary care*"<!-- [@NHSEngland2023a] -->.
+
+A key element of the recovery plan is the Pharmacy First programme, which launched on 31st January 2024, and supports community pharmacists to follow specified clinical pathways to assess for and manage seven common conditions (sinusitis, acute pharyngitis, acute otitis media, infected insect bites, impetigo, herpes zoster, and uncomplicated urinary tract infections in women) and supply medications, including prescription-only medications, where appropriate<!-- [@NHSEngland2024];[@NHSEngland2023]; [@NHSEngland2024] -->.
+
+As part of efforts to improve and simplify information sharing between general practice (GP) and community pharmacy, GP Connect: Update Record has been created, allowing registered community pharmacy professionals to send summaries in a structured format from Pharmacy First consultations, using pre-specified SNOMED CT codes, directly into general practice workflow<!--  [@NHSEngland2023b] -->.
+However, the roll out of Update Record has been gradual due to the involvement of multiple community pharmacy and GP system suppliers, with each being ready at different stages<!--  [@Colivicchi2024; @CommunityPharmacyEngland2024] -->.
+
+The aims of this report are to:
+
+1. Describe the **patient population** using the Pharmacy First Clinical Pathway service, including demographic and regional subgroups;
+2. Describe the **completeness of recorded Pharmacy First consultations** (clinical conditions and medications)
+3. Describe the **clinical conditions and medications being treated/supplied** under Pharmacy First Clinical Pathways and recorded in GP records
+
+# Results
+
+## Monthly changes in Pharmacy First consultations in GP records
+
+The monthly counts of patients with a recorded Pharmacy First consultation in OpenSAFELY-TPP broken down by individual [Pharmacy First consultation codes](https://www.opencodelists.org/codelist/opensafely/pharmacy-first-consultation/71687df2/) are presented in Figure 1.
+All consultations were recorded either with the Pharmacy First service code or the Consultation Service for minor illness code.
+Only the *Consultation Service for minor illness* code (see purple triangles in Figure 1) is referenced in the service specification. <!--  [@NHSEngland] --> 
+
+**Figure 1**. Monthly count of patients with a Pharmacy First consultation code in their GP records in OpenSAFELY-TPP, broken down by individual Pharmacy First consultation codes. CP = Community Pharmacy.
+
+```{r plot-pf-consultations, message=FALSE, warning=FALSE, fig.height=8, fig.width=10}
+
+fs::dir_create(here("output", "report", "data"))
+
+# Create figure for total count of Pharmacy First consultations for each code (3 codes)
+df_pf_consultations_extended <- generate_pf_consultation_counts_extended(df_measures)
+
+write_csv(df_pf_consultations_extended, here("output", "report", "data", "df_pf_consultations_extended.csv"))
+
+plot_pf_consultations <- df_pf_consultations_extended |>
+  ggplot(
+    aes(
+      x = interval_start,
+      y = value,
+      colour = measure,
+      shape = measure,
+      fill = measure
+    )
+  ) +
+  geom_point(size = 2.5) +
+  geom_line(alpha = .2) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  guides(
+    color = guide_legend(nrow = 2),
+    shape = guide_legend(nrow = 2)
+  ) +
+  labs(
+    title = NULL,
+    x = NULL,
+    y = NULL,
+    colour = NULL,
+    shape = NULL,
+    fill = NULL
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  ) +
+  facet_wrap(
+    ~data_desc,
+    ncol = 1
+  ) +
+  scale_colour_viridis_d(option = "plasma", end = .75) +
+  scale_y_continuous(
+    labels = scales::number,
+    breaks = c(seq(0, 60000, by = 10000))
+  )
+
+plot_pf_consultations
+
+# Saving figure, and creates new directory called "figures"
+ggsave(here("output", "report", "figures", "figure1.png"), plot_pf_consultations, width = 10, height = 8, create.dir = TRUE)
+```
+
+### Demographic breakdowns
+
+These charts show how the number of Pharmacy First consultations changed over time across key demographic groups.
+Counts are broken down by sex, age, IMD quintile, region, and ethnicity to highlight patterns in service use across the population.
+
+#### Sex
+
+**Figure 2**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by sex.
+
+```{r plot-pf-consultations-by-sex, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+pf_sex <- df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Sex") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = sex,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  )
+
+pf_sex
+write_csv(df_measures, here("output", "report", "data", "df_measures.csv"))
+ggsave(here("output", "report", "figures", "figure2sex.png"), pf_sex, width = 10, height = 4)
+```
+
+#### Age
+
+**Figure 3**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by age bands.
+
+```{r plot-pf-consultations-by-age-band, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+unique_categories <- sort(unique(df_measures$age_band))
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
+shape_mapping <- setNames(manual_ggplot2_shapes[1:length(unique_categories)], unique_categories)
+
+pf_age <- df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Age band") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = age_band,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping)
+
+pf_age
+ggsave(here("output", "report", "figures", "figure3age.png"), pf_age, width = 10, height = 4)
+```
+
+#### Index of Multiple Deprivation (IMD)
+
+**Figure 4**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by IMD.
+
+```{r plot-pf-consultations-by-imd, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+unique_categories <- sort(unique(df_measures$imd))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer_c("viridis::viridis", n = 7)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#443A83FF",
+  "#31688EFF",
+  "#21908CFF",
+  "#35B779FF",
+  "#8FD744FF",
+  "#FDE725FF"
+)
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
+pf_imd <- df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "IMD") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = imd,
+    guide_nrow = 1,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping)
+
+pf_imd
+ggsave(here("output", "report", "figures", "figure4imd.png"), pf_imd, width = 10, height = 4)
+```
+
+#### Region
+
+**Figure 5**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by region.
+
+```{r plot-pf-consultations-by-region, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+unique_categories <- sort(unique(df_measures$region))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 8, 4, 10, 7, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer::paletteer_c("viridis::viridis", n = 11)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#482576FF",
+  "#414487FF",
+  "#35608DFF",
+  "#2A788EFF",
+  "#21908CFF",
+  "#22A884FF",
+  "#43BF71FF",
+  "#7AD151FF",
+  "#BBDF27FF",
+  "#FDE725FF"
+)
+
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
+pf_region <- df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Region") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = region,
+    guide_nrow = 2,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping)
+
+pf_region
+ggsave(here("output", "report", "figures", "figure5region.png"), pf_region, width = 10, height = 4)
+```
+
+#### Ethnicity (5 Groups)
+
+**Figure 6**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by ethnicity.
+
+```{r plot-pf-consultations-by-ethnicity, message=FALSE, warning=FALSE, fig.height=15, fig.width=10}
+unique_categories <- sort(unique(df_measures$ethnicity))
+
+manual_ggplot2_shapes <- c(15, 19, 24, 23, 3, 1)
+shape_mapping <- setNames(
+  manual_ggplot2_shapes[1:length(unique_categories)],
+  unique_categories
+)
+
+# Get one more colour than I need from viridis so I avoid using yellow in the plot
+# paletteer::paletteer_c("viridis::viridis", n = 6)
+manual_ggplot2_colours <- c(
+  "#440154FF",
+  "#414487FF",
+  "#2A788EFF",
+  "#22A884FF",
+  "#7AD151FF",
+  "#FDE725FF"
+)
+
+colour_mapping <- setNames(
+  c(manual_ggplot2_colours[1:(length(unique_categories) - 1)], "gray40"),
+  unique_categories
+)
+
+pf_ethnicity <- df_measures %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) |>
+  filter(measure_desc == "pharmacy_first_services") %>%
+  filter(group_by == "Ethnicity") |>
+  plot_measures(
+    select_value = numerator,
+    select_interval_date = interval_start,
+    colour_var = ethnicity,
+    guide_nrow = 2,
+    facet_wrap = FALSE,
+    add_vline = FALSE,
+    title = NULL,
+    y_label = NULL
+  ) +
+  scale_shape_manual(values = shape_mapping) +
+  scale_colour_manual(values = colour_mapping) +
+  scale_fill_manual(values = colour_mapping) +
+  facet_wrap(~ethnicity, ncol = 1, scales = "free_y")
+
+pf_ethnicity
+ggsave(here("output", "report", "figures", "figure6ethnicity.png"), pf_sex, width = 10, height = 4)
+```
+
+## Completeness of recorded Pharmacy First consultations in GP records
+
+Completeness of Pharmacy First consultations is summarised here by showing the proportion of consultations with a recorded medication, clinical condition, or both.
+This gives an indication of how complete consultations are captured in GP records over time.
+
+**Figure 7**. Monthly breakdown of all Pharmacy First consultation codes with either a recorded Pharmacy First medication, clinical condition, or both in OpenSAFELY-TPP.
+
+```{r plot-pf-med-condition-linkage, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+# Create figure which shows completeness of PF consultations
+df_pf_consultations <- generate_pf_consultation_counts(df_measures)
+df_pf_descriptive_stats <- generate_linkage_dataset(df_descriptive_stats, df_pf_consultations)
+
+write_csv(df_pf_descriptive_stats, here("output", "report", "data", "df_pf_descriptive_stats.csv"))
+
+plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
+  ggplot(
+    aes(
+      x = interval_start,
+      y = ratio_exclusive,
+      fill = measure
+    )
+  ) +
+  geom_area(
+    alpha = 0.85,
+    linewidth = .5,
+    colour = "white"
+  ) +
+  geom_label(
+    aes(
+      y = cumulative_ratio_exclusive,
+      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
+    ),
+    vjust = -0.05,
+    size = 3.5,
+    show.legend = FALSE,
+    color = "black",
+    fill = "white"
+  ) +
+  scale_fill_viridis_d() +
+  scale_y_continuous(
+    limits = c(0, 1),
+    labels = scales::percent
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Pharmacy First consultations linked to: "
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  theme(
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  )
+
+plot_pf_med_condition_linkage
+
+ggsave(here("output", "report", "figures", "figure7.png"), plot_pf_med_condition_linkage, width = 10, height = 4)
+```
+
+## Summary of clinical conditions recorded in Pharmacy First consultations
+
+Pharmacy First consultations involving a clinical condition, as specified by NHS England, are shown here, broken down sex.
+This highlights which pathways were most commonly used between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
+
+**Table 2**. Clinical conditions recorded in Pharmacy First consultations grouped by sex in OpenSAFELY-TPP between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
+
+```{r, message=FALSE, warning=FALSE}
+# Creates table of clinical condition counts by sex
+df_clinical_pathways_by_sex <- generate_clinical_conditions_dataset(population_table)
+
+if (!is.null(df_clinical_pathways_by_sex)) {
+  write_csv(df_clinical_pathways_by_sex, here("output", "report", "data", "df_clinical_pathways_by_sex.csv"))
+  gt_pathways(df_clinical_pathways_by_sex)
+} else {
+  print("Creating empty clinical conditions csv: dataset not generated")
+  write_csv(empty_df, here("output", "report", "data", "df_clinical_pathways_by_sex.csv"))
+}
+```
+
+## Summary of medications recorded in Pharmacy First consultations
+
+This table presents the most commonly recorded medications recorded in Pharmacy First consultations, grouped by whether they were included in the Pharmacy First medications codelists or not.
+
+**Table 3**. Top ten medications recorded in Pharmacy First consultations between `r min(df_consultation_med_counts$interval_start)` and `r max(df_consultation_med_counts$interval_end)`.
+
+```{r, message=FALSE, warning=FALSE}
+# Creates table of top 10 med grouped by whether they are included in PF codelist or not
+df_pf_and_non_pf_med_counts <- generate_meds_dataset(df_consultation_med_counts)
+
+write_csv(df_pf_and_non_pf_med_counts, here("output", "report", "data", "df_pf_and_non_pf_med_counts.csv"))
+
+gt_top_meds(df_pf_and_non_pf_med_counts)
+```
+
+# Methods
+
+## Data Sources
+
+### OpenSAFELY-TPP
+
+Data were accessed from OpenSAFELY-TPP, which covers approximately 40% of the English population, and includes pseudonymised, structured data. 
+Individuals were included if they were aged between 0 and 120 years, had a Pharmacy First consultation, were registered at a TPP general practice each month, and had a recorded sex of male or female (assigned at birth).
+Data from individuals who opted out of NHS data sharing with their GP surgery (Type 1 Opt-out) were excluded and free-text data were also not included.
+
+To reduce the risk of re-identification, all counts smaller or equal 7 were redacted, then all counts were rounded to the nearest 5.
+
+## Identification of clinical events and medications
+
+### Pharmacy First consultations
+
+The identification of Pharmacy First consultations relied on the presence of relevant SNOMED CT codes recorded in GP records.
+Using the GP Connect: Update Record technical documentation we identified the Community Pharmacist Consultation Service for minor illness (*1577041000000109*) code.
+Using OpenCodelists (https://www.opencodelists.org/), we identified two further SNOMED CT codes associated with Pharmacy First consultations: Pharmacy First Service (*983341000000102*) and Community Pharmacy Pharmacy First Service (*2129921000000100*).
+
+### Pharmacy First clinical conditions
+
+As specified by NHS England, the Pharmacy First service includes the supply of medication for seven clinical conditions: acute otitis media, impetigo, infected insect bites, herpes zoster, acute sinusitis, acute pharyngitis, and uncomplicated urinary tract infection.
+To identify these clinical conditions within Pharmacy First consultations, we implemented the clinical conditions codelist issued by NHS England.
+This codelist included a single code for each condition as specified by NHS England.
+Each clinical condition has NHS England-defined inclusion and exclusion criteria, applied at the time of consultation to determine treatment eligibility.
+Our analysis included all consultations recorded with a Pharmacy First consultation code, regardless of eligibility.
+
+### Pharmacy First medications
+
+We developed codelists for medications for each of the seven clinical conditions using the corresponding Patient Group Directions which specify the exact drug, strengths, and formulations that may be supplied as part of the consultation.
+Relevant dictionaries of Medicines + Devices (dm+d) codes were identified directly from dm+d data by matching on drug name, strength and formulation.
+
+## Data Analyses
+
+### Overview of the patient population
+
+To describe the patient population using the Pharmacy First Clinical Pathway service, we conducted a patient-level analysis, reporting demographic (10-year age bands, sex, ethnicity in 16 categories) and regional (Indices of Multiple Deprivation quintiles derived from patients’ postcodes at lower super output area, region) breakdowns.
+Initial data collection covered the first year of service, from 31 January 2024 to 30 January 2025, and is now regularly updated for this report.
+
+### Monthly changes in Pharmacy First consultations in GP records
+
+Patients with at least one recorded Pharmacy First consultation code each month were included in this report.
+We reported monthly consultation counts to capture the total activity in GP records.
+
+### Completeness of recorded Pharmacy First consultations in GP records 
+Completeness was assessed to determine the extent to which key clinical information - specifically conditions and medications - is consistently recorded in Pharmacy First consultations.
+Consultations were categorised in three mutually exclusive groups: (i) those with a recorded clinical condition from one of the seven pre-specified clinical conditions; (ii) those with a prescribed Pharmacy first medication; and (iii) those with both a recorded Pharmacy first-specific clinical condition and medication.
+Monthly proportions were calculated to assess changes in recording patterns over time.
+
+### Summary of clinical conditions recorded in Pharmacy First consultations
+
+We identified Pharmacy First clinical conditions by extracting all SNOMED CT codes recorded during Pharmacy First consultations that matched the seven NHS England-defined clinical conditions.
+Counts of clinical conditions were grouped by pathway and broken down by patient sex to get a better understanding of the population using the service for each condition.
+
+### Summary of medications recorded in Pharmacy First consultations
+
+Medications issued during the Pharmacy First consultations were identified using dm+d codes recorded within the same consultation, and summarised at the Virtual Medicinal Product (VMP) level.
+We restricted analysis to the ten most frequently recorded medications.
+We identified the percentage of Pharmacy First consultations with and without a prescription as specified by NHS England.
+
+# References
+
+1. British Medical Association. Protect your patients, protect your GP practice [Internet]. 2024 [cited 2025 Mar 19]. Available from: https://web.archive.org/web/20240813185659/https://www.bma.org.uk/our-campaigns/gp-campaigns/contracts/gp-contract-202425-changes
+2. NHS England. GP Connect Update Record: FAQs [Internet]. 2025 [cited 2025 Mar 19]. Available from: https://www.england.nhs.uk/long-read/gp-connect-update-record-faqs/
+3. Andrews C, Schultze A, Curtis H, Hulme W, Tazare J, Evans S, et al. OpenSAFELY: Representativeness of electronic health record platform OpenSAFELY-TPP data compared to the population of England. Wellcome Open Res. 2022;7:191. 
+4. NHS England. Pharmacy First Clinical Pathways [Internet]. 2023 [cited 2025 Feb 26]. Report No.: v. 1.6. Available from: https://www.england.nhs.uk/wp-content/uploads/2023/11/PRN00936_ii_Pharmacy-First-Clinical-Pathways-v.1.6.pdf
+5. NHS England. GP Connect Update Record [Internet]. 2023 [cited 2025 Feb 26]. Available from: https://digital.nhs.uk/developer/api-catalogue/gp-connect-update-record
+6. NHS England. GP Connect - Update Record (ITK3) [Internet]. [cited 2025 Feb 26]. Available from: https://simplifier.net/guide/gp-connect--update-record--itk3/Home/FHIR-Assets/All-assets/Profiles/Profile--CareConnect-Composition-1?version=1.2.0-public-beta
+7. NHS Business Service Authority. Dispensing contractors’ data [Internet]. 2025 [cited 2025 Feb 26]. Available from: https://www.nhsbsa.nhs.uk/prescription-data/dispensing-data/dispensing-contractors-data
+8. Colivicchi A. Practices take urgent collective action to switch off GP Connect update. Pulse Today [Internet]. 2024 [cited 2025 Feb 26]; Available from: https://www.pulsetoday.co.uk/news/technology/gp-practices-thwart-nhs-england-attempts-to-prevent-removal-of-gp-connect/
+9. Community Pharmacy England. Reminder: GP Connect: Update Record rollout. 2024 [cited 2025 Feb 26]; Available from: https://cpe.org.uk/our-news/gp-connect-update-record-rollout-and-flow-of-information/
+10. NHS England. GP Connect: Update Record [Internet]. 2024 [cited 2025 Feb 26]. Available from: https://digital.nhs.uk/services/gp-connect/gp-connect-in-your-organisation/gp-connect-update-record
+11. NHS England. Community Pharmacy advanced service specification: NHS Pharmacy First Service [Internet]. 2023 [cited 2025 Feb 26]. Available from: https://www.england.nhs.uk/publication/community-pharmacy-advanced-service-specification-nhs-pharmacy-first-service/
+12. NHS England. NHS Community Pharmacist Consultation Service (CPCS) [Internet]. 2024 [cited 2025 Feb 26]. Available from: https://www.england.nhs.uk/midlands/nhs-england-and-nhs-improvement-midlands-work/nhs-community-pharmacist-consultation-service-cpcs/
+13. NHS England. Pharmacy services: Pharmacy First [Internet]. 2024 [cited 2025 Feb 26]. Available from: https://www.england.nhs.uk/primary-care/pharmacy/pharmacy-services/pharmacy-first/
+14. NHS England. Delivery plan for recovering access to primary care [Internet]. 2023. Available from: https://www.england.nhs.uk/long-read/delivery-plan-for-recovering-access-to-primary-care-2/
+15. Williamson EJ, Walker AJ, Bhaskaran K, Bacon S, Bates C, Morton CE, et al. Factors associated with COVID-19-related death using OpenSAFELY. Nature. 2020 Aug;584(7821):430–6. 
