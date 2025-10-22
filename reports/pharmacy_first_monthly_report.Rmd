@@ -412,9 +412,9 @@ ggsave(here("output", "report", "figures", "figure7.png"), plot_pf_med_condition
 ## Summary of clinical conditions recorded in Pharmacy First consultations
 
 Pharmacy First consultations involving a clinical condition, as specified by NHS England, are shown here, broken down sex.
-This highlights which pathways were most commonly used between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
+This highlights which pathways were most commonly used between 2024-01-31 and `r max(df_measures$interval_end)`.
 
-**Table 2**. Clinical conditions recorded in Pharmacy First consultations grouped by sex in OpenSAFELY-TPP between `r min(df_measures$interval_start)` and `r max(df_measures$interval_end)`.
+**Table 2**. Clinical conditions recorded in Pharmacy First consultations grouped by sex in OpenSAFELY-TPP between 2024-01-31 and `r max(df_measures$interval_end)`.
 
 ```{r, message=FALSE, warning=FALSE}
 # Creates table of clinical condition counts by sex
@@ -433,7 +433,7 @@ if (!is.null(df_clinical_pathways_by_sex)) {
 
 This table presents the most commonly recorded medications recorded in Pharmacy First consultations, grouped by whether they were included in the Pharmacy First medications codelists or not.
 
-**Table 3**. Top ten medications recorded in Pharmacy First consultations between `r min(df_consultation_med_counts$interval_start)` and `r max(df_consultation_med_counts$interval_end)`.
+**Table 3**. Top ten medications recorded in Pharmacy First consultations between 2024-01-31 and `r max(df_consultation_med_counts$interval_end)`.
 
 ```{r, message=FALSE, warning=FALSE}
 # Creates table of top 10 med grouped by whether they are included in PF codelist or not
