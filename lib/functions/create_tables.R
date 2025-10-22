@@ -148,6 +148,68 @@ generate_pf_consultation_counts <- function(df_measures) {
   return(df_pf_consultations)
 }
 
+# Create a labelled dataset with counts for three different Pharmacy First
+# consultation codes, along with their total.
+# Outputs both the individual breakdowns and combined total, reshaped for plotting.
+generate_pf_consultation_counts_extended <- function(df_measures) {
+  df_pf_consultations <- df_measures |>
+    filter(measure_desc == "clinical_service") |>
+    filter(is.na(group_by)) |>
+    select(measure, interval_start, numerator) |>
+    mutate(measure = factor(measure,
+      levels = c(
+        "Consultation Service",
+        "Pharmacy First Consultation",
+        "Community Pharmacy First Service"
+      ),
+      labels = c(
+        "CP Consultation Service for minor illness (1577041000000109)",
+        "Pharmacy First service (983341000000102)",
+        "CP Pharmacy First Service (2129921000000100)"
+      )
+    )) |>
+    group_by(interval_start) |>
+    mutate(
+      pf_consultation_total = sum(numerator, na.rm = TRUE),
+      data_desc = "Pharmacy First Consultation"
+    ) |>
+    rename(pf_code = measure) |>
+    ungroup() |>
+    pivot_longer(
+      cols = c(numerator, pf_consultation_total),
+      names_to = "measure"
+    ) |>
+    mutate(
+      measure = case_when(
+        measure == "pf_consultation_total" ~ "Pharmacy First Service Total",
+        measure == "numerator" ~ pf_code
+      ),
+      data_desc = case_when(
+        measure == "Pharmacy First Service Total" ~ "total",
+        measure %in% c(
+          "CP Consultation Service for minor illness (1577041000000109)",
+          "Pharmacy First service (983341000000102)",
+          "CP Pharmacy First Service (2129921000000100)"
+        ) ~ "breakdown"
+      ),
+      measure = factor(measure,
+        levels = c(
+          "Pharmacy First Service Total",
+          "CP Consultation Service for minor illness (1577041000000109)",
+          "Pharmacy First service (983341000000102)",
+          "CP Pharmacy First Service (2129921000000100)"
+        )
+      ),
+      data_desc = factor(data_desc,
+        levels = c("total", "breakdown"),
+        labels = c("Total", "Breakdown")
+      )
+    ) |>
+    select(measure, interval_start, data_desc, value)
+
+  return(df_pf_consultations)
+}
+
 # Create a dataset for plotting Figure 3 showing linkage between consultations and
 # medications, conditions, or both.
 # Joins total consultations, calculates exclusive linkage ratios, and
@@ -336,10 +398,6 @@ gt_top_meds <- function(data) {
     gt(
       groupname_col = "pharmacy_first_med",
       rowname_col = "vmp_nm"
-    ) %>%
-    tab_header(
-      title = "Top 10 medications linked to Pharmacy First consultations",
-      subtitle = "Timeframe: 1st Feb 2024 to 31st January 2025"
     ) %>%
     cols_label(
       vmp_nm = md("**Medication**"),
