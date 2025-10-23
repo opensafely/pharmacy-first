@@ -1,7 +1,4 @@
 code,term,dmd_id,dmd_type,bnf_code
-41953111000001108,Nitrofurantoin 50mg capsules,41953111000001108,VMP,0501130R0AAAAAA
-41953211000001102,Nitrofurantoin 50mg tablets,41953211000001102,VMP,0501130R0AAADAD
-39108511000001108,Nitrofurantoin 100mg modified-release capsules,39108511000001108,VMP,0501130R0AAAGAG
 24209111000001106,Nitrofurantoin 50mg capsules (Advanz Pharma),24209111000001106,AMP,0501130R0AAAAAA
 30210411000001105,Macrodantin 50mg capsules (Waymade Healthcare Plc),30210411000001105,AMP,
 30272211000001100,Macrobid 100mg modified-release capsules (Waymade Healthcare Plc),30272211000001100,AMP,
@@ -9,8 +6,6 @@ code,term,dmd_id,dmd_type,bnf_code
 37541311000001100,Macrobid 100mg modified-release capsules (Mawdsley-Brooks & Company Ltd),37541311000001100,AMP,
 42856711000001105,Macrobid 100mg modified-release capsules (Necessity Supplies Ltd),42856711000001105,AMP,
 42864611000001101,Nitrofurantoin 50mg capsules (Necessity Supplies Ltd),42864611000001101,AMP,
-44125511000001105,Nitrofurantoin 100mg modified-release capsules (CNX Therapeutics Ltd),44125511000001105,AMP,
-44225811000001106,Nitrofurantoin 100mg modified-release capsules (A A H Pharmaceuticals Ltd),44225811000001106,AMP,
 623211000001101,Macrodantin 50mg capsules (Advanz Pharma),623211000001101,AMP,0501130R0BCAAAA
 24421611000001107,Nitrofurantoin 50mg capsules (Alliance Healthcare (Distribution) Ltd),24421611000001107,AMP,0501130R0AAAAAA
 24549911000001107,Nitrofurantoin 50mg capsules (A A H Pharmaceuticals Ltd),24549911000001107,AMP,0501130R0AAAAAA
@@ -51,6 +46,13 @@ code,term,dmd_id,dmd_type,bnf_code
 42566811000001105,Nitrofurantoin 50mg tablets (AAH Hillcross),42566811000001105,AMP,0501130R0AAADAD
 517311000001102,Macrobid 100mg modified-release capsules (Advanz Pharma),517311000001102,AMP,0501130R0BGAAAG
 41334211000001109,Nitrofurantoin 100mg modified-release capsules (Advanz Pharma),41334211000001109,AMP,0501130R0AAAGAG
+44125511000001105,Nitrofurantoin 100mg modified-release capsules (CNX Therapeutics Ltd),44125511000001105,AMP,0501130R0AAAGAG
+44225811000001106,Nitrofurantoin 100mg modified-release capsules (A A H Pharmaceuticals Ltd),44225811000001106,AMP,0501130R0AAAGAG
+44889611000001107,Nitrofurantoin 100mg modified-release capsules (Alliance Healthcare (Distribution) Ltd),44889611000001107,AMP,0501130R0AAAGAG
+44961111000001105,Nitrofurantoin 100mg modified-release capsules (RPH Pharmaceuticals AB),44961111000001105,AMP,0501130R0AAAGAG
+41953111000001108,Nitrofurantoin 50mg capsules,41953111000001108,VMP,0501130R0AAAAAA
+41953211000001102,Nitrofurantoin 50mg tablets,41953211000001102,VMP,0501130R0AAADAD
+39108511000001108,Nitrofurantoin 100mg modified-release capsules,39108511000001108,VMP,0501130R0AAAGAG
 324558006,VMP previous to 41953211000001102,324558006,VMP,0501130R0AAADAD
 324568001,VMP previous to 39108511000001108,324568001,VMP,0501130R0AAAGAG
 324570005,VMP previous to 41953111000001108,324570005,VMP,0501130R0AAAAAA

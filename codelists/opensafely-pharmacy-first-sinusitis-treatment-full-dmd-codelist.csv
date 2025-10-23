@@ -1,19 +1,7 @@
 code,term,dmd_id,dmd_type,bnf_code
-44365911000001103,Nasonex 50micrograms/dose nasal spray (Pilsco Ltd),44365911000001103,AMP,
-5286611000001101,Clarithromycin 125mg/5ml oral suspension (Dowelhurst Ltd),5286611000001101,AMP,
-5298511000001100,Klaricid Paediatric 125mg/5ml oral suspension (Dowelhurst Ltd),5298511000001100,AMP,
-5300211000001105,Klaricid Paediatric 250mg/5ml oral suspension (Dowelhurst Ltd),5300211000001105,AMP,
-5304211000001102,Nasonex 50micrograms/dose nasal spray (Dowelhurst Ltd),5304211000001102,AMP,
-5377011000001108,Klaricid 250mg tablets (Waymade Healthcare Plc),5377011000001108,AMP,
-5377411000001104,Klaricid 500 tablets (Waymade Healthcare Plc),5377411000001104,AMP,
-5393611000001101,Nasonex 50micrograms/dose nasal spray (Waymade Healthcare Plc),5393611000001101,AMP,
-5459011000001106,Clarithromycin 500mg tablets (Dowelhurst Ltd),5459011000001106,AMP,
-5514211000001102,Clarithromycin 250mg tablets (Dowelhurst Ltd),5514211000001102,AMP,
-5541711000001100,Erythrocin 500 tablets (Dowelhurst Ltd),5541711000001100,AMP,
-5543211000001106,Erythroped A 500mg tablets (Dowelhurst Ltd),5543211000001106,AMP,
-5551011000001104,Klaricid 250mg tablets (Dowelhurst Ltd),5551011000001104,AMP,
-5551211000001109,Klaricid 500 tablets (Dowelhurst Ltd),5551211000001109,AMP,
-5622111000001100,Vibramycin-D 100mg dispersible tablets (Dowelhurst Ltd),5622111000001100,AMP,
+22878811000001100,Erythrocin 500 tablets (Waymade Healthcare Plc),22878811000001100,AMP,
+24099111000001103,Erythromycin 250mg gastro-resistant tablets (Waymade Healthcare Plc),24099111000001103,AMP,
+8993811000001101,Clarithromycin 500mg tablets (Sandoz Ltd),8993811000001101,AMP,0501050B0AAADAD
 10536411000001109,Erythroped A 500mg tablets (Waymade Healthcare Plc),10536411000001109,AMP,
 10833311000001107,Clarithromycin 125mg/5ml oral suspension (Waymade Healthcare Plc),10833311000001107,AMP,
 10833511000001101,Clarithromycin 250mg/5ml oral suspension (Waymade Healthcare Plc),10833511000001101,AMP,
@@ -48,18 +36,28 @@ code,term,dmd_id,dmd_type,bnf_code
 18271311000001104,Klaricid 500 tablets (Necessity Supplies Ltd),18271311000001104,AMP,
 20562711000001106,Vibramycin-D 100mg dispersible tablets (Waymade Healthcare Plc),20562711000001106,AMP,
 21203711000001101,Avamys 27.5micrograms/dose nasal spray (Waymade Healthcare Plc),21203711000001101,AMP,
-22878811000001100,Erythrocin 500 tablets (Waymade Healthcare Plc),22878811000001100,AMP,
-23726411000001109,Mometasone 50micrograms/dose nasal spray (Alliance Healthcare (Distribution) Ltd),23726411000001109,AMP,1202010U0AAAAAA
-24099111000001103,Erythromycin 250mg gastro-resistant tablets (Waymade Healthcare Plc),24099111000001103,AMP,
-36621611000001102,Clarithromycin 125mg/5ml oral suspension (Accord-UK Ltd),36621611000001102,AMP,0501050B0AAABAB
+21975211000001103,Erythromycin ethyl succinate 250mg/5ml oral suspension (Waymade Healthcare Plc),21975211000001103,AMP,0501050H0AAABAB
+5286611000001101,Clarithromycin 125mg/5ml oral suspension (Dowelhurst Ltd),5286611000001101,AMP,
+5298511000001100,Klaricid Paediatric 125mg/5ml oral suspension (Dowelhurst Ltd),5298511000001100,AMP,
+5300211000001105,Klaricid Paediatric 250mg/5ml oral suspension (Dowelhurst Ltd),5300211000001105,AMP,
+5304211000001102,Nasonex 50micrograms/dose nasal spray (Dowelhurst Ltd),5304211000001102,AMP,
+5377011000001108,Klaricid 250mg tablets (Waymade Healthcare Plc),5377011000001108,AMP,
+5377411000001104,Klaricid 500 tablets (Waymade Healthcare Plc),5377411000001104,AMP,
+5393611000001101,Nasonex 50micrograms/dose nasal spray (Waymade Healthcare Plc),5393611000001101,AMP,
+5459011000001106,Clarithromycin 500mg tablets (Dowelhurst Ltd),5459011000001106,AMP,
+5514211000001102,Clarithromycin 250mg tablets (Dowelhurst Ltd),5514211000001102,AMP,
+5541711000001100,Erythrocin 500 tablets (Dowelhurst Ltd),5541711000001100,AMP,
+5543211000001106,Erythroped A 500mg tablets (Dowelhurst Ltd),5543211000001106,AMP,
+5551011000001104,Klaricid 250mg tablets (Dowelhurst Ltd),5551011000001104,AMP,
+5551211000001109,Klaricid 500 tablets (Dowelhurst Ltd),5551211000001109,AMP,
+5622111000001100,Vibramycin-D 100mg dispersible tablets (Dowelhurst Ltd),5622111000001100,AMP,
 37369311000001108,Erythrocin 250 tablets (CST Pharma Ltd),37369311000001108,AMP,
 37369811000001104,Erythrocin 500 tablets (CST Pharma Ltd),37369811000001104,AMP,
 38118411000001108,Avamys 27.5micrograms/dose nasal spray (DE Pharmaceuticals),38118411000001108,AMP,
 39239111000001100,Mometasone 50micrograms/dose nasal spray (Pilsco Ltd),39239111000001100,AMP,
 42831211000001105,Doxycycline 100mg dispersible tablets sugar free (Drugsrus Ltd),42831211000001105,AMP,
 42863911000001105,Nasonex 50micrograms/dose nasal spray (Necessity Supplies Ltd),42863911000001105,AMP,
-44151911000001104,Clarinaze Hayfever Relief 0.05% nasal spray (Bayer Plc),44151911000001104,AMP,
-44154311000001102,Clarithromycin 500mg tablets (Quattro Pharma Ltd),44154311000001102,AMP,
+44365911000001103,Nasonex 50micrograms/dose nasal spray (Pilsco Ltd),44365911000001103,AMP,
 765311000001105,Phenoxymethylpenicillin 250mg tablets (A A H Pharmaceuticals Ltd),765311000001105,AMP,0501011P0AAAJAJ
 35211000001107,Phenoxymethylpenicillin 250mg tablets (Accord-UK Ltd),35211000001107,AMP,0501011P0AAAJAJ
 799511000001103,Phenoxymethylpenicillin 250mg tablets (Teva UK Ltd),799511000001103,AMP,0501011P0AAAJAJ
@@ -130,7 +128,6 @@ code,term,dmd_id,dmd_type,bnf_code
 10307711000001108,Erythromycin ethyl succinate 250mg/5ml oral suspension (Focus Pharmaceuticals Ltd),10307711000001108,AMP,0501050H0AAABAB
 13620511000001101,Erythromycin ethyl succinate 250mg/5ml oral suspension (Pinewood Healthcare),13620511000001101,AMP,0501050H0AAABAB
 17902811000001101,Erythromycin ethyl succinate 250mg/5ml oral suspension (Phoenix Healthcare Distribution Ltd),17902811000001101,AMP,0501050H0AAABAB
-21975211000001103,Erythromycin ethyl succinate 250mg/5ml oral suspension (Waymade Healthcare Plc),21975211000001103,AMP,0501050H0AAABAB
 23902911000001100,Erythromycin ethyl succinate 250mg/5ml oral suspension (DE Pharmaceuticals),23902911000001100,AMP,0501050H0AAABAB
 29856111000001104,Erythromycin ethyl succinate 250mg/5ml oral suspension (Sigma Pharmaceuticals Plc),29856111000001104,AMP,0501050H0AAABAB
 38890011000001106,Erythromycin ethyl succinate 250mg/5ml oral suspension (Medihealth (Northern) Ltd),38890011000001106,AMP,0501050H0AAABAB
@@ -181,7 +178,6 @@ code,term,dmd_id,dmd_type,bnf_code
 8826111000001102,Clarithromycin 500mg tablets (Kent Pharma (UK) Ltd),8826111000001102,AMP,0501050B0AAADAD
 8915511000001104,Clarithromycin 500mg tablets (Viatris UK Healthcare Ltd),8915511000001104,AMP,0501050B0AAADAD
 8928611000001100,Clarithromycin 500mg tablets (A A H Pharmaceuticals Ltd),8928611000001100,AMP,0501050B0AAADAD
-8993811000001101,Clarithromycin 500mg tablets (Sandoz Ltd),8993811000001101,AMP,0501050B0AAADAD
 9033811000001101,Clarithromycin 500mg tablets (Alliance Healthcare (Distribution) Ltd),9033811000001101,AMP,0501050B0AAADAD
 9038811000001106,Clarithromycin 500mg tablets (Sun Pharma UK Ltd),9038811000001106,AMP,0501050B0AAADAD
 13745811000001102,Clarithromycin 500mg tablets (Tillomed Laboratories Ltd),13745811000001102,AMP,0501050B0AAADAD
@@ -202,6 +198,7 @@ code,term,dmd_id,dmd_type,bnf_code
 42205211000001106,Clarithromycin 500mg tablets (Brown & Burk UK Ltd),42205211000001106,AMP,0501050B0AAADAD
 42456611000001105,Clarithromycin 500mg tablets (Krka UK Ltd),42456611000001105,AMP,0501050B0AAADAD
 42830211000001104,Clarithromycin 500mg tablets (Drugsrus Ltd),42830211000001104,AMP,0501050B0AAADAD
+44154311000001102,Clarithromycin 500mg tablets (Quattro Pharma Ltd),44154311000001102,AMP,0501050B0AAADAD
 30611000001101,Erythrocin 500 tablets (Advanz Pharma),30611000001101,AMP,0501050N0BBABAB
 17627611000001109,Erythrolar 500mg tablets (Ennogen Pharma Ltd),17627611000001109,AMP,0501050N0BCABAB
 37911611000001107,Erythromycin stearate 500mg tablets (Key Pharmaceuticals Ltd),37911611000001107,AMP,0501050N0AAABAB
@@ -289,6 +286,7 @@ code,term,dmd_id,dmd_type,bnf_code
 21854311000001101,Clarithromycin 125mg/5ml oral suspension (Waymade Healthcare Plc),21854311000001101,AMP,0501050B0AAABAB
 30031911000001106,Clarithromycin 125mg/5ml oral suspension (DE Pharmaceuticals),30031911000001106,AMP,0501050B0AAABAB
 30761711000001102,Clarithromycin 125mg/5ml oral suspension (Almus Pharmaceuticals Ltd),30761711000001102,AMP,0501050B0AAABAB
+36621611000001102,Clarithromycin 125mg/5ml oral suspension (Accord-UK Ltd),36621611000001102,AMP,0501050B0AAABAB
 38840411000001105,Clarithromycin 125mg/5ml oral suspension (Medihealth (Northern) Ltd),38840411000001105,AMP,0501050B0AAABAB
 211000001101,Klaricid Paediatric 250mg/5ml oral suspension (Viatris UK Healthcare Ltd),211000001101,AMP,0501050B0BBAHAH
 9042311000001101,Clarithromycin 250mg/5ml oral suspension (Sun Pharma UK Ltd),9042311000001101,AMP,0501050B0AAAHAH
@@ -328,6 +326,7 @@ code,term,dmd_id,dmd_type,bnf_code
 23655711000001104,Mometasone 50micrograms/dose nasal spray (Sandoz Ltd),23655711000001104,AMP,1202010U0AAAAAA
 23679811000001107,Mometasone 50micrograms/dose nasal spray (A A H Pharmaceuticals Ltd),23679811000001107,AMP,1202010U0AAAAAA
 23679911000001102,Mometasone 50micrograms/dose nasal spray (Teva UK Ltd),23679911000001102,AMP,1202010U0AAAAAA
+23726411000001109,Mometasone 50micrograms/dose nasal spray (Alliance Healthcare (Distribution) Ltd),23726411000001109,AMP,1202010U0AAAAAA
 24605011000001106,Mometasone 50micrograms/dose nasal spray (Actavis UK Ltd),24605011000001106,AMP,1202010U0AAAAAA
 29925411000001109,Mometasone 50micrograms/dose nasal spray (Sigma Pharmaceuticals Plc),29925411000001109,AMP,1202010U0AAAAAA
 30061811000001108,Mometasone 50micrograms/dose nasal spray (DE Pharmaceuticals),30061811000001108,AMP,1202010U0AAAAAA
@@ -338,6 +337,9 @@ code,term,dmd_id,dmd_type,bnf_code
 39049411000001104,Mometasone 50micrograms/dose nasal spray (Medihealth (Northern) Ltd),39049411000001104,AMP,1202010U0AAAAAA
 41153411000001100,Mometasone 50micrograms/dose nasal spray (Cipla EU Ltd),41153411000001100,AMP,1202010U0AAAAAA
 41501711000001106,Mometasone 50micrograms/dose nasal spray (Alissa Healthcare Research Ltd),41501711000001106,AMP,1202010U0AAAAAA
+44151911000001104,Clarinaze Hayfever Relief 0.05% nasal spray (Bayer Plc),44151911000001104,AMP,1202010U0BCAAAA
+44924811000001109,Clarinaze Allergy Control 0.05% nasal spray (Bayer Plc),44924811000001109,AMP,1202010U0BCABAA
+45170411000001105,Mometasone 50micrograms/dose nasal spray (Aristo Pharma Ltd),45170411000001105,AMP,1202010U0AAAAAA
 2847211000001103,Vibramycin-D 100mg dispersible tablets (Pfizer Ltd),2847211000001103,AMP,0501030Z0BCAAAB
 2847611000001101,Doxycycline 50mg capsules (A A H Pharmaceuticals Ltd),2847611000001101,AMP,0501030I0AAAAAA
 2847811000001102,Doxycycline 50mg capsules (Accord-UK Ltd),2847811000001102,AMP,0501030I0AAAAAA
@@ -421,6 +423,7 @@ code,term,dmd_id,dmd_type,bnf_code
 39177811000001104,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free (Medihealth (Northern) Ltd),39177811000001104,AMP,0501011P0AAASAS
 15046311000001109,Avamys 27.5micrograms/dose nasal spray (GlaxoSmithKline UK Ltd),15046311000001109,AMP,1202010W0BBAAAA
 42533911000001101,Coryen 27.5micrograms/dose nasal spray (Alissa Healthcare Research Ltd),42533911000001101,AMP,1202010W0BCAAAA
+45132711000001103,Flutikaz 27.5micrograms/dose nasal spray (Teva UK Ltd),45132711000001103,AMP,1202010W0BDAAAA
 41953811000001101,Phenoxymethylpenicillin 250mg tablets,41953811000001101,VMP,0501011P0AAAJAJ
 41953911000001106,Phenoxymethylpenicillin 250mg/5ml oral solution,41953911000001106,VMP,0501011P0AAAFAF
 41953711000001109,Phenoxymethylpenicillin 125mg/5ml oral solution,41953711000001109,VMP,0501011P0AAADAD

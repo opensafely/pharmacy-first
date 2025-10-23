@@ -86,3 +86,32 @@ actions:
         pf_by_region: output/report/figures/figure5region.png
         pf_by_ethnicity: output/report/figures/figure6ethnicity.png
         pf_completeness: output/report/figures/figure7.png
+
+  generate_pf_opensafely_monthly_report:
+    run: >
+      r:v2 -e 'rmarkdown::render(
+        "reports/pharmacy_first_monthly_report.Rmd",
+        knit_root_dir = "/workspace",
+        output_dir = "/workspace/output/report"
+      )'
+    needs:
+      - create_tables
+      - generate_pf_statistics_measures
+      - generate_pf_breakdown_measures
+      - generate_pf_med_counts_measures
+      - tidy_med_measures
+    outputs:
+      moderately_sensitive:
+        html: output/report/pharmacy_first_monthly_report.html
+        pf_breakdowns: output/report/data/df_measures_updated.csv
+        pf_med_counts: output/report/data/df_pf_and_non_pf_med_counts_updated.csv
+        pf_consultations: output/report/data/df_pf_consultations_updated.csv
+        pf_descriptive_stats: output/report/data/df_pf_descriptive_stats_updated.csv
+        pf_counts: output/report/figures/figure1_updated.png
+        pf_by_sex: output/report/figures/figure2sex_updated.png
+        pf_by_age: output/report/figures/figure3age_updated.png
+        pf_by_imd: output/report/figures/figure4imd_updated.png
+        pf_by_region: output/report/figures/figure5region_updated.png
+        pf_by_ethnicity: output/report/figures/figure6ethnicity_updated.png
+        pf_completeness: output/report/figures/figure7_updated.png
+        pf_clinical_conditions: output/report/figures/figure8clinicalpathways_updated.png

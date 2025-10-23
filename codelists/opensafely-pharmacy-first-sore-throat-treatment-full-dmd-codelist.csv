@@ -1,34 +1,7 @@
 code,term,dmd_id,dmd_type,bnf_code
-41953811000001101,Phenoxymethylpenicillin 250mg tablets,41953811000001101,VMP,0501011P0AAAJAJ
-41953911000001106,Phenoxymethylpenicillin 250mg/5ml oral solution,41953911000001106,VMP,0501011P0AAAFAF
-41953711000001109,Phenoxymethylpenicillin 125mg/5ml oral solution,41953711000001109,VMP,0501011P0AAADAD
-41949011000001107,Erythromycin ethyl succinate 250mg/5ml oral suspension,41949011000001107,VMP,0501050H0AAABAB
-41948911000001103,Erythromycin ethyl succinate 125mg/5ml oral suspension,41948911000001103,VMP,0501050H0AAAAAA
-41948811000001108,Erythromycin 250mg gastro-resistant tablets,41948811000001108,VMP,0501050C0AAABAB
-41946511000001109,Clarithromycin 500mg tablets,41946511000001109,VMP,0501050B0AAADAD
-41949411000001103,Erythromycin stearate 500mg tablets,41949411000001103,VMP,0501050N0AAABAB
-41949311000001105,Erythromycin stearate 250mg tablets,41949311000001105,VMP,0501050N0AAAAAA
-41946311000001103,Clarithromycin 250mg tablets,41946311000001103,VMP,0501050B0AAAAAA
-41949211000001102,Erythromycin ethyl succinate 500mg/5ml oral suspension,41949211000001102,VMP,0501050H0AAACAC
-39107211000001106,Erythromycin ethyl succinate 500mg/5ml oral suspension sugar free,39107211000001106,VMP,0501050H0AAANAN
-39107311000001103,Erythromycin ethyl succinate 250mg/5ml oral suspension sugar free,39107311000001103,VMP,0501050H0AAAMAM
-35368711000001104,Clarithromycin 125mg/5ml oral suspension,35368711000001104,VMP,0501050B0AAABAB
-37083211000001101,Clarithromycin 250mg/5ml oral suspension,37083211000001101,VMP,0501050B0AAAHAH
-41949111000001108,Erythromycin ethyl succinate 500mg tablets,41949111000001108,VMP,0501050H0AAAEAE
-36564711000001108,Erythromycin ethyl succinate 125mg/5ml oral suspension sugar free,36564711000001108,VMP,0501050H0AAALAL
-9215111000001107,Phenoxymethylpenicillin 125mg/5ml oral solution sugar free,9215111000001107,VMP,0501011P0AAARAR
-9215211000001101,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,9215211000001101,VMP,0501011P0AAASAS
-5286611000001101,Clarithromycin 125mg/5ml oral suspension (Dowelhurst Ltd),5286611000001101,AMP,
-5298511000001100,Klaricid Paediatric 125mg/5ml oral suspension (Dowelhurst Ltd),5298511000001100,AMP,
-5300211000001105,Klaricid Paediatric 250mg/5ml oral suspension (Dowelhurst Ltd),5300211000001105,AMP,
-5377011000001108,Klaricid 250mg tablets (Waymade Healthcare Plc),5377011000001108,AMP,
-5377411000001104,Klaricid 500 tablets (Waymade Healthcare Plc),5377411000001104,AMP,
-5459011000001106,Clarithromycin 500mg tablets (Dowelhurst Ltd),5459011000001106,AMP,
-5514211000001102,Clarithromycin 250mg tablets (Dowelhurst Ltd),5514211000001102,AMP,
-5541711000001100,Erythrocin 500 tablets (Dowelhurst Ltd),5541711000001100,AMP,
-5543211000001106,Erythroped A 500mg tablets (Dowelhurst Ltd),5543211000001106,AMP,
-5551011000001104,Klaricid 250mg tablets (Dowelhurst Ltd),5551011000001104,AMP,
-5551211000001109,Klaricid 500 tablets (Dowelhurst Ltd),5551211000001109,AMP,
+22878811000001100,Erythrocin 500 tablets (Waymade Healthcare Plc),22878811000001100,AMP,
+24099111000001103,Erythromycin 250mg gastro-resistant tablets (Waymade Healthcare Plc),24099111000001103,AMP,
+8993811000001101,Clarithromycin 500mg tablets (Sandoz Ltd),8993811000001101,AMP,0501050B0AAADAD
 10536411000001109,Erythroped A 500mg tablets (Waymade Healthcare Plc),10536411000001109,AMP,
 10833311000001107,Clarithromycin 125mg/5ml oral suspension (Waymade Healthcare Plc),10833311000001107,AMP,
 10833511000001101,Clarithromycin 250mg/5ml oral suspension (Waymade Healthcare Plc),10833511000001101,AMP,
@@ -52,12 +25,20 @@ code,term,dmd_id,dmd_type,bnf_code
 18257511000001102,Erythroped A 500mg tablets (Necessity Supplies Ltd),18257511000001102,AMP,
 18271111000001101,Klaricid 250mg tablets (Necessity Supplies Ltd),18271111000001101,AMP,
 18271311000001104,Klaricid 500 tablets (Necessity Supplies Ltd),18271311000001104,AMP,
-22878811000001100,Erythrocin 500 tablets (Waymade Healthcare Plc),22878811000001100,AMP,
-24099111000001103,Erythromycin 250mg gastro-resistant tablets (Waymade Healthcare Plc),24099111000001103,AMP,
-36621611000001102,Clarithromycin 125mg/5ml oral suspension (Accord-UK Ltd),36621611000001102,AMP,0501050B0AAABAB
+21975211000001103,Erythromycin ethyl succinate 250mg/5ml oral suspension (Waymade Healthcare Plc),21975211000001103,AMP,0501050H0AAABAB
+5286611000001101,Clarithromycin 125mg/5ml oral suspension (Dowelhurst Ltd),5286611000001101,AMP,
+5298511000001100,Klaricid Paediatric 125mg/5ml oral suspension (Dowelhurst Ltd),5298511000001100,AMP,
+5300211000001105,Klaricid Paediatric 250mg/5ml oral suspension (Dowelhurst Ltd),5300211000001105,AMP,
+5377011000001108,Klaricid 250mg tablets (Waymade Healthcare Plc),5377011000001108,AMP,
+5377411000001104,Klaricid 500 tablets (Waymade Healthcare Plc),5377411000001104,AMP,
+5459011000001106,Clarithromycin 500mg tablets (Dowelhurst Ltd),5459011000001106,AMP,
+5514211000001102,Clarithromycin 250mg tablets (Dowelhurst Ltd),5514211000001102,AMP,
+5541711000001100,Erythrocin 500 tablets (Dowelhurst Ltd),5541711000001100,AMP,
+5543211000001106,Erythroped A 500mg tablets (Dowelhurst Ltd),5543211000001106,AMP,
+5551011000001104,Klaricid 250mg tablets (Dowelhurst Ltd),5551011000001104,AMP,
+5551211000001109,Klaricid 500 tablets (Dowelhurst Ltd),5551211000001109,AMP,
 37369311000001108,Erythrocin 250 tablets (CST Pharma Ltd),37369311000001108,AMP,
 37369811000001104,Erythrocin 500 tablets (CST Pharma Ltd),37369811000001104,AMP,
-44154311000001102,Clarithromycin 500mg tablets (Quattro Pharma Ltd),44154311000001102,AMP,
 765311000001105,Phenoxymethylpenicillin 250mg tablets (A A H Pharmaceuticals Ltd),765311000001105,AMP,0501011P0AAAJAJ
 35211000001107,Phenoxymethylpenicillin 250mg tablets (Accord-UK Ltd),35211000001107,AMP,0501011P0AAAJAJ
 799511000001103,Phenoxymethylpenicillin 250mg tablets (Teva UK Ltd),799511000001103,AMP,0501011P0AAAJAJ
@@ -128,7 +109,6 @@ code,term,dmd_id,dmd_type,bnf_code
 10307711000001108,Erythromycin ethyl succinate 250mg/5ml oral suspension (Focus Pharmaceuticals Ltd),10307711000001108,AMP,0501050H0AAABAB
 13620511000001101,Erythromycin ethyl succinate 250mg/5ml oral suspension (Pinewood Healthcare),13620511000001101,AMP,0501050H0AAABAB
 17902811000001101,Erythromycin ethyl succinate 250mg/5ml oral suspension (Phoenix Healthcare Distribution Ltd),17902811000001101,AMP,0501050H0AAABAB
-21975211000001103,Erythromycin ethyl succinate 250mg/5ml oral suspension (Waymade Healthcare Plc),21975211000001103,AMP,0501050H0AAABAB
 23902911000001100,Erythromycin ethyl succinate 250mg/5ml oral suspension (DE Pharmaceuticals),23902911000001100,AMP,0501050H0AAABAB
 29856111000001104,Erythromycin ethyl succinate 250mg/5ml oral suspension (Sigma Pharmaceuticals Plc),29856111000001104,AMP,0501050H0AAABAB
 38890011000001106,Erythromycin ethyl succinate 250mg/5ml oral suspension (Medihealth (Northern) Ltd),38890011000001106,AMP,0501050H0AAABAB
@@ -179,7 +159,6 @@ code,term,dmd_id,dmd_type,bnf_code
 8826111000001102,Clarithromycin 500mg tablets (Kent Pharma (UK) Ltd),8826111000001102,AMP,0501050B0AAADAD
 8915511000001104,Clarithromycin 500mg tablets (Viatris UK Healthcare Ltd),8915511000001104,AMP,0501050B0AAADAD
 8928611000001100,Clarithromycin 500mg tablets (A A H Pharmaceuticals Ltd),8928611000001100,AMP,0501050B0AAADAD
-8993811000001101,Clarithromycin 500mg tablets (Sandoz Ltd),8993811000001101,AMP,0501050B0AAADAD
 9033811000001101,Clarithromycin 500mg tablets (Alliance Healthcare (Distribution) Ltd),9033811000001101,AMP,0501050B0AAADAD
 9038811000001106,Clarithromycin 500mg tablets (Sun Pharma UK Ltd),9038811000001106,AMP,0501050B0AAADAD
 13745811000001102,Clarithromycin 500mg tablets (Tillomed Laboratories Ltd),13745811000001102,AMP,0501050B0AAADAD
@@ -200,6 +179,7 @@ code,term,dmd_id,dmd_type,bnf_code
 42205211000001106,Clarithromycin 500mg tablets (Brown & Burk UK Ltd),42205211000001106,AMP,0501050B0AAADAD
 42456611000001105,Clarithromycin 500mg tablets (Krka UK Ltd),42456611000001105,AMP,0501050B0AAADAD
 42830211000001104,Clarithromycin 500mg tablets (Drugsrus Ltd),42830211000001104,AMP,0501050B0AAADAD
+44154311000001102,Clarithromycin 500mg tablets (Quattro Pharma Ltd),44154311000001102,AMP,0501050B0AAADAD
 30611000001101,Erythrocin 500 tablets (Advanz Pharma),30611000001101,AMP,0501050N0BBABAB
 17627611000001109,Erythrolar 500mg tablets (Ennogen Pharma Ltd),17627611000001109,AMP,0501050N0BCABAB
 37911611000001107,Erythromycin stearate 500mg tablets (Key Pharmaceuticals Ltd),37911611000001107,AMP,0501050N0AAABAB
@@ -287,6 +267,7 @@ code,term,dmd_id,dmd_type,bnf_code
 21854311000001101,Clarithromycin 125mg/5ml oral suspension (Waymade Healthcare Plc),21854311000001101,AMP,0501050B0AAABAB
 30031911000001106,Clarithromycin 125mg/5ml oral suspension (DE Pharmaceuticals),30031911000001106,AMP,0501050B0AAABAB
 30761711000001102,Clarithromycin 125mg/5ml oral suspension (Almus Pharmaceuticals Ltd),30761711000001102,AMP,0501050B0AAABAB
+36621611000001102,Clarithromycin 125mg/5ml oral suspension (Accord-UK Ltd),36621611000001102,AMP,0501050B0AAABAB
 38840411000001105,Clarithromycin 125mg/5ml oral suspension (Medihealth (Northern) Ltd),38840411000001105,AMP,0501050B0AAABAB
 211000001101,Klaricid Paediatric 250mg/5ml oral suspension (Viatris UK Healthcare Ltd),211000001101,AMP,0501050B0BBAHAH
 9042311000001101,Clarithromycin 250mg/5ml oral suspension (Sun Pharma UK Ltd),9042311000001101,AMP,0501050B0AAAHAH
@@ -354,6 +335,25 @@ code,term,dmd_id,dmd_type,bnf_code
 32492211000001103,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free (Brown & Burk UK Ltd),32492211000001103,AMP,0501011P0AAASAS
 37772811000001100,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free (DE Pharmaceuticals),37772811000001100,AMP,0501011P0AAASAS
 39177811000001104,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free (Medihealth (Northern) Ltd),39177811000001104,AMP,0501011P0AAASAS
+41953811000001101,Phenoxymethylpenicillin 250mg tablets,41953811000001101,VMP,0501011P0AAAJAJ
+41953911000001106,Phenoxymethylpenicillin 250mg/5ml oral solution,41953911000001106,VMP,0501011P0AAAFAF
+41953711000001109,Phenoxymethylpenicillin 125mg/5ml oral solution,41953711000001109,VMP,0501011P0AAADAD
+41949011000001107,Erythromycin ethyl succinate 250mg/5ml oral suspension,41949011000001107,VMP,0501050H0AAABAB
+41948911000001103,Erythromycin ethyl succinate 125mg/5ml oral suspension,41948911000001103,VMP,0501050H0AAAAAA
+41948811000001108,Erythromycin 250mg gastro-resistant tablets,41948811000001108,VMP,0501050C0AAABAB
+41946511000001109,Clarithromycin 500mg tablets,41946511000001109,VMP,0501050B0AAADAD
+41949411000001103,Erythromycin stearate 500mg tablets,41949411000001103,VMP,0501050N0AAABAB
+41949311000001105,Erythromycin stearate 250mg tablets,41949311000001105,VMP,0501050N0AAAAAA
+41946311000001103,Clarithromycin 250mg tablets,41946311000001103,VMP,0501050B0AAAAAA
+41949211000001102,Erythromycin ethyl succinate 500mg/5ml oral suspension,41949211000001102,VMP,0501050H0AAACAC
+39107211000001106,Erythromycin ethyl succinate 500mg/5ml oral suspension sugar free,39107211000001106,VMP,0501050H0AAANAN
+39107311000001103,Erythromycin ethyl succinate 250mg/5ml oral suspension sugar free,39107311000001103,VMP,0501050H0AAAMAM
+35368711000001104,Clarithromycin 125mg/5ml oral suspension,35368711000001104,VMP,0501050B0AAABAB
+37083211000001101,Clarithromycin 250mg/5ml oral suspension,37083211000001101,VMP,0501050B0AAAHAH
+41949111000001108,Erythromycin ethyl succinate 500mg tablets,41949111000001108,VMP,0501050H0AAAEAE
+36564711000001108,Erythromycin ethyl succinate 125mg/5ml oral suspension sugar free,36564711000001108,VMP,0501050H0AAALAL
+9215111000001107,Phenoxymethylpenicillin 125mg/5ml oral solution sugar free,9215111000001107,VMP,0501011P0AAARAR
+9215211000001101,Phenoxymethylpenicillin 250mg/5ml oral solution sugar free,9215211000001101,VMP,0501011P0AAASAS
 323416001,VMP previous to 41953811000001101,323416001,VMP,0501011P0AAAJAJ
 323418000,VMP previous to 41953711000001109,323418000,VMP,0501011P0AAADAD
 323420002,VMP previous to 41953911000001106,323420002,VMP,0501011P0AAAFAF
