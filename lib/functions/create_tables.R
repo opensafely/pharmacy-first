@@ -215,7 +215,7 @@ generate_pf_consultation_counts_extended <- function(df_measures, report_date) {
 # medications, conditions, or both.
 # Joins total consultations, calculates exclusive linkage ratios, and
 # positions label data for plotting stacked bar chart proportions.
-generate_linkage_dataset <- function(df_descriptive_stats, df_pf_consultations, report_date) {
+generate_linkage_dataset <- function(df_descriptive_stats, df_pf_consultations, report_date=as.Date("2025-01-31")) {
   df_pf_descriptive_stats <- df_descriptive_stats %>%
     filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
     mutate(
@@ -355,7 +355,7 @@ gt_pathways <- function(data, title = NULL, subtitle = NULL) {
 # Create a top 10 medications dataset, grouped by whether medications
 # are included in the Pharmacy First codelist or not.
 # Joins to a VMP/VTM lookup.
-generate_meds_dataset <- function(df_consultation_med_counts, report_date) {
+generate_meds_dataset <- function(df_consultation_med_counts, report_date=as.Date("2025-01-31")) {
   vmp_lookup <- read_csv(
     here("lib", "reference", "vmp_vtm_lookup.csv"),
     col_types = cols(id = col_character())
