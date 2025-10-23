@@ -151,7 +151,7 @@ generate_pf_consultation_counts <- function(df_measures) {
 # Create a labelled dataset with counts for three different Pharmacy First
 # consultation codes, along with their total.
 # Outputs both the individual breakdowns and combined total, reshaped for plotting.
-generate_pf_consultation_counts_extended <- function(df_measures) {
+generate_pf_consultation_counts_extended <- function(df_measures, report_date) {
   df_pf_consultations <- df_measures |>
     filter(measure_desc == "clinical_service") |>
     filter(is.na(group_by)) |>
@@ -174,6 +174,7 @@ generate_pf_consultation_counts_extended <- function(df_measures) {
       data_desc = "Pharmacy First Consultation"
     ) |>
     rename(pf_code = measure) |>
+    filter(interval_start <= report_date) |>
     ungroup() |>
     pivot_longer(
       cols = c(numerator, pf_consultation_total),
@@ -214,7 +215,7 @@ generate_pf_consultation_counts_extended <- function(df_measures) {
 # medications, conditions, or both.
 # Joins total consultations, calculates exclusive linkage ratios, and
 # positions label data for plotting stacked bar chart proportions.
-generate_linkage_dataset <- function(df_descriptive_stats, df_pf_consultations) {
+generate_linkage_dataset <- function(df_descriptive_stats, df_pf_consultations, report_date) {
   df_pf_descriptive_stats <- df_descriptive_stats %>%
     filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
     mutate(
@@ -243,7 +244,7 @@ generate_linkage_dataset <- function(df_descriptive_stats, df_pf_consultations) 
 
   # Set positions in graph for figure 3 percentage labels
   df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
-    filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
+    filter(between(interval_start, as.Date("2024-02-01"), report_date)) %>%
     group_by(interval_start) %>%
     mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
     arrange(desc(measure), .by_group = TRUE) |>
@@ -354,7 +355,7 @@ gt_pathways <- function(data, title = NULL, subtitle = NULL) {
 # Create a top 10 medications dataset, grouped by whether medications
 # are included in the Pharmacy First codelist or not.
 # Joins to a VMP/VTM lookup.
-generate_meds_dataset <- function(df_consultation_med_counts) {
+generate_meds_dataset <- function(df_consultation_med_counts, report_date) {
   vmp_lookup <- read_csv(
     here("lib", "reference", "vmp_vtm_lookup.csv"),
     col_types = cols(id = col_character())
@@ -362,6 +363,7 @@ generate_meds_dataset <- function(df_consultation_med_counts) {
     rename(code = id)
 
   df_pf_med_counts <- df_consultation_med_counts |>
+    filter(interval_start <= report_date) |>
     select(numerator, code = dmd_code, pharmacy_first_med) |>
     left_join(vmp_lookup, by = "code") |>
     filter(numerator > 0) |>
