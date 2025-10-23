@@ -1,10 +1,10 @@
 user/chriswood/pharmacy-first-clinical-pathway-conditions/7ec97762
 opensafely/ethnicity-snomed-0removed/2e641f61
 nhsd-primary-care-domain-refsets/preg_cod/20200812
-opensafely/pharmacy-first-acute-otitis-media-treatment-full-dmd-codelist/17ff19f3
-opensafely/pharmacy-first-impetigo-treatment-full-dmd-codelist/1ab1d9e9
-opensafely/pharmacy-first-infected-insect-bites-treatment-full-dmd-codelist/33c14d1e
-opensafely/pharmacy-first-shingles-treatment-full-dmd-codelist/01a266b4
-opensafely/pharmacy-first-sinusitis-treatment-full-dmd-codelist/4cd0c053
-opensafely/pharmacy-first-sore-throat-treatment-full-dmd-codelist/65e03388
-opensafely/pharmacy-first-urinary-tract-infection-treatment-full-dmd-codelist/6892f37e
+opensafely/pharmacy-first-acute-otitis-media-treatment-full-dmd-codelist/4758f9d4
+opensafely/pharmacy-first-impetigo-treatment-full-dmd-codelist/20051342
+opensafely/pharmacy-first-infected-insect-bites-treatment-full-dmd-codelist/54d6b9a2
+opensafely/pharmacy-first-shingles-treatment-full-dmd-codelist/7098eccd
+opensafely/pharmacy-first-sinusitis-treatment-full-dmd-codelist/78b12caf
+opensafely/pharmacy-first-sore-throat-treatment-full-dmd-codelist/11c09fe5
+opensafely/pharmacy-first-urinary-tract-infection-treatment-full-dmd-codelist/22b7d338

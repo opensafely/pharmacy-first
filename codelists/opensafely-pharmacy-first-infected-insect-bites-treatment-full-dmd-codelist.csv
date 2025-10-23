@@ -1,16 +1,8 @@
 code,term,dmd_id,dmd_type,bnf_code
-916911000001106,Flucloxacillin 250mg capsules (Alliance Healthcare (Distribution) Ltd),916911000001106,AMP,0501012G0AAAAAA
-5286611000001101,Clarithromycin 125mg/5ml oral suspension (Dowelhurst Ltd),5286611000001101,AMP,
-5298511000001100,Klaricid Paediatric 125mg/5ml oral suspension (Dowelhurst Ltd),5298511000001100,AMP,
-5300211000001105,Klaricid Paediatric 250mg/5ml oral suspension (Dowelhurst Ltd),5300211000001105,AMP,
-5377011000001108,Klaricid 250mg tablets (Waymade Healthcare Plc),5377011000001108,AMP,
-5377411000001104,Klaricid 500 tablets (Waymade Healthcare Plc),5377411000001104,AMP,
-5459011000001106,Clarithromycin 500mg tablets (Dowelhurst Ltd),5459011000001106,AMP,
-5514211000001102,Clarithromycin 250mg tablets (Dowelhurst Ltd),5514211000001102,AMP,
-5541711000001100,Erythrocin 500 tablets (Dowelhurst Ltd),5541711000001100,AMP,
-5543211000001106,Erythroped A 500mg tablets (Dowelhurst Ltd),5543211000001106,AMP,
-5551011000001104,Klaricid 250mg tablets (Dowelhurst Ltd),5551011000001104,AMP,
-5551211000001109,Klaricid 500 tablets (Dowelhurst Ltd),5551211000001109,AMP,
+22706111000001100,Flucloxacillin sodium 125mg/5ml oral suspension (Medreich Plc),22706111000001100,AMP,
+22878811000001100,Erythrocin 500 tablets (Waymade Healthcare Plc),22878811000001100,AMP,
+24099111000001103,Erythromycin 250mg gastro-resistant tablets (Waymade Healthcare Plc),24099111000001103,AMP,
+8993811000001101,Clarithromycin 500mg tablets (Sandoz Ltd),8993811000001101,AMP,0501050B0AAADAD
 10536411000001109,Erythroped A 500mg tablets (Waymade Healthcare Plc),10536411000001109,AMP,
 10833311000001107,Clarithromycin 125mg/5ml oral suspension (Waymade Healthcare Plc),10833311000001107,AMP,
 10833511000001101,Clarithromycin 250mg/5ml oral suspension (Waymade Healthcare Plc),10833511000001101,AMP,
@@ -31,34 +23,20 @@ code,term,dmd_id,dmd_type,bnf_code
 18257511000001102,Erythroped A 500mg tablets (Necessity Supplies Ltd),18257511000001102,AMP,
 18271111000001101,Klaricid 250mg tablets (Necessity Supplies Ltd),18271111000001101,AMP,
 18271311000001104,Klaricid 500 tablets (Necessity Supplies Ltd),18271311000001104,AMP,
-22706111000001100,Flucloxacillin sodium 125mg/5ml oral suspension (Medreich Plc),22706111000001100,AMP,
-22878811000001100,Erythrocin 500 tablets (Waymade Healthcare Plc),22878811000001100,AMP,
-24099111000001103,Erythromycin 250mg gastro-resistant tablets (Waymade Healthcare Plc),24099111000001103,AMP,
-36621611000001102,Clarithromycin 125mg/5ml oral suspension (Accord-UK Ltd),36621611000001102,AMP,0501050B0AAABAB
+21975211000001103,Erythromycin ethyl succinate 250mg/5ml oral suspension (Waymade Healthcare Plc),21975211000001103,AMP,0501050H0AAABAB
+5286611000001101,Clarithromycin 125mg/5ml oral suspension (Dowelhurst Ltd),5286611000001101,AMP,
+5298511000001100,Klaricid Paediatric 125mg/5ml oral suspension (Dowelhurst Ltd),5298511000001100,AMP,
+5300211000001105,Klaricid Paediatric 250mg/5ml oral suspension (Dowelhurst Ltd),5300211000001105,AMP,
+5377011000001108,Klaricid 250mg tablets (Waymade Healthcare Plc),5377011000001108,AMP,
+5377411000001104,Klaricid 500 tablets (Waymade Healthcare Plc),5377411000001104,AMP,
+5459011000001106,Clarithromycin 500mg tablets (Dowelhurst Ltd),5459011000001106,AMP,
+5514211000001102,Clarithromycin 250mg tablets (Dowelhurst Ltd),5514211000001102,AMP,
+5541711000001100,Erythrocin 500 tablets (Dowelhurst Ltd),5541711000001100,AMP,
+5543211000001106,Erythroped A 500mg tablets (Dowelhurst Ltd),5543211000001106,AMP,
+5551011000001104,Klaricid 250mg tablets (Dowelhurst Ltd),5551011000001104,AMP,
+5551211000001109,Klaricid 500 tablets (Dowelhurst Ltd),5551211000001109,AMP,
 37369311000001108,Erythrocin 250 tablets (CST Pharma Ltd),37369311000001108,AMP,
 37369811000001104,Erythrocin 500 tablets (CST Pharma Ltd),37369811000001104,AMP,
-16086611000001106,Flucloxacillin 250mg/5ml oral solution sugar free (Accord-UK Ltd),16086611000001106,AMP,0501012G0AAAQAQ
-16248111000001100,Flucloxacillin 250mg/5ml oral solution sugar free (Kent Pharma (UK) Ltd),16248111000001100,AMP,0501012G0AAAQAQ
-16443611000001100,Flucloxacillin 250mg/5ml oral solution sugar free (A A H Pharmaceuticals Ltd),16443611000001100,AMP,0501012G0AAAQAQ
-21997711000001109,Flucloxacillin 250mg/5ml oral solution sugar free (Waymade Healthcare Plc),21997711000001109,AMP,0501012G0AAAQAQ
-23979211000001107,Flucloxacillin 250mg/5ml oral solution sugar free (DE Pharmaceuticals),23979211000001107,AMP,0501012G0AAAQAQ
-27126411000001109,Flucloxacillin 250mg/5ml oral solution sugar free (Alliance Healthcare (Distribution) Ltd),27126411000001109,AMP,0501012G0AAAQAQ
-28096511000001103,Flucloxacillin 250mg/5ml oral solution sugar free (Almus Pharmaceuticals Ltd),28096511000001103,AMP,0501012G0AAAQAQ
-37732211000001103,Flucloxacillin 250mg/5ml oral solution sugar free (Novelgenix Therapeutics Ltd),37732211000001103,AMP,0501012G0AAAQAQ
-38619611000001103,Flucloxacillin 250mg/5ml oral solution sugar free (Crescent Pharma Ltd),38619611000001103,AMP,0501012G0AAAQAQ
-38915811000001103,Flucloxacillin 250mg/5ml oral solution sugar free (Medihealth (Northern) Ltd),38915811000001103,AMP,0501012G0AAAQAQ
-16086911000001100,Flucloxacillin 125mg/5ml oral solution sugar free (Accord-UK Ltd),16086911000001100,AMP,0501012G0AAAPAP
-16247911000001103,Flucloxacillin 125mg/5ml oral solution sugar free (Kent Pharma (UK) Ltd),16247911000001103,AMP,0501012G0AAAPAP
-16443111000001108,Flucloxacillin 125mg/5ml oral solution sugar free (A A H Pharmaceuticals Ltd),16443111000001108,AMP,0501012G0AAAPAP
-21997511000001104,Flucloxacillin 125mg/5ml oral solution sugar free (Waymade Healthcare Plc),21997511000001104,AMP,0501012G0AAAPAP
-23979011000001102,Flucloxacillin 125mg/5ml oral solution sugar free (DE Pharmaceuticals),23979011000001102,AMP,0501012G0AAAPAP
-27126211000001105,Flucloxacillin 125mg/5ml oral solution sugar free (Alliance Healthcare (Distribution) Ltd),27126211000001105,AMP,0501012G0AAAPAP
-28096311000001109,Flucloxacillin 125mg/5ml oral solution sugar free (Almus Pharmaceuticals Ltd),28096311000001109,AMP,0501012G0AAAPAP
-37732411000001104,Flucloxacillin 125mg/5ml oral solution sugar free (Novelgenix Therapeutics Ltd),37732411000001104,AMP,0501012G0AAAPAP
-38619411000001101,Flucloxacillin 125mg/5ml oral solution sugar free (Crescent Pharma Ltd),38619411000001101,AMP,0501012G0AAAPAP
-38915411000001100,Flucloxacillin 125mg/5ml oral solution sugar free (Medihealth (Northern) Ltd),38915411000001100,AMP,0501012G0AAAPAP
-44154311000001102,Clarithromycin 500mg tablets (Quattro Pharma Ltd),44154311000001102,AMP,
-44158611000001102,Flucloxacillin 250mg capsules (Flamingo Pharma (UK) Ltd),44158611000001102,AMP,
 513711000001108,Flucloxacillin 125mg/5ml oral solution (A A H Pharmaceuticals Ltd),513711000001108,AMP,0501012G0AAAFAF
 103311000001100,Flucloxacillin 125mg/5ml oral solution (Accord-UK Ltd),103311000001100,AMP,0501012G0AAAFAF
 767311000001102,Flucloxacillin 125mg/5ml oral solution (Teva UK Ltd),767311000001102,AMP,0501012G0AAAFAF
@@ -85,7 +63,6 @@ code,term,dmd_id,dmd_type,bnf_code
 10307711000001108,Erythromycin ethyl succinate 250mg/5ml oral suspension (Focus Pharmaceuticals Ltd),10307711000001108,AMP,0501050H0AAABAB
 13620511000001101,Erythromycin ethyl succinate 250mg/5ml oral suspension (Pinewood Healthcare),13620511000001101,AMP,0501050H0AAABAB
 17902811000001101,Erythromycin ethyl succinate 250mg/5ml oral suspension (Phoenix Healthcare Distribution Ltd),17902811000001101,AMP,0501050H0AAABAB
-21975211000001103,Erythromycin ethyl succinate 250mg/5ml oral suspension (Waymade Healthcare Plc),21975211000001103,AMP,0501050H0AAABAB
 23902911000001100,Erythromycin ethyl succinate 250mg/5ml oral suspension (DE Pharmaceuticals),23902911000001100,AMP,0501050H0AAABAB
 29856111000001104,Erythromycin ethyl succinate 250mg/5ml oral suspension (Sigma Pharmaceuticals Plc),29856111000001104,AMP,0501050H0AAABAB
 38890011000001106,Erythromycin ethyl succinate 250mg/5ml oral suspension (Medihealth (Northern) Ltd),38890011000001106,AMP,0501050H0AAABAB
@@ -140,6 +117,7 @@ code,term,dmd_id,dmd_type,bnf_code
 194111000001102,Flucloxacillin 250mg capsules (IVAX Pharmaceuticals UK Ltd),194111000001102,AMP,0501012G0AAAAAA
 627011000001100,Flucloxacillin 250mg capsules (Kent Pharma (UK) Ltd),627011000001100,AMP,0501012G0AAAAAA
 471111000001107,Floxapen 250mg capsules (Actavis UK Ltd),471111000001107,AMP,0501012G0BBAAAA
+916911000001106,Flucloxacillin 250mg capsules (Alliance Healthcare (Distribution) Ltd),916911000001106,AMP,0501012G0AAAAAA
 135511000001102,Flucloxacillin 250mg capsules (Sandoz Ltd),135511000001102,AMP,0501012G0AAAAAA
 220311000001101,Flucloxacillin 250mg capsules (Sun Pharma UK Ltd),220311000001101,AMP,0501012G0AAAAAA
 9798411000001103,Flucloxacillin 250mg capsules (Almus Pharmaceuticals Ltd),9798411000001103,AMP,0501012G0AAAAAA
@@ -155,6 +133,8 @@ code,term,dmd_id,dmd_type,bnf_code
 37506211000001106,Flucloxacillin 250mg capsules (Noumed Life Sciences Ltd),37506211000001106,AMP,0501012G0AAAAAA
 38915011000001109,Flucloxacillin 250mg capsules (Medihealth (Northern) Ltd),38915011000001109,AMP,0501012G0AAAAAA
 41885411000001100,Flucloxacillin 250mg capsules (Brown & Burk UK Ltd),41885411000001100,AMP,0501012G0AAAAAA
+44158611000001102,Flucloxacillin 250mg capsules (Flamingo Pharma (UK) Ltd),44158611000001102,AMP,0501012G0AAAAAA
+45167811000001102,Flucloxacillin 250mg capsules (Rudipharm Ltd),45167811000001102,AMP,0501012G0AAAAAA
 289411000001107,Flucloxacillin 500mg capsules (A A H Pharmaceuticals Ltd),289411000001107,AMP,0501012G0AAABAB
 3111000001109,Flucloxacillin 500mg capsules (Accord-UK Ltd),3111000001109,AMP,0501012G0AAABAB
 833311000001104,Flucloxacillin 500mg capsules (Teva UK Ltd),833311000001104,AMP,0501012G0AAABAB
@@ -182,12 +162,12 @@ code,term,dmd_id,dmd_type,bnf_code
 41885211000001104,Flucloxacillin 500mg capsules (Brown & Burk UK Ltd),41885211000001104,AMP,0501012G0AAABAB
 42544011000001102,Flucloxacillin 500mg capsules (Flamingo Pharma (UK) Ltd),42544011000001102,AMP,0501012G0AAABAB
 43990411000001108,Flucloxacillin 500mg capsules (Crescent Pharma Ltd),43990411000001108,AMP,0501012G0AAABAB
+45167611000001101,Flucloxacillin 500mg capsules (Rudipharm Ltd),45167611000001101,AMP,0501012G0AAABAB
 463111000001102,Klaricid 500 tablets (Abbott Laboratories Ltd),463111000001102,AMP,0501050B0BBADAD
 8819111000001101,Clarithromycin 500mg tablets (Teva UK Ltd),8819111000001101,AMP,0501050B0AAADAD
 8826111000001102,Clarithromycin 500mg tablets (Kent Pharma (UK) Ltd),8826111000001102,AMP,0501050B0AAADAD
 8915511000001104,Clarithromycin 500mg tablets (Viatris UK Healthcare Ltd),8915511000001104,AMP,0501050B0AAADAD
 8928611000001100,Clarithromycin 500mg tablets (A A H Pharmaceuticals Ltd),8928611000001100,AMP,0501050B0AAADAD
-8993811000001101,Clarithromycin 500mg tablets (Sandoz Ltd),8993811000001101,AMP,0501050B0AAADAD
 9033811000001101,Clarithromycin 500mg tablets (Alliance Healthcare (Distribution) Ltd),9033811000001101,AMP,0501050B0AAADAD
 9038811000001106,Clarithromycin 500mg tablets (Sun Pharma UK Ltd),9038811000001106,AMP,0501050B0AAADAD
 13745811000001102,Clarithromycin 500mg tablets (Tillomed Laboratories Ltd),13745811000001102,AMP,0501050B0AAADAD
@@ -208,6 +188,7 @@ code,term,dmd_id,dmd_type,bnf_code
 42205211000001106,Clarithromycin 500mg tablets (Brown & Burk UK Ltd),42205211000001106,AMP,0501050B0AAADAD
 42456611000001105,Clarithromycin 500mg tablets (Krka UK Ltd),42456611000001105,AMP,0501050B0AAADAD
 42830211000001104,Clarithromycin 500mg tablets (Drugsrus Ltd),42830211000001104,AMP,0501050B0AAADAD
+44154311000001102,Clarithromycin 500mg tablets (Quattro Pharma Ltd),44154311000001102,AMP,0501050B0AAADAD
 30611000001101,Erythrocin 500 tablets (Advanz Pharma),30611000001101,AMP,0501050N0BBABAB
 17627611000001109,Erythrolar 500mg tablets (Ennogen Pharma Ltd),17627611000001109,AMP,0501050N0BCABAB
 37911611000001107,Erythromycin stearate 500mg tablets (Key Pharmaceuticals Ltd),37911611000001107,AMP,0501050N0AAABAB
@@ -295,6 +276,7 @@ code,term,dmd_id,dmd_type,bnf_code
 21854311000001101,Clarithromycin 125mg/5ml oral suspension (Waymade Healthcare Plc),21854311000001101,AMP,0501050B0AAABAB
 30031911000001106,Clarithromycin 125mg/5ml oral suspension (DE Pharmaceuticals),30031911000001106,AMP,0501050B0AAABAB
 30761711000001102,Clarithromycin 125mg/5ml oral suspension (Almus Pharmaceuticals Ltd),30761711000001102,AMP,0501050B0AAABAB
+36621611000001102,Clarithromycin 125mg/5ml oral suspension (Accord-UK Ltd),36621611000001102,AMP,0501050B0AAABAB
 38840411000001105,Clarithromycin 125mg/5ml oral suspension (Medihealth (Northern) Ltd),38840411000001105,AMP,0501050B0AAABAB
 211000001101,Klaricid Paediatric 250mg/5ml oral suspension (Viatris UK Healthcare Ltd),211000001101,AMP,0501050B0BBAHAH
 9042311000001101,Clarithromycin 250mg/5ml oral suspension (Sun Pharma UK Ltd),9042311000001101,AMP,0501050B0AAAHAH
@@ -341,6 +323,26 @@ code,term,dmd_id,dmd_type,bnf_code
 38076711000001103,Flucloxacillin 250mg/5ml oral solution (Teva UK Ltd),38076711000001103,AMP,0501012G0AAAGAG
 38915611000001102,Flucloxacillin 250mg/5ml oral solution (Medihealth (Northern) Ltd),38915611000001102,AMP,0501012G0AAAGAG
 40754011000001105,Flucloxacillin 250mg/5ml oral solution (Milpharm Ltd),40754011000001105,AMP,0501012G0AAAGAG
+16086611000001106,Flucloxacillin 250mg/5ml oral solution sugar free (Accord-UK Ltd),16086611000001106,AMP,0501012G0AAAQAQ
+16248111000001100,Flucloxacillin 250mg/5ml oral solution sugar free (Kent Pharma (UK) Ltd),16248111000001100,AMP,0501012G0AAAQAQ
+16443611000001100,Flucloxacillin 250mg/5ml oral solution sugar free (A A H Pharmaceuticals Ltd),16443611000001100,AMP,0501012G0AAAQAQ
+21997711000001109,Flucloxacillin 250mg/5ml oral solution sugar free (Waymade Healthcare Plc),21997711000001109,AMP,0501012G0AAAQAQ
+23979211000001107,Flucloxacillin 250mg/5ml oral solution sugar free (DE Pharmaceuticals),23979211000001107,AMP,0501012G0AAAQAQ
+27126411000001109,Flucloxacillin 250mg/5ml oral solution sugar free (Alliance Healthcare (Distribution) Ltd),27126411000001109,AMP,0501012G0AAAQAQ
+28096511000001103,Flucloxacillin 250mg/5ml oral solution sugar free (Almus Pharmaceuticals Ltd),28096511000001103,AMP,0501012G0AAAQAQ
+37732211000001103,Flucloxacillin 250mg/5ml oral solution sugar free (Novelgenix Therapeutics Ltd),37732211000001103,AMP,0501012G0AAAQAQ
+38619611000001103,Flucloxacillin 250mg/5ml oral solution sugar free (Crescent Pharma Ltd),38619611000001103,AMP,0501012G0AAAQAQ
+38915811000001103,Flucloxacillin 250mg/5ml oral solution sugar free (Medihealth (Northern) Ltd),38915811000001103,AMP,0501012G0AAAQAQ
+16086911000001100,Flucloxacillin 125mg/5ml oral solution sugar free (Accord-UK Ltd),16086911000001100,AMP,0501012G0AAAPAP
+16247911000001103,Flucloxacillin 125mg/5ml oral solution sugar free (Kent Pharma (UK) Ltd),16247911000001103,AMP,0501012G0AAAPAP
+16443111000001108,Flucloxacillin 125mg/5ml oral solution sugar free (A A H Pharmaceuticals Ltd),16443111000001108,AMP,0501012G0AAAPAP
+21997511000001104,Flucloxacillin 125mg/5ml oral solution sugar free (Waymade Healthcare Plc),21997511000001104,AMP,0501012G0AAAPAP
+23979011000001102,Flucloxacillin 125mg/5ml oral solution sugar free (DE Pharmaceuticals),23979011000001102,AMP,0501012G0AAAPAP
+27126211000001105,Flucloxacillin 125mg/5ml oral solution sugar free (Alliance Healthcare (Distribution) Ltd),27126211000001105,AMP,0501012G0AAAPAP
+28096311000001109,Flucloxacillin 125mg/5ml oral solution sugar free (Almus Pharmaceuticals Ltd),28096311000001109,AMP,0501012G0AAAPAP
+37732411000001104,Flucloxacillin 125mg/5ml oral solution sugar free (Novelgenix Therapeutics Ltd),37732411000001104,AMP,0501012G0AAAPAP
+38619411000001101,Flucloxacillin 125mg/5ml oral solution sugar free (Crescent Pharma Ltd),38619411000001101,AMP,0501012G0AAAPAP
+38915411000001100,Flucloxacillin 125mg/5ml oral solution sugar free (Medihealth (Northern) Ltd),38915411000001100,AMP,0501012G0AAAPAP
 22751511000001108,Flucloxacillin sodium 125mg/5ml oral suspension,22751511000001108,VMP,
 41949911000001106,Flucloxacillin 125mg/5ml oral solution,41949911000001106,VMP,0501012G0AAAFAF
 41950011000001102,Flucloxacillin 125mg/5ml oral suspension,41950011000001102,VMP,0501012H0AAAAAA
