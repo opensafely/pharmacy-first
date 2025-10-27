@@ -103,10 +103,11 @@ actions:
     outputs:
       moderately_sensitive:
         html: output/report/pharmacy_first_monthly_report.html
-        pf_breakdowns: output/report/data/df_measures_updated.csv
+        pf_breakdowns: output/report/data/df_pf_consultations_breakdown_updated.csv
         pf_med_counts: output/report/data/df_pf_and_non_pf_med_counts_updated.csv
         pf_consultations: output/report/data/df_pf_consultations_updated.csv
         pf_descriptive_stats: output/report/data/df_pf_descriptive_stats_updated.csv
+        pf_clinical_pathways: output/report/data/df_pf_clinical_pathways_updated.csv
         pf_counts: output/report/figures/figure1_updated.png
         pf_by_sex: output/report/figures/figure2sex_updated.png
         pf_by_age: output/report/figures/figure3age_updated.png
