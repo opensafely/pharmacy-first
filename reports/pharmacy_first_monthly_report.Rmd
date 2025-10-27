@@ -147,6 +147,10 @@ Counts are broken down by sex, age, IMD quintile, region, and ethnicity to highl
 **Figure 2**. Monthly count of patients with a Pharmacy First consultation code in OpenSAFELY-TPP broken down by sex.
 
 ```{r plot-pf-consultations-by-sex, message=FALSE, warning=FALSE, fig.height=4, fig.width=10}
+
+df_pf_consultations_breakdown <- df_measures %>%
+  filter(measure_desc == "pharmacy_first_services")
+
 pf_sex <- df_measures %>%
   filter(between(interval_start, as.Date("2024-02-01"), report_date)) |>
   filter(measure_desc == "pharmacy_first_services") %>%
@@ -163,7 +167,8 @@ pf_sex <- df_measures %>%
   )
 
 pf_sex
-write_csv(df_measures, here("output", "report", "data", "df_measures_updated.csv"))
+
+write_csv(df_pf_consultations_breakdown, here("output", "report", "data", "df_pf_consultations_breakdown_updated.csv"))
 ggsave(here("output", "report", "figures", "figure2sex_updated.png"), pf_sex, width = 10, height = 4)
 ```
 
@@ -442,6 +447,11 @@ pf_clinical_pathways <- df_measures %>%
 
 pf_clinical_pathways
 
+df_pf_clinical_pathways <- df_measures %>% 
+  filter(measure_desc == "clinical_condition") %>% 
+  filter(is.na(group_by))
+
+write_csv(df_pf_clinical_pathways, here("output", "report", "data", "df_pf_clinical_pathways_updated.csv"))
 ggsave(here("output", "report", "figures", "figure8clinicalpathways_updated.png"), pf_clinical_pathways, width = 10, height = 15)
 ```
 
