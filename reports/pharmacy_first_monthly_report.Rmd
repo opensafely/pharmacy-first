@@ -37,7 +37,7 @@ source(here("lib", "functions", "create_tables.R"))
 source(here("lib", "functions", "load_opensafely_outputs.R"))
 
 # Define report date
-report_date <- as.Date("2025-09-30")
+report_date <- as.Date("2025-10-31")
 ```
 
 This OpenSAFELY report presents real-time analyses of the Pharmacy First service using data from OpenSAFELY-TPP. 
