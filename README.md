@@ -58,7 +58,8 @@ No clinical, policy or safety conclusions must be drawn from the contents of thi
 
 ## RMarkdown reports
 
-- `reports/pharmacy_first_report.Rmd`: R Markdown file to create pharmacy first dashboard.
+- `reports/pharmacy_first_report.Rmd`: R Markdown file to create Pharmacy First first year dashboard.
+- `reports/pharmacy_first_monthly_report.Rmd`: R Markdown file to create Pharmacy First monthly dashboard.
 - `reports/create_results_manuscript.Rmd`: Compiles main manuscript results in publication-ready format.
 
 
