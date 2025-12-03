@@ -41,6 +41,11 @@ pf_consultation_events = select_events(
     selected_events,
     codelist=pf_consultation_events_dict["pf_consultation_services_combined"],
 )
+# Select minor illness (mi) code event
+pf_mi_events = select_events(
+    selected_events,
+    codelist=pf_consultation_events_dict["pf_consultation_cp_minorillness"],
+)
 
 # Extract Pharmacy First consultation IDs
 pf_ids = pf_consultation_events.consultation_id
@@ -48,6 +53,15 @@ has_pf_consultation = pf_consultation_events.exists_for_patient()
 
 # Counts number of Pharmacy First consultations
 pf_consultation_count = pf_consultation_events.count_for_patient()
+
+# Extract Pharmacy First consultation IDs (for minor illness code)
+pf_mi_ids = pf_mi_events.consultation_id
+has_pf_mi_consultation = pf_mi_events.exists_for_patient()
+
+# Counts number of Pharmacy First consultations (for minor illness code)
+pf_mi_consultation_count = pf_mi_events.count_for_patient()
+
+
 
 
 # Pharmacy First conditions
@@ -67,6 +81,14 @@ selected_pf_id_non_pf_events = (
     )
 )
 
+# Pharmacy First conditions (for minor illness code)
+selected_pf_mi_id_conditions = selected_events.where(
+    selected_events.consultation_id.is_in(pf_mi_ids)
+).where(selected_events.snomedct_code.is_in(pf_conditions_codelist))
+
+selected_pf_mi_id_condition_ids = selected_pf_mi_id_conditions.consultation_id
+
+
 # Counts all other clinical events linked to PF ID per month
 nonpf_event_count = selected_pf_id_non_pf_events.count_for_patient()
 
@@ -75,7 +97,13 @@ selected_pf_id_medications = selected_medications.where(
     selected_medications.consultation_id.is_in(pf_ids)
 ).where(selected_medications.dmd_code.is_in(pf_med_codelist))
 
+# Pharmacy First medications (for minor illness code)
+selected_pf_mi_id_medications = selected_medications.where(
+    selected_medications.consultation_id.is_in(pf_mi_ids)
+).where(selected_medications.dmd_code.is_in(pf_med_codelist))
+
 selected_pf_id_medication_ids = selected_pf_id_medications.consultation_id
+selected_pf_mi_id_medication_ids = selected_pf_mi_id_medications.consultation_id
 
 selected_pf_id_non_pf_medications = selected_medications.where(
     selected_medications.consultation_id.is_in(pf_ids)
@@ -100,6 +128,22 @@ count_pf_condition_only = selected_pf_id_conditions.where(
 # (3) BOTH, these should give us identical numbers
 count_pf_both = selected_pf_id_medications.where(
     selected_pf_id_medications.consultation_id.is_in(selected_pf_id_condition_ids)
+).consultation_id.count_distinct_for_patient()
+
+# Count PF consultations (for minor illness code) linked to (1) PF MED ONLY (2) PF CONDITION ONLY (3) BOTH
+# (1) PF MED ONLY
+count_pf_mi_med_only = selected_pf_mi_id_medications.where(
+    selected_pf_mi_id_medications.consultation_id.is_not_in(selected_pf_mi_id_condition_ids)
+).consultation_id.count_distinct_for_patient()
+
+# (2) PF CONDITION
+count_pf_mi_condition_only = selected_pf_mi_id_conditions.where(
+    selected_pf_mi_id_conditions.consultation_id.is_not_in(selected_pf_mi_id_medication_ids)
+).consultation_id.count_distinct_for_patient()
+
+# (3) BOTH, these should give us identical numbers
+count_pf_mi_both = selected_pf_mi_id_medications.where(
+    selected_pf_mi_id_medications.consultation_id.is_in(selected_pf_mi_id_condition_ids)
 ).consultation_id.count_distinct_for_patient()
 
 # count_pf_condition_and_med = selected_pf_id_conditions.where(
@@ -131,6 +175,21 @@ measures.define_measure(
 measures.define_measure(
     name="pfmed_and_pfcondition_with_pfid",
     numerator=count_pf_both,
+)
+
+measures.define_measure(
+    name="pfmed_with_pfid_mi",
+    numerator=count_pf_mi_med_only,
+)
+
+measures.define_measure(
+    name="pfcondition_with_pfid_mi",
+    numerator=count_pf_mi_condition_only,
+)
+
+measures.define_measure(
+    name="pfmed_and_pfcondition_with_pfid_mi",
+    numerator=count_pf_mi_both,
 )
 
 measures.define_measure(
