@@ -128,8 +128,9 @@ plot_pf_consultations <- df_pf_consultations_extended |>
   scale_colour_viridis_d(option = "plasma", end = .75) +
   scale_y_continuous(
     labels = scales::number,
-    breaks = c(seq(0, 60000, by = 10000))
-  )
+    breaks = scales::pretty_breaks(),
+    expand = expansion(mult = c(0, 0.1))
+)
 
 plot_pf_consultations
 
