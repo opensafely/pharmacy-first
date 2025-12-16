@@ -228,7 +228,7 @@ df_results_pf_total_counts %>%
 ```{r, message=FALSE, warning=FALSE, echo = FALSE, fig.height = 4, fig.width = 8}
 # Create figure to show & of PF Med, Condition and both with linked PF consultations
 
-df_pf_descriptive_stats <- df_descriptive_stats %>%
+df_pf_descriptive_stats_all <- df_descriptive_stats %>%
   filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
   mutate(
     measure = factor(measure,
@@ -245,23 +245,23 @@ df_pf_descriptive_stats <- df_descriptive_stats %>%
     )
   ) 
   
-  df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  df_pf_descriptive_stats_all <- df_pf_descriptive_stats_all %>%
   left_join(df_pf_consultation_total,
     by = c("interval_start")
   )
 
 # Set positions in graph for figure 3 percentage labels
-df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
-  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-02-01"))) %>%
+df_pf_descriptive_stats_all <- df_pf_descriptive_stats_all %>%
+  filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-01-01"))) %>%
   group_by(interval_start) %>%
   mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
   arrange(desc(measure), .by_group = TRUE) |>
   mutate(
     ratio_exclusive = numerator / value,
-    cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
+    cumulative_ratio_exclusive = case_when(interval_start == "2025-01-01" ~ cumsum(ratio_exclusive), TRUE ~ NA)
   )
 
-fig_pf_med_condition_linkage <- df_pf_descriptive_stats |>
+fig_pf_med_condition_linkage_all <- df_pf_descriptive_stats_all |>
   ggplot(
     aes(
       x = interval_start,
@@ -288,7 +288,7 @@ fig_pf_med_condition_linkage <- df_pf_descriptive_stats |>
   scale_fill_viridis_d() +
   guides(fill = guide_legend(reverse = TRUE)) +
   scale_y_continuous(
-    limits = c(0, .5),
+    limits = c(0, .65),
     labels = scales::percent
   ) +
   labs(
@@ -307,20 +307,103 @@ fig_pf_med_condition_linkage <- df_pf_descriptive_stats |>
     text = element_text(size = 14)
   )
 
-fig_pf_med_condition_linkage
+fig_pf_med_condition_linkage_all
 
 ggsave(
   filename = here("released_output", "results", "manuscript", "fig3_pf_consultation_completeness.png"),
-  fig_pf_med_condition_linkage,
+  fig_pf_med_condition_linkage_all,
   height = 4,
   width = 8
 )
+
+# Create figure to show & of PF Med, Condition and both with linked PF consultations (Minor Illness)
+
+df_pf_descriptive_stats_mi <- df_descriptive_stats %>%
+  filter(measure %in% c("pfmed_with_pfid_mi", "pfcondition_with_pfid_mi", "pfmed_and_pfcondition_with_pfid_mi")) %>%
+  mutate(
+    measure = factor(measure,
+      levels = c(
+        "pfmed_with_pfid_mi",
+        "pfcondition_with_pfid_mi",
+        "pfmed_and_pfcondition_with_pfid_mi"
+      ),
+      labels = c(
+        "Medication",
+        "Clinical condition",
+        "Both"
+      )
+    )
+  ) 
+  
+    df_pf_consultation_total <- df_pf_consultations %>% 
+      filter(measure == "CP Consultation Service for minor illness (1577041000000109)") %>% 
+      distinct() %>% 
+      select(-measure)
+
+    df_pf_descriptive_stats_mi <- df_pf_descriptive_stats_mi %>%
+    left_join(df_pf_consultation_total,
+      by = c("interval_start")
+    )
+
+# Create figure which shows completeness of PF consultations
+df_pf_descriptive_stats_mi <- generate_linkage_dataset_mi(df_descriptive_stats, df_pf_consultations)
+
+write_csv(df_pf_descriptive_stats_mi, here("output", "report", "data", "df_pf_descriptive_stats_mi.csv"))
+
+plot_pf_med_condition_linkage_mi <- df_pf_descriptive_stats_mi |>
+  ggplot(
+    aes(
+      x = interval_start,
+      y = ratio_exclusive,
+      fill = measure
+    )
+  ) +
+  geom_area(
+    alpha = 0.85,
+    linewidth = .5,
+    colour = "white"
+  ) +
+  geom_label(
+    aes(
+      y = cumulative_ratio_exclusive,
+      label = ifelse(is.na(ratio_exclusive), "", scales::percent(ratio_exclusive, accuracy = .1)),
+    ),
+    vjust = -0.05,
+    size = 3.5,
+    show.legend = FALSE,
+    color = "black",
+    fill = "white"
+  ) +
+  scale_fill_viridis_d() +
+  scale_y_continuous(
+    limits = c(0, 0.65),
+    labels = scales::percent
+  ) +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Pharmacy First consultations linked to: "
+  ) +
+  scale_x_date(
+    date_breaks = "1 month",
+    labels = scales::label_date_short()
+  ) +
+  theme(
+    panel.background = element_blank(),
+    axis.line = element_line(colour = "grey50"),
+    legend.position = "bottom",
+    text = element_text(size = 14)
+  )
+
+plot_pf_med_condition_linkage_mi
+
+ggsave(here("released_output", "results", "fig3b_pf_consultation_completeness.png"), plot_pf_med_condition_linkage_mi, width = 8, height = 4)
 ```
 
 ### Results for Figure 3 description
 
 ```{r}
-df_results_pf_linkage <- df_pf_descriptive_stats %>%
+df_results_pf_linkage <- df_pf_descriptive_stats_all %>%
   select(measure, interval_start, ratio, numerator) %>%
   group_by(interval_start) %>%
   mutate(
@@ -453,15 +536,15 @@ gtsave(
 
 ```{r}
 
-df_table_a3 <- read_csv(here("lib/validation/data/pf_consultation_validation_data.csv"))
+# df_table_a3 <- read_csv(here("lib/validation/data/pf_consultation_validation_data.csv"))
 
-df_table_a3 |>
-  filter(date >= "2024-02-01" & date <= "2025-01-01") |>
-  group_by(consultation_type) |>
-  summarise(
-    count = sum(count)
-  ) |>
-  ungroup() |>
-  mutate(pct = count / sum(count))
+# df_table_a3 |>
+#   filter(date >= "2024-02-01" & date <= "2025-01-01") |>
+#   group_by(consultation_type) |>
+#   summarise(
+#     count = sum(count)
+#   ) |>
+#   ungroup() |>
+#   mutate(pct = count / sum(count))
 
 ```

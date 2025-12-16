@@ -216,7 +216,7 @@ generate_pf_consultation_counts_extended <- function(df_measures, report_date) {
 # Joins total consultations, calculates exclusive linkage ratios, and
 # positions label data for plotting stacked bar chart proportions.
 generate_linkage_dataset <- function(df_descriptive_stats, df_pf_consultations, report_date=as.Date("2025-01-31")) {
-  df_pf_descriptive_stats <- df_descriptive_stats %>%
+  df_pf_descriptive_stats_all <- df_descriptive_stats %>%
     filter(measure %in% c("pfmed_with_pfid", "pfcondition_with_pfid", "pfmed_and_pfcondition_with_pfid")) %>%
     mutate(
       measure = factor(measure,
@@ -237,23 +237,68 @@ generate_linkage_dataset <- function(df_descriptive_stats, df_pf_consultations, 
       distinct() %>% 
       select(-measure)
 
-    df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+    df_pf_descriptive_stats_all <- df_pf_descriptive_stats_all %>%
     left_join(df_pf_consultation_total,
       by = c("interval_start")
     )
 
   # Set positions in graph for figure 3 percentage labels
-  df_pf_descriptive_stats <- df_pf_descriptive_stats %>%
+  df_pf_descriptive_stats_all <- df_pf_descriptive_stats_all %>%
     filter(between(interval_start, as.Date("2024-02-01"), report_date)) %>%
     group_by(interval_start) %>%
     mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
     arrange(desc(measure), .by_group = TRUE) |>
     mutate(
       ratio_exclusive = numerator / value,
-      cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
+      cumulative_ratio_exclusive = case_when(interval_start == max(df_pf_descriptive_stats_all$interval_start) ~ cumsum(ratio_exclusive), TRUE ~ NA)
     )
 
-  return(df_pf_descriptive_stats)
+  return(df_pf_descriptive_stats_all)
+}
+
+# Create a dataset for plotting Figure 3 showing linkage between consultations and
+# medications, conditions, or both FOR MINOR ILLNESS CODE ONLY
+# Joins total consultations, calculates exclusive linkage ratios, and
+# positions label data for plotting stacked bar chart proportions.
+generate_linkage_dataset_mi <- function(df_descriptive_stats, df_pf_consultations, report_date=as.Date("2025-01-31")) {
+  df_pf_descriptive_stats_mi <- df_descriptive_stats %>%
+    filter(measure %in% c("pfmed_with_pfid_mi", "pfcondition_with_pfid_mi", "pfmed_and_pfcondition_with_pfid_mi")) %>%
+    mutate(
+      measure = factor(measure,
+        levels = c(
+          "pfmed_with_pfid_mi",
+          "pfcondition_with_pfid_mi",
+          "pfmed_and_pfcondition_with_pfid_mi"
+        ),
+        labels = c(
+          "Medication",
+          "Clinical condition",
+          "Both"
+        )
+      )
+    ) 
+    df_pf_consultation_total <- df_pf_consultations %>% 
+      filter(measure == "CP Consultation Service for minor illness (1577041000000109)") %>% 
+      distinct() %>% 
+      select(-measure)
+
+    df_pf_descriptive_stats_mi <- df_pf_descriptive_stats_mi %>%
+    left_join(df_pf_consultation_total,
+      by = c("interval_start")
+    )
+
+  # Set positions in graph for figure 3 percentage labels
+  df_pf_descriptive_stats_mi <- df_pf_descriptive_stats_mi %>%
+    filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-01-31"))) %>%
+    group_by(interval_start) %>%
+    mutate(measure = factor(measure, levels = c("Both", "Clinical condition", "Medication"))) |>
+    arrange(desc(measure), .by_group = TRUE) |>
+    mutate(
+      ratio_exclusive = numerator / value,
+      cumulative_ratio_exclusive = case_when(interval_start == "2025-01-01" ~ cumsum(ratio_exclusive), TRUE ~ NA)
+    )
+
+  return(df_pf_descriptive_stats_mi)
 }
 
 # Produce a dataset showing the sex breakdown for each clinical condition
