@@ -145,6 +145,13 @@ df_pf_consultation_total <- df_pf_consultations %>%
   distinct() %>% 
   select(-measure)
 
+# create labels vector matching the factor levels used in the plot
+labels_vec <- c(
+  "CP Consultation Service for minor illness (1577041000000109)*",
+  "Pharmacy First service (983341000000102)",
+  "CP Pharmacy First Service (2129921000000100)"
+)
+
 plot_pf_consultations <- df_pf_consultations_breakdown |>
   ggplot(
     aes(
@@ -162,8 +169,8 @@ plot_pf_consultations <- df_pf_consultations_breakdown |>
     labels = scales::label_date_short()
   ) +
   guides(
-    color = guide_legend(nrow = 2),
-    shape = guide_legend(nrow = 2)
+    color = guide_legend(nrow = 2, byrow = TRUE),
+    shape = guide_legend(nrow = 2, byrow = TRUE)
   ) +
   labs(
     title = NULL,
@@ -177,9 +184,11 @@ plot_pf_consultations <- df_pf_consultations_breakdown |>
     legend.position = "bottom",
     text = element_text(size = 12),
     panel.background = element_blank(),
-    axis.line = element_line(colour = "grey50"),
+    axis.line = element_line(colour = "grey50")
   ) +
-  scale_colour_viridis_d(option = "plasma", end = .75) +
+  scale_colour_viridis_d(option = "plasma", end = .75, labels = labels_vec) +
+  scale_shape_discrete(labels = labels_vec) +
+  scale_fill_discrete(labels = labels_vec) +
   scale_y_continuous(
     limits = c(0, 40000),
     labels = scales::label_number(),
@@ -250,6 +259,9 @@ df_pf_descriptive_stats_all <- df_descriptive_stats %>%
     by = c("interval_start")
   )
 
+df_filtered <- df_pf_descriptive_stats_all %>% 
+  filter(interval_start <= "2025-01-01")
+sum(df_filtered$numerator)
 # Set positions in graph for figure 3 percentage labels
 df_pf_descriptive_stats_all <- df_pf_descriptive_stats_all %>%
   filter(between(interval_start, as.Date("2024-02-01"), as.Date("2025-01-01"))) %>%
