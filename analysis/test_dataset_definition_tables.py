@@ -77,9 +77,7 @@ test_data = {
         },
         "clinical_events": [
             {
-                # Swiss
-                "date": date(2000, 1, 1),
-                "snomedct_code": "76574004",
+
             },
         ],
         "addresses": {},
