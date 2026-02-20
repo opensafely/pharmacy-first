@@ -9,8 +9,8 @@ start_date_measure_condition_provider = "2023-01-01"
 monthly_intervals_measure_condition_provider = 25
 
 # Number of months included in the monthly dashboard - INCREASE THIS INTERVAL BY ONE EACH MONTH
-# Current timeframe of monthly dashboard: 01/11/2023 - 31/12/2025 (UPDATE this timeframe monthly)
-monthly_dashboard_intervals = 26
+# Current timeframe of monthly dashboard: 01/11/2023 - 31/01/2026 (UPDATE this timeframe monthly)
+monthly_dashboard_intervals = 27
 
 # Measure: measures_definition_pf_breakdown.py
 start_date_measure_pf_breakdown = "2023-11-01"
