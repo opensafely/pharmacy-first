@@ -1,16 +1,12 @@
 library(here)
 library(tidyverse)
 
-pf_consultations_with_breakdowns <- read_csv(here(
-  "output",
-  "measures",
-  "pf_breakdown_measures.csv"
-))
-pf_completeness <- read_csv(here(
-  "output",
-  "measures",
-  "pf_descriptive_stats_measures.csv"
-))
+pf_consultations_with_breakdowns <- read_csv(
+  here("output", "measures", "pf_breakdown_measures.csv")
+)
+pf_completeness <- read_csv(
+  here("output", "measures", "pf_descriptive_stats_measures.csv")
+)
 
 pf_consultations_with_breakdowns_clean <- pf_consultations_with_breakdowns %>%
   mutate(
@@ -50,7 +46,9 @@ pf_completeness_clean <- pf_completeness %>%
     measure == "pfmed_with_pfid" |
       measure == "pfcondition_with_pfid" |
       measure == "pfmed_and_pfcondition_with_pfid"
-  )
+  ) %>% select(-ratio, -denominator)
+
+dir.create(here("output", "user_tables"))
 
 readr::write_csv(
   pf_consultations_with_breakdowns_clean,
