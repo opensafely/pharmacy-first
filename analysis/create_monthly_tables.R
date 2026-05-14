@@ -33,7 +33,7 @@ pf_consultations_with_breakdowns_clean <- pf_consultations_with_breakdowns %>%
     interval_end,
     group_type,
     group,
-    value = numerator,
+    count = numerator,
   ) %>%
   arrange(interval_start, measure_type, measure, group_type, group) %>%
   filter(
@@ -46,7 +46,9 @@ pf_completeness_clean <- pf_completeness %>%
     measure == "pfmed_with_pfid" |
       measure == "pfcondition_with_pfid" |
       measure == "pfmed_and_pfcondition_with_pfid"
-  ) %>% select(-ratio, -denominator)
+  ) %>%
+  select(-ratio, -denominator) %>%
+  rename(count = numerator)
 
 dir.create(here("output", "user_tables"))
 
