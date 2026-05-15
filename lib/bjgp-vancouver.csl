@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" demote-non-dropping-particle="sort-only" default-locale="en-GB">
+
+  <info>
+    <title>BJGP Vancouver</title>
+    <id>bjgp-vancouver</id>
+    <link href="https://bjgp.org/site/misc/ifora.xhtml" rel="documentation"/>
+    <author>
+      <name>Custom for BJGP</name>
+    </author>
+    <summary>Vancouver style for the British Journal of General Practice. Numbers in text, NLM journal abbreviations, first 3 authors then et al for 5+ authors, no PMID/PMCID, accessed date after URL.</summary>
+    <updated>2026-05-15T00:00:00+00:00</updated>
+    <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
+  </info>
+
+  <!-- MACROS -->
+
+  <macro name="author">
+    <names variable="author">
+      <name sort-separator=" " initialize-with="" name-as-sort-order="all" delimiter=", " delimiter-precedes-last="always" et-al-min="5" et-al-use-first="3"/>
+      <et-al term="et-al" font-style="normal"/>
+      <substitute>
+        <names variable="editor"/>
+        <text macro="title"/>
+      </substitute>
+    </names>
+  </macro>
+
+  <macro name="editor">
+    <names variable="editor">
+      <name sort-separator=" " initialize-with="" name-as-sort-order="all" delimiter=", " delimiter-precedes-last="always"/>
+      <label form="short" prefix=", " suffix="."/>
+    </names>
+  </macro>
+
+  <macro name="title">
+    <text variable="title"/>
+  </macro>
+
+  <macro name="publisher">
+    <group delimiter=": ">
+      <text variable="publisher-place"/>
+      <text variable="publisher"/>
+    </group>
+  </macro>
+
+  <macro name="edition">
+    <choose>
+      <if is-numeric="edition">
+        <group delimiter=" ">
+          <number variable="edition" form="ordinal"/>
+          <text term="edition" form="short"/>
+        </group>
+      </if>
+      <else>
+        <text variable="edition"/>
+      </else>
+    </choose>
+  </macro>
+
+  <macro name="date">
+    <choose>
+      <if variable="issued">
+        <date variable="issued">
+          <date-part name="year"/>
+        </date>
+      </if>
+      <else>
+        <text term="no date" form="short"/>
+      </else>
+    </choose>
+  </macro>
+
+  <macro name="access">
+    <choose>
+      <if variable="URL">
+        <group delimiter=" ">
+          <text variable="URL"/>
+          <choose>
+            <if variable="accessed">
+              <group prefix="(accessed " suffix=")">
+                <date variable="accessed" delimiter=" ">
+                  <date-part name="day"/>
+                  <date-part name="month" form="short" strip-periods="true"/>
+                  <date-part name="year"/>
+                </date>
+              </group>
+            </if>
+          </choose>
+        </group>
+      </if>
+    </choose>
+  </macro>
+
+  <macro name="journal-title">
+    <choose>
+      <if type="article-journal article-magazine" match="any">
+        <text variable="container-title" form="short" strip-periods="true" font-style="normal"/>
+      </if>
+      <else>
+        <text variable="container-title" strip-periods="true"/>
+      </else>
+    </choose>
+  </macro>
+
+  <!-- CITATION -->
+
+  <citation collapse="citation-number">
+    <sort>
+      <key variable="citation-number"/>
+    </sort>
+    <layout prefix="" suffix="." delimiter=",">
+      <text variable="citation-number"/>
+    </layout>
+  </citation>
+
+  <!-- BIBLIOGRAPHY -->
+
+  <bibliography et-al-min="5" et-al-use-first="3" second-field-align="flush" entry-spacing="0">
+    <layout suffix=".">
+      <text variable="citation-number" suffix=". "/>
+      <text macro="author" suffix=". "/>
+      <choose>
+
+        <!-- JOURNAL ARTICLE -->
+        <if type="article-journal">
+          <group delimiter=". " suffix=".">
+            <text macro="title"/>
+            <group delimiter=" ">
+              <text macro="journal-title"/>
+              <group delimiter=";">
+                <text macro="date"/>
+                <group delimiter=":">
+                  <group>
+                    <text variable="volume"/>
+                    <text variable="issue" prefix="(" suffix=")"/>
+                  </group>
+                  <text variable="page"/>
+                </group>
+              </group>
+            </group>
+            <text variable="DOI" prefix="DOI: https://doi.org/"/>
+          </group>
+          <text macro="access" prefix=" "/>
+        </if>
+
+        <!-- BOOK -->
+        <else-if type="book">
+          <group delimiter=". " suffix=".">
+            <text macro="title"/>
+            <text macro="edition"/>
+            <group delimiter="; ">
+              <text macro="publisher"/>
+              <text macro="date"/>
+            </group>
+          </group>
+          <text macro="access" prefix=" "/>
+        </else-if>
+
+        <!-- BOOK CHAPTER -->
+        <else-if type="chapter">
+          <group delimiter=". " suffix=".">
+            <text macro="title"/>
+            <group delimiter=": ">
+              <text term="in" text-case="capitalize-first"/>
+              <text macro="editor"/>
+            </group>
+            <text variable="container-title"/>
+            <text macro="edition"/>
+            <group delimiter="; ">
+              <text macro="publisher"/>
+              <text macro="date"/>
+            </group>
+            <group delimiter=" ">
+              <label variable="page" form="short"/>
+              <text variable="page"/>
+            </group>
+          </group>
+          <text macro="access" prefix=" "/>
+        </else-if>
+
+        <!-- WEBPAGE / ONLINE -->
+        <else-if type="webpage post post-weblog" match="any">
+          <group delimiter=". " suffix=".">
+            <text macro="title"/>
+            <text variable="container-title"/>
+            <text macro="date"/>
+          </group>
+          <text macro="access" prefix=" "/>
+        </else-if>
+
+        <!-- REPORT / THESIS / OTHER -->
+        <else>
+          <group delimiter=". " suffix=".">
+            <text macro="title"/>
+            <text macro="edition"/>
+            <group delimiter="; ">
+              <text macro="publisher"/>
+              <text macro="date"/>
+            </group>
+          </group>
+          <text macro="access" prefix=" "/>
+        </else>
+
+      </choose>
+    </layout>
+  </bibliography>
+
+</style>
