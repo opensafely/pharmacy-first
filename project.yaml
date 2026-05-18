@@ -116,3 +116,13 @@ actions:
         pf_by_ethnicity: output/report/figures/figure6ethnicity_updated.png
         pf_completeness: output/report/figures/figure7_updated.png
         pf_clinical_conditions: output/report/figures/figure8clinicalpathways_updated.png
+  
+  generate_pf_opensafely_monthly_report_tables: 
+    run: r:v2 analysis/create_monthly_tables.R
+    needs:
+      - generate_pf_breakdown_measures
+      - generate_pf_statistics_measures
+    outputs:
+      moderately_sensitive:
+        dataset: output/user_tables/pf_consultations_with_breakdowns.csv
+        dataset2: output/user_tables/pf_completeness.csv
