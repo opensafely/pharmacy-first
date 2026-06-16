@@ -5,6 +5,6 @@ opensafely/pharmacy-first-acute-otitis-media-treatment-full-dmd-codelist/2c549ca
 opensafely/pharmacy-first-impetigo-treatment-full-dmd-codelist/2f075c98
 opensafely/pharmacy-first-infected-insect-bites-treatment-full-dmd-codelist/1345296d
 opensafely/pharmacy-first-shingles-treatment-full-dmd-codelist/7a35b637
-opensafely/pharmacy-first-sinusitis-treatment-full-dmd-codelist/78b12caf
+opensafely/pharmacy-first-sinusitis-treatment-full-dmd-codelist/346cdc84
 opensafely/pharmacy-first-sore-throat-treatment-full-dmd-codelist/61264302
 opensafely/pharmacy-first-urinary-tract-infection-treatment-full-dmd-codelist/4816cfcd
