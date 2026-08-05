@@ -14,28 +14,30 @@
 #' @param guide_nrow Number of rows for the colour/guide
 #' @param facet_wrap Logical, specifying whether to include panels using facet_wrap
 #' @param facet_var Variable name used for creating panels
+#' @param date_breaks Interval between x-axis labels.
 #'
 #' @return A ggplot object.
 
 plot_measures <- function(
-    data,
-    select_interval_date,
-    select_value,
-    title = NULL,
-    x_label = NULL,
-    y_label = NULL,
-    guide_label = NULL,
-    guide_nrow = 2,
-    facet_wrap = FALSE,
-    facet_var = NULL,
-    colour_var = NULL,
-    y_scale = NULL,
-    scale_measure = NULL,
-    add_vline = TRUE,
-    date_breaks = "1 month",
-    legend_position = "bottom",
-    text_size = 14,
-    point_size = 2.5) {
+  data,
+  select_interval_date,
+  select_value,
+  title = NULL,
+  x_label = NULL,
+  y_label = NULL,
+  guide_label = NULL,
+  guide_nrow = 2,
+  facet_wrap = FALSE,
+  facet_var = NULL,
+  colour_var = NULL,
+  y_scale = NULL,
+  scale_measure = NULL,
+  add_vline = TRUE,
+  date_breaks = "1 month",
+  legend_position = "bottom",
+  text_size = 14,
+  point_size = 2.5
+) {
   plot_tmp <- ggplot(
     data,
     aes(
@@ -50,8 +52,16 @@ plot_measures <- function(
     geom_point(size = point_size) +
     geom_line(alpha = .3) +
     scale_x_date(
-      date_breaks = {{ date_breaks }},
-      labels = scales::label_date_short()
+      breaks = sort(unique(c(
+        seq(
+          min(data$interval_start, na.rm = TRUE),
+          max(data$interval_start, na.rm = TRUE),
+          by = date_breaks
+        ),
+        max(data$interval_start, na.rm = TRUE)
+      ))),
+      labels = scales::label_date_short(),
+      expand = expansion(add = c(15, 15))
     ) +
     guides(
       color = guide_legend(nrow = guide_nrow),
@@ -72,12 +82,13 @@ plot_measures <- function(
     )
 
   if (add_vline) {
-    plot_tmp <- plot_tmp + geom_vline(
-      xintercept = lubridate::as_date("2024-02-01"),
-      linetype = "dotted",
-      colour = "orange",
-      linewidth = .7
-    )
+    plot_tmp <- plot_tmp +
+      geom_vline(
+        xintercept = lubridate::as_date("2024-02-01"),
+        linetype = "dotted",
+        colour = "orange",
+        linewidth = .7
+      )
   }
 
   plot_tmp <- plot_tmp +
@@ -87,22 +98,25 @@ plot_measures <- function(
   # Automatically change y scale depending selected value
   scale_label <- rlang::as_label(enquo(scale_measure))
   if (is.null(scale_measure)) {
-    plot_tmp <- plot_tmp + scale_y_continuous(
-      limits = c(0, NA),
-      labels = scales::label_number()
-    )
+    plot_tmp <- plot_tmp +
+      scale_y_continuous(
+        limits = c(0, NA),
+        labels = scales::label_number()
+      )
   } else if (scale_measure == "rate") {
-    plot_tmp <- plot_tmp + scale_y_continuous(
-      limits = c(0, NA),
-      labels = scales::label_number(scale = 1000)
-    )
+    plot_tmp <- plot_tmp +
+      scale_y_continuous(
+        limits = c(0, NA),
+        labels = scales::label_number(scale = 1000)
+      )
   } else if (scale_measure == "percent") {
     plot_tmp <- plot_tmp + scale_y_continuous(labels = scales::percent)
   } else {
-    plot_tmp <- plot_tmp + scale_y_continuous(
-      limits = c(0, NA),
-      labels = scales::label_number()
-    )
+    plot_tmp <- plot_tmp +
+      scale_y_continuous(
+        limits = c(0, NA),
+        labels = scales::label_number()
+      )
   }
 
   # Add facets if requested
