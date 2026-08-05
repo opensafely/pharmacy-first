@@ -14,6 +14,7 @@
 #' @param guide_nrow Number of rows for the colour/guide
 #' @param facet_wrap Logical, specifying whether to include panels using facet_wrap
 #' @param facet_var Variable name used for creating panels
+#' @param date_breaks Interval between x-axis labels.
 #'
 #' @return A ggplot object.
 
@@ -50,8 +51,16 @@ plot_measures <- function(
     geom_point(size = point_size) +
     geom_line(alpha = .3) +
     scale_x_date(
-      date_breaks = {{ date_breaks }},
-      labels = scales::label_date_short()
+      breaks = sort(unique(c(
+        seq(
+          min(data$interval_start, na.rm = TRUE),
+          max(data$interval_start, na.rm = TRUE),
+          by = date_breaks
+        ),
+        max(data$interval_start, na.rm = TRUE)
+      ))),
+      labels = scales::label_date_short(),
+      expand = expansion(add = c(15, 15))
     ) +
     guides(
       color = guide_legend(nrow = guide_nrow),

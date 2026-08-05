@@ -102,8 +102,16 @@ plot_pf_consultations <- df_pf_consultations_extended |>
     color = "orange"
   ) +
   scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
+    breaks = sort(unique(c(
+      seq(
+        min(df_pf_consultations_extended$interval_start, na.rm = TRUE),
+        max(df_pf_consultations_extended$interval_start, na.rm = TRUE),
+        by = "2 months"
+      ),
+      max(df_pf_consultations_extended$interval_start, na.rm = TRUE)
+    ))),
+    labels = scales::label_date_short(),
+    expand = expansion(add = c(15, 15))
   ) +
   guides(
     color = guide_legend(nrow = 2),
@@ -164,7 +172,8 @@ pf_sex <- df_measures %>%
     facet_wrap = FALSE,
     add_vline = FALSE,
     title = NULL,
-    y_label = NULL
+    y_label = NULL,
+    date_breaks = "2 months"
   )
 
 pf_sex
@@ -194,7 +203,8 @@ pf_age <- df_measures %>%
     facet_wrap = FALSE,
     add_vline = FALSE,
     title = NULL,
-    y_label = NULL
+    y_label = NULL,
+    date_breaks = "2 months"
   ) +
   scale_shape_manual(values = shape_mapping)
 
@@ -243,7 +253,8 @@ pf_imd <- df_measures %>%
     facet_wrap = FALSE,
     add_vline = FALSE,
     title = NULL,
-    y_label = NULL
+    y_label = NULL,
+    date_breaks = "2 months"
   ) +
   scale_shape_manual(values = shape_mapping) +
   scale_colour_manual(values = colour_mapping) +
@@ -299,7 +310,8 @@ pf_region <- df_measures %>%
     facet_wrap = FALSE,
     add_vline = FALSE,
     title = NULL,
-    y_label = NULL
+    y_label = NULL,
+    date_breaks = "2 months"
   ) +
   scale_shape_manual(values = shape_mapping) +
   scale_colour_manual(values = colour_mapping) +
@@ -350,7 +362,8 @@ pf_ethnicity <- df_measures %>%
     facet_wrap = FALSE,
     add_vline = FALSE,
     title = NULL,
-    y_label = NULL
+    y_label = NULL,
+    date_breaks = "2 months"
   ) +
   scale_shape_manual(values = shape_mapping) +
   scale_colour_manual(values = colour_mapping) +
@@ -410,8 +423,16 @@ plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
     fill = "Pharmacy First consultations linked to: "
   ) +
   scale_x_date(
-    date_breaks = "1 month",
-    labels = scales::label_date_short()
+    breaks = sort(unique(c(
+      seq(
+        min(df_pf_descriptive_stats$interval_start, na.rm = TRUE),
+        max(df_pf_descriptive_stats$interval_start, na.rm = TRUE),
+        by = "2 months"
+      ),
+      max(df_pf_descriptive_stats$interval_start, na.rm = TRUE)
+    ))),
+    labels = scales::label_date_short(),
+    expand = expansion(add = c(15, 15))
   ) +
   theme(
     legend.position = "bottom",
@@ -443,7 +464,8 @@ pf_clinical_pathways <- df_measures %>%
     facet_wrap = FALSE,
     add_vline = FALSE,
     title = NULL,
-    y_label = NULL
+    y_label = NULL,
+    date_breaks = "2 months"
   ) + facet_wrap(~measure, ncol = 1, scales = "free_y")
 
 pf_clinical_pathways
