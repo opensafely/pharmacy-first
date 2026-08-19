@@ -432,7 +432,8 @@ plot_pf_med_condition_linkage <- df_pf_descriptive_stats |>
       max(df_pf_descriptive_stats$interval_start, na.rm = TRUE)
     ))),
     labels = scales::label_date_short(),
-    expand = expansion(add = c(15, 15))
+    # Leave enough room for the percentage labels centred on the final month.
+    expand = expansion(add = c(15, 35))
   ) +
   theme(
     legend.position = "bottom",
