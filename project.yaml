@@ -1,4 +1,4 @@
-version: "3.0"
+aversion: "3.0"
 
 # Ignore this`expectation` block. It is required but not used, and will be removed in future versions.
 expectations:
@@ -50,7 +50,7 @@ actions:
         measure: output/measures/pf_medications_measures.csv
 
   tidy_med_measures:
-    run: r:latest analysis/tidy_measures_med_counts.R
+    run: r:v2 analysis/tidy_measures_med_counts.R
     needs: [generate_pf_med_counts_measures]
     outputs:
       moderately_sensitive:
