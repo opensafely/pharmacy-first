@@ -1,4 +1,4 @@
-aversion: "3.0"
+version: "3.0"
 
 # Ignore this`expectation` block. It is required but not used, and will be removed in future versions.
 expectations:
