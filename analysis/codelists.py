@@ -2,7 +2,7 @@ from ehrql import codelist_from_csv
 
 # Import pharmacy first conditions codelist
 pf_conditions_codelist = codelist_from_csv(
-    "codelists/user-chriswood-pharmacy-first-clinical-pathway-conditions.csv",
+    "codelists/opensafely-pharmacy-first-clinical-pathway-conditions.csv",
     column="code",
     category_column="term",
 )
