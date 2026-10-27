@@ -130,6 +130,7 @@ pf_condition_denominators = {
     "acute_pharyngitis": denominator,
     "acute_sinusitis": denominator,
     "acute_otitis_media": denominator,
+    "sore_throat": denominator,
 }
 
 # Create measures for pharmacy first conditions

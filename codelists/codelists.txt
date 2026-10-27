@@ -1,4 +1,4 @@
-user/chriswood/pharmacy-first-clinical-pathway-conditions/7ec97762
+opensafely/pharmacy-first-clinical-pathway-conditions/218a2831/
 opensafely/ethnicity-snomed-0removed/2e641f61
 nhsd-primary-care-domain-refsets/preg_cod/20200812
 opensafely/pharmacy-first-acute-otitis-media-treatment-full-dmd-codelist/2c549ca2
