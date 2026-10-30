@@ -410,6 +410,31 @@ plot_pf_med_condition_linkage_mi <- df_pf_descriptive_stats_mi |>
 plot_pf_med_condition_linkage_mi
 
 ggsave(here("released_output", "results", "fig3b_pf_consultation_completeness.png"), plot_pf_med_condition_linkage_mi, width = 8, height = 4)
+
+fig_pf_med_condition_linkage_combined <- (fig_pf_med_condition_linkage_all +
+  labs(title = "All Pharmacy First consultation codes (n = 91,805 PF events)")) /
+  (plot_pf_med_condition_linkage_mi +
+    labs(title = "Pharmacy First consultations with recommended code (n = 76,010 PF events)")) +
+  plot_layout(guides = "collect", axis_titles = "collect") +
+  plot_annotation(tag_levels = "a") &
+  labs(y = "Proportion of consultations") &
+  guides(fill = guide_legend(reverse = TRUE)) &
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(size = 12, margin = margin(l = 18, b = 5)),
+    plot.tag.location = "panel",
+    plot.tag.position = c(-0.02, 1.05),
+    plot.tag = element_text(face = "bold", hjust = 0, vjust = -0.2)
+  )
+
+fig_pf_med_condition_linkage_combined
+
+ggsave(
+  filename = here("released_output", "results", "manuscript", "fig3_pf_consultation_completeness_combined.png"),
+  fig_pf_med_condition_linkage_combined,
+  height = 8,
+  width = 10
+)
 ```
 
 ### Results for Figure 3 description
